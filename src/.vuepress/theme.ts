@@ -4,11 +4,11 @@ import { enNavbar, zhNavbar } from "./navbar/index.js";
 import { enSidebar, zhSidebar } from "./sidebar/index.js";
 
 export default hopeTheme({
-  hostname: "https://mister-hope.github.io",
+  hostname: "https://ranmoanran.github.io/moran-blog/zh/",
 
   author: {
-    name: "Mr.Hope",
-    url: "https://mister-hope.com",
+    name: "moran",
+    url: "https://ranmoanran.github.io/moran-blog/zh/",
   },
 
   logo: "https://theme-hope-assets.vuejs.press/logo.svg",
@@ -67,7 +67,7 @@ export default hopeTheme({
 
       footer: "Default footer",
 
-      displayFooter: true,
+      displayFooter: false,
 
       blog: {
         description: "A FrontEnd programmer",
@@ -89,12 +89,12 @@ export default hopeTheme({
       // sidebar
       sidebar: zhSidebar,
 
-      footer: "默认页脚",
+      footer: "墨然的博客",
 
       displayFooter: true,
 
       blog: {
-        description: "一个前端开发者",
+        description: "墨然",
         intro: "/zh/intro.html",
       },
 

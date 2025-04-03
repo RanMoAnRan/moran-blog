@@ -4,23 +4,29 @@ export const zhSidebar = sidebar({
   "/zh/": [
     "",
     {
-      text: "如何使用",
+      text: "Kafka",
       icon: "laptop-code",
       prefix: "demo/",
       link: "demo/",
       children: "structure",
     },
     {
-      text: "文章",
+      text: "Spark",
       icon: "book",
       prefix: "posts/",
       children: "structure",
     },
     "intro",
     {
-      text: "幻灯片",
+      text: "Flume",
       icon: "person-chalkboard",
-      link: "https://ecosystem.vuejs.press/zh/plugins/markdown/revealjs/demo.html",
+      link: "",
+    },
+    {
+      text: "Doris",
+      icon: "book",
+      prefix: "posts/",
+      children: "structure",
     },
   ],
 });

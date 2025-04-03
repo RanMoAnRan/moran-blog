@@ -2,36 +2,54 @@
 home: true
 layout: BlogHome
 icon: house
-title: 主页
-heroImage: https://theme-hope-assets.vuejs.press/logo.svg
+title: 首页
+heroImage: assets/icon/chrome-192.png
 heroText: 墨然
 heroFullScreen: true
 tagline: 无论你对此生的决定为何，一定要真诚地对待自己。
 projects:
   - icon: folder-open
-    name: 项目名称
-    desc: 项目详细描述
-    link: https://你的项目链接
+    name: Deepseek
+    desc: Deepseek
+    link: https://chat.deepseek.com/
 
   - icon: link
-    name: 链接名称
-    desc: 链接详细描述
-    link: https://链接地址
+    name: kimi
+    desc: MIMI
+    link: https://kimi.moonshot.cn/
 
   - icon: book
-    name: 书籍名称
-    desc: 书籍详细描述
-    link: https://你的书籍链接
+    name: 通义
+    desc: 通义千问
+    link: https://tongyi.aliyun.com/
 
   - icon: newspaper
-    name: 文章名称
-    desc: 文章详细描述
-    link: https://你的文章链接
+    name: 元宝
+    desc: 腾讯元宝
+    link: https://yuanbao.tencent.com/
+
+  - icon: folder-open
+    name: Deepseek
+    desc: Deepseek
+    link: https://chat.deepseek.com/
+
+  - icon: link
+    name: kimi
+    desc: MIMI
+    link: https://kimi.moonshot.cn/
+
+  - icon: book
+    name: 通义
+    desc: 通义千问
+    link: https://tongyi.aliyun.com/
+
+  - icon: newspaper
+    name: 元宝
+    desc: 腾讯元宝
+    link: https://yuanbao.tencent.com/
 
 
-footer: 自定义你的页脚文字
+footer: 墨然的博客
 ---
-
-墨然的博客
 
 让自己进入一片雪，一片叶，一片云，让自己平和安乐是一种修行。
