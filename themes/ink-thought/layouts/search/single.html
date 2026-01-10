@@ -1,0 +1,32 @@
+{{ define "main" }}
+  <div class="container">
+    <div class="content">
+      <header class="page-header">
+        <h1 class="page-title">{{ .Title }}</h1>
+        {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+      </header>
+
+      {{ with .Content }}
+        <div class="prose">{{ . }}</div>
+      {{ end }}
+
+      <div class="search" data-search-index="{{ relLangURL `/index.json` }}">
+        <label class="sr-only" for="search-input">搜索</label>
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          inputmode="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="输入关键词，实时搜索标题 / 摘要 / 正文…"
+        >
+        <p id="search-status" class="search-status">正在加载索引…</p>
+        <div id="search-results" class="search-results" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  {{- $js := resources.Get "js/search.js" | minify | fingerprint -}}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{ end }}

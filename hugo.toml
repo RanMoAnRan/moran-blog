@@ -1,0 +1,103 @@
+baseURL = 'https://example.org/'
+title = '墨然的博客'
+languageCode = 'zh-cn'
+defaultContentLanguage = 'zh'
+timeZone = 'Asia/Shanghai'
+
+theme = 'ink-thought'
+enableRobotsTXT = true
+
+[outputs]
+  home = ['HTML', 'RSS', 'JSON']
+
+[outputFormats]
+  [outputFormats.RSS]
+    baseName = 'atom'
+
+[taxonomies]
+  tag = 'tags'
+  category = 'categories'
+
+[permalinks]
+  posts = '/posts/:slug/'
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    noClasses = false
+    lineNos = false
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4
+    ordered = false
+
+[pagination]
+  pagerSize = 10
+
+[params]
+  description = '记录代码与生活'
+  slogan = '记录代码与生活'
+  accent = '#002FA7'
+
+  [params.profile]
+    name = '墨然'
+    bio = '写代码，做产品，偶尔写字。'
+    location = 'Asia/Shanghai'
+
+  [[params.social]]
+    name = 'GitHub'
+    url = 'https://github.com/your-username'
+    icon = 'github'
+
+  [[params.social]]
+    name = 'Email'
+    url = 'mailto:you@example.com'
+    icon = 'email'
+
+  [params.post]
+    license = '本文采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议。'
+
+  [params.giscus]
+    enabled = false
+    repo = 'OWNER/REPO'
+    repoId = ''
+    category = 'Announcements'
+    categoryId = ''
+    mapping = 'pathname'
+    reactionsEnabled = '1'
+    emitMetadata = '0'
+    inputPosition = 'top'
+    theme = 'preferred_color_scheme'
+    lang = 'zh-CN'
+
+  [params.analytics]
+    umamiWebsiteId = ''
+    umamiSrc = ''
+    googleAnalyticsId = ''
+
+[menu]
+  [[menu.main]]
+    name = '首页'
+    pageRef = '/'
+    weight = 10
+
+  [[menu.main]]
+    name = '归档'
+    pageRef = '/archives/'
+    weight = 20
+
+  [[menu.main]]
+    name = '标签'
+    pageRef = '/tags/'
+    weight = 30
+
+  [[menu.main]]
+    name = '分类'
+    pageRef = '/categories/'
+    weight = 40
+
+  [[menu.main]]
+    name = '关于'
+    pageRef = '/about/'
+    weight = 50

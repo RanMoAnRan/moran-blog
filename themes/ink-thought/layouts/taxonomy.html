@@ -1,0 +1,27 @@
+{{ define "main" }}
+  <div class="container">
+    <div class="content">
+      <header class="page-header">
+        <h1 class="page-title">{{ .Title }}</h1>
+        {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+      </header>
+
+      <div class="term-cloud" data-taxonomy="{{ .Data.Plural }}">
+        {{ range .Data.Terms.ByCount }}
+          {{ $size := "s" }}
+          {{ if ge .Count 20 }}
+            {{ $size = "xl" }}
+          {{ else if ge .Count 10 }}
+            {{ $size = "l" }}
+          {{ else if ge .Count 5 }}
+            {{ $size = "m" }}
+          {{ end }}
+          <a class="term term--{{ $size }}" href="{{ .Page.RelPermalink }}">
+            <span class="term-name">{{ .Page.LinkTitle }}</span>
+            <span class="term-count" aria-label="文章数">{{ .Count }}</span>
+          </a>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+{{ end }}

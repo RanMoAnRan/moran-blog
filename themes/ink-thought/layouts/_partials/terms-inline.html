@@ -1,0 +1,11 @@
+{{- $page := .page -}}
+{{- $taxonomy := .taxonomy -}}
+
+{{- with $page.GetTerms $taxonomy -}}
+  <div class="terms terms--{{ $taxonomy }}" aria-label="{{ $taxonomy }}">
+    {{- range . -}}
+      <a class="term-chip" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+    {{- end -}}
+  </div>
+{{- end -}}
+

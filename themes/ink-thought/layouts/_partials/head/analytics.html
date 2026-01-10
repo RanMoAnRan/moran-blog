@@ -1,0 +1,17 @@
+{{- $umamiID := site.Params.analytics.umamiWebsiteId -}}
+{{- $umamiSrc := site.Params.analytics.umamiSrc -}}
+{{- if and $umamiID $umamiSrc -}}
+  <script defer src="{{ $umamiSrc }}" data-website-id="{{ $umamiID }}"></script>
+{{- end -}}
+
+{{- $ga := site.Params.analytics.googleAnalyticsId -}}
+{{- if $ga -}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ $ga }}');
+  </script>
+{{- end -}}
+

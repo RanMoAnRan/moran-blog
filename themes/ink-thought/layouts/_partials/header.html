@@ -1,0 +1,38 @@
+<header class="site-header" role="banner">
+  <div class="container">
+    <div class="header-inner">
+      <a class="brand" href="{{ relLangURL `/` }}">{{ site.Title }}</a>
+
+      {{ with site.Menus.main }}
+        <nav class="nav" aria-label="主导航">
+          <ul class="nav-list">
+            {{ range . }}
+              {{ $attrs := dict "href" .URL "class" "nav-link" }}
+              {{ if $.IsMenuCurrent .Menu . }}
+                {{ $attrs = merge $attrs (dict "aria-current" "page" "class" "nav-link is-active") }}
+              {{ else if $.HasMenuCurrent .Menu . }}
+                {{ $attrs = merge $attrs (dict "aria-current" "true" "class" "nav-link is-ancestor") }}
+              {{ end }}
+              <li class="nav-item">
+                <a
+                  {{- range $k, $v := $attrs -}}
+                    {{- printf " %s=%q" $k $v | safeHTMLAttr -}}
+                  {{- end -}}
+                >{{ .Name }}</a>
+              </li>
+            {{ end }}
+          </ul>
+        </nav>
+      {{ end }}
+
+      <div class="header-actions">
+        <a class="icon-button" href="{{ relLangURL `/search/` }}" aria-label="搜索">
+          {{ partial "icons.html" (dict "name" "search") }}
+        </a>
+        <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">
+          {{ partial "icons.html" (dict "name" "sun-moon") }}
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

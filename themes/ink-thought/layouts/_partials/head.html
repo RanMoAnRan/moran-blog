@@ -1,0 +1,37 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s · %s" .Title site.Title }}{{ end }}</title>
+
+{{- $desc := "" -}}
+{{- if .Description -}}
+  {{- $desc = .Description -}}
+{{- else if .IsHome -}}
+  {{- $desc = site.Params.description -}}
+{{- else if .Summary -}}
+  {{- $desc = .Summary -}}
+{{- end -}}
+{{- with $desc -}}
+  <meta name="description" content="{{ . | plainify }}">
+{{- end }}
+
+<link rel="canonical" href="{{ .Permalink }}">
+
+{{ with .OutputFormats.Get "RSS" }}
+  <link rel="alternate" type="{{ .MediaType.Type }}" href="{{ .Permalink }}" title="{{ site.Title }}">
+{{ end }}
+
+<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+{{ with $desc }}<meta property="og:description" content="{{ . | plainify }}">{{ end }}
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+
+<meta name="twitter:card" content="summary">
+{{ with $desc }}<meta name="twitter:description" content="{{ . | plainify }}">{{ end }}
+
+{{ partialCached "head/css.html" . }}
+{{ partialCached "head/js.html" . }}
+
+{{ partial "head/analytics.html" . }}
+
+{{ partial "head/math.html" . }}

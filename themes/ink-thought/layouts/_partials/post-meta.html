@@ -1,0 +1,17 @@
+{{- $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" -}}
+{{- $dateHuman := .Date | time.Format "2006-01-02" -}}
+
+{{- $words := .WordCount -}}
+{{- $wordsHuman := printf "%d" $words -}}
+{{- if ge $words 1000 -}}
+  {{- $wordsHuman = printf "%.1fk" (div (mul $words 1.0) 1000.0) -}}
+{{- end -}}
+
+<span class="meta">
+  <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+  <span class="dot" aria-hidden="true">·</span>
+  <span>字数 {{ $wordsHuman }}</span>
+  <span class="dot" aria-hidden="true">·</span>
+  <span>阅读 {{ .ReadingTime }} mins</span>
+</span>
+

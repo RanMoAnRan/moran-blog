@@ -1,0 +1,11 @@
+{{ with site.Params.social }}
+  <div class="social">
+    {{ range . }}
+      <a class="social-link" href="{{ .url }}" aria-label="{{ .name }}" rel="me noopener noreferrer" target="_blank">
+        {{ partial "icons.html" (dict "name" .icon) }}
+        <span class="sr-only">{{ .name }}</span>
+      </a>
+    {{ end }}
+  </div>
+{{ end }}
+

@@ -1,0 +1,27 @@
+{{ define "main" }}
+  <div class="container">
+    <section class="home-hero">
+      <div class="profile-card">
+        <div class="profile-head">
+          <h1 class="profile-name">{{ or site.Params.profile.name site.Title }}</h1>
+          {{ with site.Params.slogan }}<p class="profile-slogan">{{ . }}</p>{{ end }}
+        </div>
+        {{ with site.Params.profile.bio }}<p class="profile-bio">{{ . }}</p>{{ end }}
+        {{ partial "social.html" . }}
+      </div>
+    </section>
+
+    <section class="home-feed" aria-label="最新文章">
+      <h2 class="section-title">最新文章</h2>
+      <div class="post-list">
+        {{ $pages := where site.RegularPages "Section" "posts" }}
+        {{ range first 10 $pages.ByDate.Reverse }}
+          {{ partial "post-card.html" . }}
+        {{ end }}
+      </div>
+      <div class="home-more">
+        <a href="{{ relLangURL `/archives/` }}">查看全部归档 →</a>
+      </div>
+    </section>
+  </div>
+{{ end }}
