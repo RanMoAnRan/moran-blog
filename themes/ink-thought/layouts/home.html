@@ -1,27 +1,43 @@
 {{ define "main" }}
   <div class="container">
-    <section class="home-hero">
-      <div class="profile-card">
-        <div class="profile-head">
-          <h1 class="profile-name">{{ or site.Params.profile.name site.Title }}</h1>
-          {{ with site.Params.slogan }}<p class="profile-slogan">{{ . }}</p>{{ end }}
+    <div class="home-grid">
+      <section class="home-hero">
+        {{- $name := or site.Params.profile.name site.Title -}}
+        <div class="profile-card">
+          <div class="profile-head">
+            <div class="profile-avatar" aria-hidden="true">
+              {{- with site.Params.profile.avatar -}}
+                {{- if hasPrefix . "http" -}}
+                  <img src="{{ . }}" alt="" loading="lazy" decoding="async">
+                {{- else -}}
+                  <img src="{{ . | relURL }}" alt="" loading="lazy" decoding="async">
+                {{- end -}}
+              {{- else -}}
+                {{ slicestr $name 0 1 }}
+              {{- end -}}
+            </div>
+            <div class="profile-text">
+              <h1 class="profile-name">{{ $name }}</h1>
+              {{ with site.Params.slogan }}<p class="profile-slogan">{{ . }}</p>{{ end }}
+            </div>
+          </div>
+          {{ with site.Params.profile.bio }}<p class="profile-bio">{{ . }}</p>{{ end }}
+          {{ partial "social.html" . }}
         </div>
-        {{ with site.Params.profile.bio }}<p class="profile-bio">{{ . }}</p>{{ end }}
-        {{ partial "social.html" . }}
-      </div>
-    </section>
+      </section>
 
-    <section class="home-feed" aria-label="最新文章">
-      <h2 class="section-title">最新文章</h2>
-      <div class="post-list">
-        {{ $pages := where site.RegularPages "Section" "posts" }}
-        {{ range first 10 $pages.ByDate.Reverse }}
-          {{ partial "post-card.html" . }}
-        {{ end }}
-      </div>
-      <div class="home-more">
-        <a href="{{ with site.GetPage `/archives` }}{{ .RelPermalink }}{{ else }}{{ relLangURL `archives/` }}{{ end }}">查看全部归档 →</a>
-      </div>
-    </section>
+      <section class="home-feed" aria-label="最新文章">
+        <h2 class="section-title">最新文章</h2>
+        <div class="post-list">
+          {{ $pages := where site.RegularPages "Section" "posts" }}
+          {{ range first 10 $pages.ByDate.Reverse }}
+            {{ partial "post-card.html" . }}
+          {{ end }}
+        </div>
+        <div class="home-more">
+          <a href="{{ with site.GetPage `/archives` }}{{ .RelPermalink }}{{ else }}{{ relLangURL `archives/` }}{{ end }}">查看全部归档 →</a>
+        </div>
+      </section>
+    </div>
   </div>
 {{ end }}
