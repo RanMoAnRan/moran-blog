@@ -13,6 +13,13 @@
   --shadow-md: 0 1px 2px rgba(15, 23, 42, 0.06), 0 18px 52px rgba(15, 23, 42, 0.10);
   --shadow: var(--shadow-sm);
 
+  /* Magazine Style Colors */
+  --color-tech: #0ea5e9; /* Sky Blue */
+  --color-life: #10b981; /* Emerald */
+  --color-photo: #f97316; /* Orange */
+  --grad-start: #ffdee9;
+  --grad-end: #b5fffc;
+
   --code-bg: rgba(15, 23, 42, 0.045);
   --code-border: rgba(15, 23, 42, 0.085);
 
@@ -41,6 +48,13 @@
     --shadow: var(--shadow-sm);
     --code-bg: rgba(255, 255, 255, 0.06);
     --code-border: rgba(255, 255, 255, 0.12);
+
+    /* Dark Mode Magazine Colors */
+    --color-tech: #38bdf8;
+    --color-life: #34d399;
+    --color-photo: #fb923c;
+    --grad-start: #2e1065;
+    --grad-end: #0c4a6e;
   }
 }
 
@@ -95,12 +109,14 @@ body {
 
 body {
   margin: 0;
-  background: radial-gradient(
-      900px 420px at 12% -10%,
-      var(--glow-accent),
-      transparent 62%
-    ),
-    radial-gradient(760px 420px at 92% -10%, var(--glow-warm), transparent 60%), var(--bg);
+  background-image: 
+    radial-gradient(at 0% 0%, var(--grad-start) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, var(--grad-end) 0px, transparent 50%);
+  background-color: var(--bg);
+  background-attachment: fixed;
+  background-size: 100% 100vh;
+  background-repeat: no-repeat;
+  
   color: var(--text);
   font-family: var(--font-sans);
   font-size: clamp(16px, 1.1vw + 12px, 18px);
@@ -266,12 +282,15 @@ a:hover {
   color: var(--text);
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .icon-button:hover {
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
-  border-color: var(--border);
+  background: var(--panel);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .icon {
@@ -386,11 +405,15 @@ a:hover {
   border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   background: color-mix(in srgb, var(--panel) 80%, transparent);
   color: var(--text);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .social-link:hover {
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
-  border-color: var(--border);
+  background: var(--panel);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .home-feed {
@@ -479,20 +502,63 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+  border: 1px solid transparent;
   background: color-mix(in srgb, var(--panel) 85%, transparent);
   color: var(--muted);
   text-decoration: none;
   font-size: 0.85rem;
-  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
 }
 
+/* Base Hover */
 .term-chip:hover {
-  color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 26%, var(--border));
-  background: color-mix(in srgb, var(--panel) 95%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Functional Colors: Categories */
+[data-taxonomy="categories"] .term-chip[data-term="技术"] { --cat-color: var(--color-tech); }
+[data-taxonomy="categories"] .term-chip[data-term="生活"] { --cat-color: var(--color-life); }
+[data-taxonomy="categories"] .term-chip[data-term="摄影"] { --cat-color: var(--color-photo); }
+/* Fallback for other categories */
+[data-taxonomy="categories"] .term-chip {
+  --cat-color: var(--accent); /* Default accent */
+}
+
+/* Apply Category Styles */
+[data-taxonomy="categories"] .term-chip {
+  background-color: color-mix(in srgb, var(--cat-color) 10%, transparent);
+  color: var(--cat-color);
+  border-color: color-mix(in srgb, var(--cat-color) 20%, transparent);
+}
+
+[data-taxonomy="categories"] .term-chip:hover {
+  background-color: var(--cat-color);
+  color: #ffffff;
+  border-color: var(--cat-color);
+}
+
+/* Candy Colors: Tags */
+[data-taxonomy="tags"] .term-chip:nth-child(5n+1) { --tag-color: #ef4444; } /* Red */
+[data-taxonomy="tags"] .term-chip:nth-child(5n+2) { --tag-color: #f59e0b; } /* Amber */
+[data-taxonomy="tags"] .term-chip:nth-child(5n+3) { --tag-color: #10b981; } /* Emerald */
+[data-taxonomy="tags"] .term-chip:nth-child(5n+4) { --tag-color: #3b82f6; } /* Blue */
+[data-taxonomy="tags"] .term-chip:nth-child(5n+5) { --tag-color: #8b5cf6; } /* Violet */
+
+[data-taxonomy="tags"] .term-chip {
+  background-color: color-mix(in srgb, var(--tag-color, var(--muted)) 8%, transparent);
+  color: var(--tag-color, var(--muted));
+}
+
+[data-taxonomy="tags"] .term-chip:hover {
+  background-color: var(--tag-color, var(--muted));
+  color: #ffffff;
+  transform: scale(1.05);
 }
 
 .home-more {

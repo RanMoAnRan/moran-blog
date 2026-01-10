@@ -2,9 +2,9 @@
 {{- $taxonomy := .taxonomy -}}
 
 {{- with $page.GetTerms $taxonomy -}}
-  <div class="terms terms--{{ $taxonomy }}" aria-label="{{ $taxonomy }}">
+  <div class="terms terms--{{ $taxonomy }}" aria-label="{{ $taxonomy }}" data-taxonomy="{{ $taxonomy }}">
     {{- range . -}}
-      <a class="term-chip" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      <a class="term-chip" href="{{ .RelPermalink }}" data-term="{{ .LinkTitle }}">{{ .LinkTitle }}</a>
     {{- end -}}
   </div>
 {{- end -}}
