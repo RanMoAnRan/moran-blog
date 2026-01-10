@@ -325,351 +325,207 @@ a:hover {
   padding: 0;
 }
 
+/* ... (previous styles) ... */
+
+/* Magazine Layout Enhancements */
+
+/* 1. Profile Card: Cleaner, "Editor's Note" feel */
 .profile-card {
   border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  background: color-mix(in srgb, var(--panel) 60%, transparent); /* More transparent */
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   box-shadow: var(--shadow-sm);
-  padding: 28px 24px;
-}
-
-.profile-head {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
-  gap: 16px;
-  align-items: center;
-}
-
-.profile-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-serif);
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  color: #ffffff;
-  background: radial-gradient(
-      70% 70% at 30% 30%,
-      color-mix(in srgb, var(--accent) 65%, #ffffff),
-      var(--accent)
-    );
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  overflow: hidden;
-}
-
-.profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-text {
-  min-width: 0;
-}
-
-.profile-name {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 2.2rem;
-  line-height: 1.12;
-}
-
-.profile-slogan {
-  margin: 8px 0 0;
-  color: var(--muted);
-}
-
-.profile-bio {
-  margin: 16px 0 0;
-  color: var(--muted);
-}
-
-.profile-card .social {
-  margin-top: 14px;
-}
-
-.social {
-  display: flex;
-  gap: 10px;
-}
-
-.social-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  background: color-mix(in srgb, var(--panel) 80%, transparent);
-  color: var(--text);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.social-link:hover {
-  background: var(--panel);
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: scale(1.1);
-  box-shadow: var(--shadow-sm);
-}
-
-.home-feed {
-  padding: 0;
-}
-
-.section-title {
-  margin: 0 0 14px;
-  font-family: var(--font-serif);
-  font-size: 1.45rem;
-}
-
-.post-list {
-  display: grid;
-  gap: 14px;
-}
-
-.post-card {
-  border-radius: var(--radius);
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 18px 18px 16px;
-  transition: box-shadow 160ms ease, border-color 160ms ease;
-}
-
-.post-card:hover {
-  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
-  box-shadow: var(--shadow-md);
-}
-
-.post-card__title {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
-  line-height: 1.25;
-  letter-spacing: 0.01em;
-}
-
-.post-card__title-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.post-card__title-link:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-}
-
-.post-card__meta {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.meta {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.dot {
-  opacity: 0.55;
-}
-
-.post-card__summary {
-  margin: 12px 0 0;
-  color: var(--muted);
-}
-
-.post-card__footer {
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.terms {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.term-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  background: color-mix(in srgb, var(--panel) 85%, transparent);
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: 32px 28px;
   position: relative;
   overflow: hidden;
 }
 
-/* Base Hover */
-.term-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+/* Add a subtle top accent line to profile */
+.profile-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-tech), var(--color-life), var(--color-photo));
+  opacity: 0.8;
 }
 
-/* Functional Colors: Categories */
-[data-taxonomy="categories"] .term-chip[data-term="技术"] { --cat-color: var(--color-tech); }
-[data-taxonomy="categories"] .term-chip[data-term="生活"] { --cat-color: var(--color-life); }
-[data-taxonomy="categories"] .term-chip[data-term="摄影"] { --cat-color: var(--color-photo); }
-/* Fallback for other categories */
-[data-taxonomy="categories"] .term-chip {
-  --cat-color: var(--accent); /* Default accent */
+.profile-name {
+  font-size: 2.4rem;
+  letter-spacing: -0.02em;
 }
 
-/* Apply Category Styles */
-[data-taxonomy="categories"] .term-chip {
-  background-color: color-mix(in srgb, var(--cat-color) 10%, transparent);
-  color: var(--cat-color);
-  border-color: color-mix(in srgb, var(--cat-color) 20%, transparent);
+/* 2. Post Card: Magazine Style */
+.post-card {
+  position: relative;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
 }
 
-[data-taxonomy="categories"] .term-chip:hover {
-  background-color: var(--cat-color);
-  color: #ffffff;
-  border-color: var(--cat-color);
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
-/* Candy Colors: Tags */
-[data-taxonomy="tags"] .term-chip:nth-child(5n+1) { --tag-color: #ef4444; } /* Red */
-[data-taxonomy="tags"] .term-chip:nth-child(5n+2) { --tag-color: #f59e0b; } /* Amber */
-[data-taxonomy="tags"] .term-chip:nth-child(5n+3) { --tag-color: #10b981; } /* Emerald */
-[data-taxonomy="tags"] .term-chip:nth-child(5n+4) { --tag-color: #3b82f6; } /* Blue */
-[data-taxonomy="tags"] .term-chip:nth-child(5n+5) { --tag-color: #8b5cf6; } /* Violet */
-
-[data-taxonomy="tags"] .term-chip {
-  background-color: color-mix(in srgb, var(--tag-color, var(--muted)) 8%, transparent);
-  color: var(--tag-color, var(--muted));
+/* Category "Rubric" styling - positioning terms at top */
+.post-card .terms--categories {
+  order: -1;
+  margin-bottom: 12px;
 }
 
-[data-taxonomy="tags"] .term-chip:hover {
-  background-color: var(--tag-color, var(--muted));
-  color: #ffffff;
-  transform: scale(1.05);
+.post-card .terms--categories .term-chip {
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
 }
 
-.home-more {
-  margin-top: 18px;
-  color: var(--muted);
+.post-card__title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 8px;
 }
 
-.home-more a {
-  color: inherit;
-  text-decoration: none;
+.post-card__summary {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.85;
 }
 
-.home-more a:hover {
-  color: var(--text);
-  text-decoration: underline;
+/* 3. Homepage Grid Layout */
+@media (min-width: 980px) {
+  .home-feed .post-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  /* "Cover Story": First post spans 2 columns */
+  .home-feed .post-list .post-card:first-child {
+    grid-column: span 2;
+    padding: 36px;
+    background: color-mix(in srgb, var(--panel) 80%, transparent);
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Text left, Meta/Terms right */
+    gap: 30px;
+    align-items: start;
+  }
+
+  /* Re-ordering for the Cover Story */
+  .home-feed .post-list .post-card:first-child .post-card__header {
+    grid-column: 1 / -1;
+  }
+  
+  .home-feed .post-list .post-card:first-child .post-card__title {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+  }
+
+  .home-feed .post-list .post-card:first-child .post-card__summary {
+    font-size: 1.15rem;
+    grid-column: 1 / 2;
+    margin-top: 0;
+  }
+
+  .home-feed .post-list .post-card:first-child .post-card__footer {
+    grid-column: 2 / 3;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 0;
+  }
 }
 
-.post {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 28px 0 64px;
-}
-
+/* 4. Single Post Page Typography */
 .post-header {
-  max-width: var(--content);
-  margin: 0 auto 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  text-align: center;
+  padding: 40px 0 40px;
+  max-width: 900px; /* Wider header */
+  margin-inline: auto;
+  border-bottom: none; /* Remove simple line */
+  position: relative;
+}
+
+/* Decorative element under title */
+.post-header::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--accent);
+  margin: 30px auto 0;
+  border-radius: 2px;
 }
 
 .post-title {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 2.25rem;
-  line-height: 1.15;
-  letter-spacing: 0.01em;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.1;
+  background: linear-gradient(135deg, var(--text) 30%, color-mix(in srgb, var(--text) 60%, var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .post-meta {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 0.95rem;
+  justify-content: center;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  opacity: 0.7;
 }
 
 .post-tax {
-  margin-top: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  justify-content: center;
 }
 
-.post-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 22px;
-  align-items: start;
-}
-
-.post-aside {
-  display: none;
-}
-
-@media (min-width: 980px) {
-  .post-layout {
-    grid-template-columns: minmax(0, var(--content)) 260px;
-    justify-content: center;
-  }
-
-  .post-aside {
-    display: block;
-    position: sticky;
-    top: 92px;
-  }
-}
-
+/* TOC Styling */
 .toc-card {
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
-  border: 1px solid var(--border);
-  padding: 14px 14px 10px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--border);
+  border-radius: 0;
+  padding: 0 0 0 16px;
 }
 
 .toc-title {
-  font-size: 0.85rem;
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-#TableOfContents ul {
-  list-style: none;
-  margin: 0;
-  padding-left: 0;
-  display: grid;
-  gap: 6px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 #TableOfContents a {
-  display: inline-flex;
-  padding: 6px 8px;
-  border-radius: 12px;
+  padding: 4px 0;
   color: var(--muted);
-  text-decoration: none;
-  transition: background-color 160ms ease, color 160ms ease;
+  font-size: 0.9rem;
+  border-radius: 0;
+  display: block;
 }
 
 #TableOfContents a:hover {
-  color: var(--text);
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  background: transparent;
+  color: var(--accent);
+  transform: translateX(4px);
 }
+
+#TableOfContents a.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ... (rest of the file) ... */
 
 .prose {
   max-width: var(--content);
