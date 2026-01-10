@@ -1,69 +1,44 @@
 <header class="site-header" role="banner">
-  <div class="container">
+  <div class="container" style="height: 100%;">
     <div class="header-inner">
+      <!-- 1. Logo (Left) -->
       <a class="brand" href="{{ site.Home.RelPermalink }}">
         <span class="brand-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         </span>
         {{ site.Title }}
       </a>
 
-      {{ with site.Menus.main }}
-        <nav class="nav" aria-label="主导航">
-          <ul class="nav-list">
-            {{ range . }}
-              {{ $attrs := dict "href" .URL "class" "nav-link" }}
-              {{ if $.IsMenuCurrent .Menu . }}
-                {{ $attrs = merge $attrs (dict "aria-current" "page" "class" "nav-link is-active") }}
-              {{ else if $.HasMenuCurrent .Menu . }}
-                {{ $attrs = merge $attrs (dict "aria-current" "true" "class" "nav-link is-ancestor") }}
-              {{ end }}
-              <li class="nav-item">
-                <a
-                  {{- range $k, $v := $attrs -}}
-                    {{- printf " %s=%q" $k $v | safeHTMLAttr -}}
-                  {{- end -}}
-                >{{ .Name }}</a>
-              </li>
-            {{ end }}
-          </ul>
-        </nav>
-      {{ end }}
-
-      <div class="header-actions">
-        <a class="icon-button" href="{{ with site.GetPage `/search` }}{{ .RelPermalink }}{{ else }}{{ relLangURL `search/` }}{{ end }}" aria-label="搜索">
-          {{ partial "icons.html" (dict "name" "search") }}
+      <!-- 2. Desktop Nav (Center) -->
+      <nav class="nav-desktop">
+        <a href="{{ site.Home.RelPermalink }}" class="nav-link {{ if .IsHome }}is-active{{ end }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          首页
         </a>
-        <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">
-          {{ partial "icons.html" (dict "name" "sun-moon") }}
+        <a href="{{ "archives" | relURL }}" class="nav-link {{ if eq .Section "archives" }}is-active{{ end }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          归档
+        </a>
+        <a href="{{ "tags" | relURL }}" class="nav-link {{ if or (eq .Section "tags") (eq .Section "categories") }}is-active{{ end }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+          分类/标签
+        </a>
+        <a href="{{ "about" | relURL }}" class="nav-link {{ if eq .Section "about" }}is-active{{ end }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          关于
+        </a>
+      </nav>
+
+      <!-- 3. Actions (Right) -->
+      <div class="header-actions">
+        <a href="{{ "search" | relURL }}" class="icon-button" aria-label="搜索">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </a>
+        <!-- Mobile Menu Toggle (Visible only on mobile via CSS) -->
+        <button class="icon-button md:hidden" style="display: none;" aria-label="菜单">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
         </button>
       </div>
     </div>
   </div>
 </header>
-
-<style>
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.25rem;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .brand-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: var(--primary-gradient);
-    border-radius: 8px;
-    color: white; /* Icon itself needs to be white on the gradient background */
-    -webkit-text-fill-color: white; /* Override parent */
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-  }
-</style>

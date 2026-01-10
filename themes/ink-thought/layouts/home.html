@@ -1,43 +1,47 @@
 {{ define "main" }}
   <div class="container">
-    <!-- Hero Section -->
-    <section class="home-hero-new">
-      <div class="hero-background-blob"></div>
-      
-      <h1 class="hero-title font-serif">
+    <!-- Hero Section (Matches React App 'home' tab) -->
+    <div style="position: relative; padding: 80px 0 112px; text-align: center; max-width: 896px; margin: 0 auto;">
+      <!-- Hero Background Elements -->
+      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 300px; background: linear-gradient(to right, rgba(221, 214, 254, 0.5), rgba(199, 210, 254, 0.5)); filter: blur(80px); border-radius: 9999px; z-index: -10;"></div>
+
+      <h1 style="font-size: clamp(3rem, 5vw, 4.5rem); font-family: var(--font-serif); font-weight: 900; color: var(--slate-900); margin-bottom: 24px; letter-spacing: -0.025em; line-height: 1;">
         {{ site.Title }}
       </h1>
-      <p class="hero-subtitle">
+      <p style="font-size: clamp(1.25rem, 2vw, 1.5rem); color: var(--slate-500); line-height: 1.625; font-weight: 300; margin-bottom: 32px;">
         {{ site.Params.slogan | default "记录代码与生活的间隙" }}
       </p>
-      
-      <div class="hero-actions">
-        <a href="#latest-posts" class="btn btn-primary">
-          <span>开始阅读</span>
+      <div style="display: flex; justify-content: center; gap: 16px;">
+        <a href="#latest-posts" class="btn btn-primary" style="padding: 12px 32px; border-radius: 9999px;">
+          开始阅读
         </a>
-        <a href="{{ "about" | relURL }}" class="btn btn-outline">
-          <span>关于我</span>
+        <a href="{{ "about" | relURL }}" class="btn btn-outline" style="padding: 12px 32px; border-radius: 9999px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px);">
+          我的项目
         </a>
       </div>
-    </section>
+    </div>
 
     <!-- Latest Posts Section -->
-    <section id="latest-posts" class="home-feed">
-      <div class="section-header">
-        <h2 class="section-title">
-          <span class="icon-box">✨</span> 最新文章
+    <div id="latest-posts" style="max-width: 896px; margin: 0 auto;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding: 0 8px;">
+        <h2 style="font-weight: 700; color: var(--slate-900); font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">
+          <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 9999px; background: var(--violet-100); color: var(--violet-600);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></svg>
+          </span>
+          最新文章
         </h2>
-        <a href="{{ "archives" | relURL }}" class="view-all-link">
-          查看全部 →
+        <a href="{{ "archives" | relURL }}" style="font-size: 0.875rem; font-weight: 500; color: var(--slate-500); display: flex; align-items: center; gap: 4px; transition: color 0.2s;" onmouseover="this.style.color='var(--violet-600)'" onmouseout="this.style.color='var(--slate-500)'">
+          查看全部 
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </a>
       </div>
       
-      <div class="post-list">
+      <div style="display: grid; gap: 24px;">
         {{ $pages := where site.RegularPages "Section" "posts" }}
         {{ range first 10 $pages.ByDate.Reverse }}
           {{ partial "post-card.html" . }}
         {{ end }}
       </div>
-    </section>
+    </div>
   </div>
 {{ end }}
