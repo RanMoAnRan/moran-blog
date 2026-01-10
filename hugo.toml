@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://ranmoanran.github.io/moran-blog/'
 title = '墨然的博客'
 languageCode = 'zh-cn'
 defaultContentLanguage = 'zh'
@@ -47,7 +47,7 @@ enableRobotsTXT = true
 
   [[params.social]]
     name = 'GitHub'
-    url = 'https://github.com/your-username'
+    url = 'https://github.com/RanMoAnRan'
     icon = 'github'
 
   [[params.social]]
@@ -60,7 +60,7 @@ enableRobotsTXT = true
 
   [params.giscus]
     enabled = false
-    repo = 'OWNER/REPO'
+    repo = 'RanMoAnRan/moran-blog'
     repoId = ''
     category = 'Announcements'
     categoryId = ''

@@ -10,7 +10,7 @@
         <div class="prose">{{ . }}</div>
       {{ end }}
 
-      <div class="search" data-search-index="{{ relLangURL `/index.json` }}">
+      <div class="search" data-search-index="{{ with site.Home.OutputFormats.Get `JSON` }}{{ .RelPermalink }}{{ else }}{{ relLangURL `index.json` }}{{ end }}">
         <label class="sr-only" for="search-input">搜索</label>
         <input
           id="search-input"

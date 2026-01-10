@@ -20,7 +20,7 @@
         {{ end }}
       </div>
       <div class="home-more">
-        <a href="{{ relLangURL `/archives/` }}">查看全部归档 →</a>
+        <a href="{{ with site.GetPage `/archives` }}{{ .RelPermalink }}{{ else }}{{ relLangURL `archives/` }}{{ end }}">查看全部归档 →</a>
       </div>
     </section>
   </div>

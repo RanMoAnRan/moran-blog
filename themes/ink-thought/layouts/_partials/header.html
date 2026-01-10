@@ -1,7 +1,7 @@
 <header class="site-header" role="banner">
   <div class="container">
     <div class="header-inner">
-      <a class="brand" href="{{ relLangURL `/` }}">{{ site.Title }}</a>
+      <a class="brand" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
 
       {{ with site.Menus.main }}
         <nav class="nav" aria-label="主导航">
@@ -26,7 +26,7 @@
       {{ end }}
 
       <div class="header-actions">
-        <a class="icon-button" href="{{ relLangURL `/search/` }}" aria-label="搜索">
+        <a class="icon-button" href="{{ with site.GetPage `/search` }}{{ .RelPermalink }}{{ else }}{{ relLangURL `search/` }}{{ end }}" aria-label="搜索">
           {{ partial "icons.html" (dict "name" "search") }}
         </a>
         <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">
