@@ -1,14 +1,40 @@
 {{ define "main" }}
   <div class="container">
+    <div class="post-navigation-top">
+      <a href="{{ site.Home.RelPermalink }}" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        返回首页
+      </a>
+    </div>
+
     <article class="post">
       <header class="post-header">
-        <h1 class="post-title">{{ .Title }}</h1>
-        <div class="post-meta">
-          <span>发布于 {{ partial "post-meta.html" . }}</span>
+        <!-- 1. Category Pill -->
+        <div class="post-category-wrapper">
+          {{ range first 1 (.GetTerms "categories") }}
+            <a href="{{ .RelPermalink }}" class="category-pill">{{ .Title }}</a>
+          {{ end }}
         </div>
-        <div class="post-tax">
-          {{ partial "terms-inline.html" (dict "taxonomy" "categories" "page" .) }}
-          {{ partial "terms-inline.html" (dict "taxonomy" "tags" "page" .) }}
+
+        <!-- 2. Title -->
+        <h1 class="post-title">{{ .Title }}</h1>
+
+        <!-- 3. Meta Row -->
+        <div class="post-meta-row">
+           <span class="meta-item">
+             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+             {{ .Date.Format "2006-01-02" }}
+           </span>
+           <span class="meta-dot"></span>
+           <span class="meta-item">
+             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+             {{ .ReadingTime }} 分钟阅读
+           </span>
+           <span class="meta-dot"></span>
+           <span class="meta-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              {{ site.Params.author | default "Alex" }}
+           </span>
         </div>
       </header>
 
@@ -17,6 +43,15 @@
           <div class="prose">
             {{ .Content }}
           </div>
+
+          <!-- Tags Footer -->
+          {{ with .GetTerms "tags" }}
+          <div class="post-tags-footer">
+             {{ range . }}
+               <a href="{{ .RelPermalink }}" class="tag-pill">#{{ .Title }}</a>
+             {{ end }}
+          </div>
+          {{ end }}
 
           {{ $prev := .PrevInSection }}
           {{ $next := .NextInSection }}
@@ -37,12 +72,6 @@
             </nav>
           {{ end }}
 
-          {{ with site.Params.post.license }}
-            <div class="post-license prose">
-              {{ . | markdownify }}
-            </div>
-          {{ end }}
-
           {{ partial "giscus.html" . }}
         </div>
 
@@ -57,5 +86,94 @@
       </div>
     </article>
   </div>
-{{ end }}
 
+  <style>
+    .post-navigation-top {
+      padding: 20px 0;
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--slate-500);
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .back-link:hover {
+      background: var(--slate-100);
+      color: var(--violet-600);
+    }
+
+    .post-category-wrapper {
+      margin-bottom: 20px;
+    }
+
+    .category-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--violet-50);
+      color: var(--violet-600);
+      border: 1px solid var(--violet-200);
+    }
+
+    .post-meta-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      color: var(--slate-400);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--slate-100);
+      border-bottom: 1px solid var(--slate-100);
+      padding: 16px 0;
+      width: 100%;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--slate-300);
+      border-radius: 50%;
+    }
+    
+    .post-tags-footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--slate-100);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .tag-pill {
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: var(--slate-50);
+      color: var(--slate-500);
+      font-size: 0.9rem;
+      border: 1px solid var(--slate-200);
+    }
+    
+    .tag-pill:hover {
+      background: var(--violet-50);
+      color: var(--violet-600);
+      border-color: var(--violet-200);
+    }
+  </style>
+{{ end }}
