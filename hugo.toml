@@ -38,7 +38,7 @@ enableRobotsTXT = true
 [params]
   description = '记录代码与生活'
   slogan = '记录代码与生活'
-  accent = '#002FA7'
+  accent = '#0B3D91'
 
   [params.profile]
     name = '墨然'
