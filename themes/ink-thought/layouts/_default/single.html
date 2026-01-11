@@ -115,8 +115,20 @@
 
     .about-header-bg {
       height: 192px; /* h-48 */
-      background: linear-gradient(to right, var(--violet-600), var(--indigo-600), #06b6d4); /* violet-indigo-cyan */
+      background:
+        radial-gradient(700px circle at 20% 25%, rgba(34, 211, 238, 0.50), transparent 60%),
+        radial-gradient(700px circle at 82% 20%, rgba(244, 63, 94, 0.32), transparent 58%),
+        radial-gradient(900px circle at 55% 120%, rgba(245, 158, 11, 0.24), transparent 62%),
+        linear-gradient(to bottom right, var(--violet-600), var(--indigo-600));
       position: relative;
+    }
+
+    [data-theme='dark'] .about-header-bg {
+      background:
+        radial-gradient(700px circle at 20% 25%, rgba(34, 211, 238, 0.18), transparent 62%),
+        radial-gradient(700px circle at 82% 20%, rgba(244, 63, 94, 0.14), transparent 60%),
+        radial-gradient(900px circle at 55% 120%, rgba(245, 158, 11, 0.12), transparent 65%),
+        linear-gradient(to bottom right, rgba(124, 58, 237, 0.34), rgba(79, 70, 229, 0.22));
     }
 
     .about-pattern {
