@@ -33,6 +33,7 @@
 <meta name="twitter:card" content="summary">
 {{ with $desc }}<meta name="twitter:description" content="{{ . | plainify }}">{{ end }}
 
+{{ partial "head/theme-init.html" . }}
 {{ partialCached "head/css.html" . }}
 {{ partialCached "head/js.html" . }}
 
