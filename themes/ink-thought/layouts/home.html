@@ -38,7 +38,8 @@
       
       <div style="display: grid; gap: 24px;">
         {{ $pages := where site.RegularPages "Section" "posts" }}
-        {{ range first 10 $pages.ByDate.Reverse }}
+        {{ $limit := int (site.Params.homelatestcount | default 8) }}
+        {{ range first $limit $pages.ByDate.Reverse }}
           {{ partial "post-card.html" . }}
         {{ end }}
       </div>
