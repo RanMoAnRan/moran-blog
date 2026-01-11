@@ -33,18 +33,18 @@
   --orange-600: #ea580c;
 
   /* Semantic Variables */
-  --bg: #FDFCF8;
+  --bg: var(--slate-100);
   --panel: #ffffff;
   --panel-muted: rgba(248, 250, 252, 0.6);
   --text-heading: var(--slate-900);
   --text-main: var(--slate-800);
   --text-muted: var(--slate-500);
-  --border: var(--slate-100);
+  --border: var(--slate-200);
 
   --header-bg: rgba(255, 255, 255, 0.8);
-  --header-border: rgba(241, 245, 249, 0.5);
+  --header-border: rgba(226, 232, 240, 0.85);
   --pill-bg: rgba(248, 250, 252, 0.5);
-  --pill-border: rgba(226, 232, 240, 0.5);
+  --pill-border: rgba(226, 232, 240, 0.85);
   --footer-bg: rgba(255, 255, 255, 0.5);
   --footer-border: rgba(226, 232, 240, 0.6);
   --hover-bg: rgba(226, 232, 240, 0.5);
@@ -605,6 +605,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 24px; /* p-6 */
   margin-bottom: 24px;
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s;
   cursor: pointer;
   position: relative;

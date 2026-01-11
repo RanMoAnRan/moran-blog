@@ -1,7 +1,7 @@
 +++
 title = 'Ink & Thought：从零开始的极简博客copy111'
 slug = 'ink-and-thought-copy'
-date = 2026-01-08T00:00:00+08:00
+date = 2025-01-08T00:00:00+08:00
 draft = false
 tags = ['SSG', 'Hugo', '设计']
 categories = ['博客']
