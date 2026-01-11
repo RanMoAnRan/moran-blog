@@ -2,7 +2,7 @@
 title = 'Ink & Thought：从零开始的极简博客copy111'
 slug = 'ink-and-thought-copy'
 date = 2026-01-08T00:00:00+08:00
-draft = true
+draft = false
 tags = ['SSG', 'Hugo', '设计']
 categories = ['博客']
 summary = '这是一篇用于验证排版、暗色模式、目录、代码高亮与数学公式的示例文章。'
