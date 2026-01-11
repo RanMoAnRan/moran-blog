@@ -50,7 +50,7 @@
   --hover-bg: rgba(226, 232, 240, 0.5);
 
   --page-gradient: linear-gradient(to bottom, rgba(238, 242, 255, 0.5), transparent);
-  --hero-glow: linear-gradient(to right, rgba(221, 214, 254, 0.75), rgba(199, 210, 254, 0.75));
+  --hero-glow: linear-gradient(to right, rgba(167, 139, 250, 0.62), rgba(129, 140, 248, 0.62));
   
   --primary: var(--violet-600);
   --primary-gradient: linear-gradient(to right, var(--violet-600), var(--indigo-600));

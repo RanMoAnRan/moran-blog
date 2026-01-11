@@ -10,25 +10,46 @@
         </header>
         
         <div class="discovery-grid">
-          <!-- Categories Column -->
+          <!-- Categories -->
           <div class="discovery-col">
-            <h3 class="discovery-col-title">
+            <h3 class="discovery-col-title" data-kind="categories">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
               分类 Categories
             </h3>
-            <div class="discovery-list-cats">
-              {{ range site.Taxonomies.categories }}
-                <a href="{{ .Page.RelPermalink }}" class="discovery-cat-btn group" data-term="{{ .Page.Title }}">
-                  {{ .Page.Title }}
-                  <span class="discovery-count">{{ .Count }}</span>
+            <div class="discovery-category-grid">
+              {{ range site.Taxonomies.categories.ByCount }}
+                {{- $title := .Page.Title -}}
+                <a href="{{ .Page.RelPermalink }}" class="discovery-category-card" data-term="{{ $title }}">
+                  <span class="discovery-category-icon" aria-hidden="true">
+                    {{- if eq $title "技术" -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    {{- else if eq $title "生活" -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.6 12 20l-7.5-7.4A5.5 5.5 0 0 1 12 5.8a5.5 5.5 0 0 1 7.5 6.8Z"/></svg>
+                    {{- else if eq $title "摄影" -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5h-3.2l-1.2-2H8.4L7.2 5H4a2 2 0 0 0-2 2v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a2 2 0 0 0-2-2Z"/><circle cx="12" cy="13" r="3"/></svg>
+                    {{- else if eq $title "博客" -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 6h8"/><path d="M8 10h8"/></svg>
+                    {{- else -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
+                    {{- end -}}
+                  </span>
+
+                  <span class="discovery-category-body">
+                    <span class="discovery-category-name">{{ $title }}</span>
+                    <span class="discovery-category-meta">
+                      <span class="discovery-category-count">{{ .Count }} 篇</span>
+                    </span>
+                  </span>
+
+                  <svg class="discovery-category-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </a>
               {{ end }}
             </div>
           </div>
 
-          <!-- Tags Column -->
+          <!-- Tags -->
           <div class="discovery-col">
-            <h3 class="discovery-col-title">
+            <h3 class="discovery-col-title" data-kind="tags">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>
               标签 Tags
             </h3>
@@ -49,21 +70,22 @@
 
   <style>
     .discovery-card {
-      background: var(--panel);
-      border-radius: var(--radius-lg);
-      padding: 48px;
-      border: 1px solid var(--border);
-      text-align: center;
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      border: none;
+      text-align: left;
       position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
+      overflow: visible;
+      box-shadow: none;
     }
 
     .discovery-hero {
       position: relative;
-      margin: -24px -24px 32px;
-      padding: 32px 24px 28px;
-      border-radius: 18px;
+      margin: 0 0 48px;
+      padding: 40px;
+      min-height: 164px;
+      border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       background: linear-gradient(
         to bottom right,
@@ -72,6 +94,9 @@
         rgba(245, 243, 255, 0.62)
       );
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .discovery-hero::before {
@@ -115,12 +140,13 @@
 
     .discovery-title {
       font-family: var(--font-serif);
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: clamp(1.8rem, 3.2vw, 2.35rem);
+      font-weight: 900;
       color: var(--text-heading);
       margin: 0;
       position: relative;
       z-index: 1;
+      text-align: center;
     }
 
     .discovery-grid {
@@ -129,64 +155,176 @@
       text-align: left;
     }
 
-    @media (min-width: 768px) {
-      .discovery-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
     .discovery-col-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 16px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      letter-spacing: 0.02em;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .discovery-col-title svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .discovery-col-title[data-kind="categories"] svg {
+      color: var(--violet-600);
+    }
+
+    .discovery-col-title[data-kind="tags"] svg {
+      color: var(--orange-600);
     }
 
     /* Categories Styling */
-    .discovery-list-cats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+    .discovery-category-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
     }
 
-    .discovery-cat-btn {
+    @media (min-width: 640px) {
+      .discovery-category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .discovery-category-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .discovery-category-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 18px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .discovery-category-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .discovery-category-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 128px;
+      height: 128px;
+      background: linear-gradient(to bottom right, rgba(237, 233, 254, 0.5), rgba(238, 242, 255, 0.5));
+      border-bottom-left-radius: 9999px;
+      margin-right: -64px;
+      margin-top: -64px;
+      transition: transform 0.5s, opacity 0.5s;
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    [data-theme='dark'] .discovery-category-card::before {
+      background: linear-gradient(to bottom right, rgba(124, 58, 237, 0.18), rgba(79, 70, 229, 0.12));
+    }
+
+    .discovery-category-card:hover {
+      border-color: var(--violet-200);
+      box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.1);
+    }
+
+    [data-theme='dark'] .discovery-category-card:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
+    }
+
+    .discovery-category-card:hover::before {
+      transform: scale(1.5);
+      opacity: 1;
+    }
+
+    .discovery-category-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-sm);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 0.875rem;
-      font-weight: 700;
-      background: var(--panel);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      transition: all 0.2s;
-    }
-
-    .discovery-cat-btn:hover {
-      border-color: var(--slate-400);
-      transform: translateY(-1px);
-    }
-    
-    /* Simulate active state or functional colors via attr */
-    .discovery-cat-btn[data-term="技术"] { border-color: #bfdbfe; color: #2563eb; background: #eff6ff; }
-    .discovery-cat-btn[data-term="生活"] { border-color: #a7f3d0; color: #059669; background: #ecfdf5; }
-
-    .discovery-count {
-      font-size: 0.75rem;
+      justify-content: center;
+      flex: 0 0 auto;
       background: var(--panel-muted);
-      padding: 2px 6px;
-      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: var(--violet-600);
+    }
+
+    .discovery-category-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .discovery-category-body {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .discovery-category-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .discovery-category-meta {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .discovery-category-count {
+      font-size: 0.75rem;
+      font-weight: 700;
       color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
     }
-    .discovery-cat-btn:hover .discovery-count {
-      background: var(--panel);
+
+    .discovery-category-arrow {
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      opacity: 0.7;
+      flex: 0 0 auto;
+      transition: transform 0.2s, opacity 0.2s;
     }
+
+    .discovery-category-card:hover .discovery-category-arrow {
+      transform: translateX(2px);
+      opacity: 1;
+    }
+
+    /* Term-specific accents */
+    .discovery-category-card[data-term="技术"] .discovery-category-icon { background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.22); color: var(--indigo-600); }
+    .discovery-category-card[data-term="生活"] .discovery-category-icon { background: rgba(5, 150, 105, 0.10); border-color: rgba(5, 150, 105, 0.22); color: var(--emerald-600); }
+    .discovery-category-card[data-term="摄影"] .discovery-category-icon { background: rgba(234, 88, 12, 0.10); border-color: rgba(234, 88, 12, 0.22); color: var(--orange-600); }
+    .discovery-category-card[data-term="博客"] .discovery-category-icon { background: rgba(124, 58, 237, 0.10); border-color: rgba(124, 58, 237, 0.22); color: var(--violet-600); }
 
     /* Tags Styling */
     .discovery-list-tags {
