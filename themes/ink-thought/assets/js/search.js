@@ -1,5 +1,6 @@
 (() => {
-  const input = document.getElementById("search-input");
+  const input =
+    document.getElementById("search-input") || document.getElementById("header-search-input");
   const results = document.getElementById("search-results");
   const status = document.getElementById("search-status");
 
@@ -17,6 +18,21 @@
   const normalize = (value) => (value || "").toString().trim().toLowerCase();
 
   const tokenize = (query) => normalize(query).split(/\s+/).filter(Boolean);
+
+  const updateUrl = (query) => {
+    try {
+      const url = new URL(window.location.href);
+      const value = (query || "").toString().trim();
+      if (value) {
+        url.searchParams.set("q", value);
+      } else {
+        url.searchParams.delete("q");
+      }
+      window.history.replaceState({}, "", url.toString());
+    } catch {
+      // ignore
+    }
+  };
 
   const includesAny = (haystack, tokens) => {
     const text = normalize(haystack);
@@ -101,6 +117,8 @@
   const doSearch = (query) => {
     if (!loaded) return;
 
+    updateUrl(query);
+
     const tokens = tokenize(query);
     if (!tokens.length) {
       renderResults([], "");
@@ -128,6 +146,14 @@
     doSearch(q);
   };
 
+  const focusInput = () => {
+    try {
+      input.focus({ preventScroll: true });
+    } catch {
+      input.focus();
+    }
+  };
+
   const load = async () => {
     try {
       const res = await fetch(endpoint, { cache: "force-cache" });
@@ -135,14 +161,28 @@
       pages = await res.json();
       loaded = true;
       setStatus("输入关键词开始搜索。");
+      focusInput();
       prefillFromUrl();
     } catch {
       setStatus("索引加载失败，请稍后刷新。");
     }
   };
 
+  const form = input.closest("form");
+  if (form) {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      doSearch(input.value);
+    });
+  }
+
   input.addEventListener("input", () => doSearch(input.value));
   input.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      input.value = "";
+      doSearch("");
+      return;
+    }
     if (event.key !== "Enter") return;
     doSearch(input.value);
   });

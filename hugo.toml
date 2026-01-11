@@ -36,8 +36,8 @@ enableRobotsTXT = true
   pagerSize = 10
 
 [params]
-  description = '记录代码与生活'
-  slogan = '记录代码与生活'
+  description = '记录代码与生活的间隙'
+  slogan = '记录代码与生活的间隙'
   accent = '#0B3D91'
 
   [params.profile]
@@ -52,7 +52,7 @@ enableRobotsTXT = true
 
   [[params.social]]
     name = 'Email'
-    url = 'mailto:you@example.com'
+    url = 'mailto:ranmoanran@qq.com'
     icon = 'email'
 
   [params.post]

@@ -2,49 +2,84 @@
   const storageKey = "ink-theme";
   const root = document.documentElement;
 
+  const normalizeTheme = (value) => (value === "dark" ? "dark" : "light");
+
   const applyTheme = (theme) => {
-    if (!theme || theme === "auto") {
-      root.removeAttribute("data-theme");
-      return;
-    }
-    root.setAttribute("data-theme", theme);
+    root.setAttribute("data-theme", normalizeTheme(theme));
   };
 
   const getStoredTheme = () => {
     try {
-      return localStorage.getItem(storageKey) || "auto";
+      return normalizeTheme(localStorage.getItem(storageKey));
     } catch {
-      return "auto";
+      return "light";
     }
   };
 
   const setStoredTheme = (theme) => {
     try {
-      localStorage.setItem(storageKey, theme);
+      localStorage.setItem(storageKey, normalizeTheme(theme));
     } catch {
       // ignore
     }
   };
 
-  const cycleTheme = (current) => {
-    if (current === "auto") return "light";
-    if (current === "light") return "dark";
-    return "auto";
-  };
+  const toggleTheme = (current) => (normalizeTheme(current) === "dark" ? "light" : "dark");
+
+  const getThemeLabel = (theme) => (normalizeTheme(theme) === "dark" ? "主题：深色" : "主题：浅色");
 
   let theme = getStoredTheme();
   applyTheme(theme);
 
-  document.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-theme-toggle]");
-    if (!button) return;
+  const button = document.querySelector("[data-theme-toggle]");
+  if (button) button.setAttribute("aria-label", getThemeLabel(theme));
 
-    theme = cycleTheme(theme);
-    setStoredTheme(theme);
-    applyTheme(theme);
+  if (button) {
+    button.addEventListener("click", () => {
+      theme = toggleTheme(theme);
+      setStoredTheme(theme);
+      applyTheme(theme);
+      button.setAttribute("aria-label", getThemeLabel(theme));
+    });
+  }
 
-    const label =
-      theme === "auto" ? "主题：跟随系统" : theme === "light" ? "主题：浅色" : "主题：深色";
-    button.setAttribute("aria-label", label);
-  });
+  const navToggle = document.querySelector("[data-nav-toggle]");
+  const navMobile = document.querySelector("[data-nav-mobile]");
+
+  if (navToggle && navMobile) {
+    const setOpen = (open) => {
+      navMobile.hidden = !open;
+      navToggle.classList.toggle("is-open", open);
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+
+    setOpen(false);
+
+    navToggle.addEventListener("click", () => {
+      setOpen(navMobile.hidden);
+    });
+
+    navMobile.addEventListener("click", (event) => {
+      const link = event.target.closest("a");
+      if (!link) return;
+      setOpen(false);
+    });
+
+    document.addEventListener("click", (event) => {
+      if (navMobile.hidden) return;
+      if (event.target.closest("[data-nav-toggle]")) return;
+      if (event.target.closest("[data-nav-mobile]")) return;
+      setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (navMobile.hidden) return;
+      setOpen(false);
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 768) setOpen(false);
+    });
+  }
 })();

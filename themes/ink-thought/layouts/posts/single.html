@@ -1,179 +1,519 @@
 {{ define "main" }}
   <div class="container">
-    <div class="post-navigation-top">
-      <a href="{{ site.Home.RelPermalink }}" class="back-link">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        返回首页
+    <div class="post-detail-container">
+      <!-- Back Button -->
+      <a href="{{ site.Home.RelPermalink }}" class="back-btn group">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform"><path d="m15 18-6-6 6-6"/></svg>
+        返回文章列表
       </a>
+
+      <!-- Article Card -->
+      <article class="post-detail-card">
+        <!-- Top Decoration -->
+        <div class="card-decoration"></div>
+
+        <header class="detail-header">
+          <!-- Category -->
+          <div style="margin-bottom: 24px;">
+            {{ range first 1 (.GetTerms "categories") }}
+              <a href="{{ .RelPermalink }}" class="category-badge-pill" data-term="{{ .Title }}">{{ .Title }}</a>
+            {{ end }}
+          </div>
+
+          <!-- Title -->
+          <h1 class="detail-title">{{ .Title }}</h1>
+
+          <!-- Meta -->
+          <div class="detail-meta-row">
+             <span class="meta-flex">
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+               {{ .Date.Format "2006-01-02" }}
+             </span>
+             <span class="meta-dot"></span>
+             <span class="meta-flex">
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+               {{ .ReadingTime }} min read
+             </span>
+             <span class="meta-dot"></span>
+             <span class="meta-flex">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                {{ site.Params.author | default "Alex" }}
+             </span>
+          </div>
+        </header>
+
+        <div class="prose detail-prose">
+          {{ .Content }}
+        </div>
+
+        <!-- Post Navigation -->
+        {{- $prev := .PrevInSection -}}
+        {{- $next := .NextInSection -}}
+        {{- if or $prev $next -}}
+          <nav class="post-nav{{ if $prev }} has-prev{{ end }}{{ if $next }} has-next{{ end }}" aria-label="文章导航">
+            {{ with $prev }}
+              <a class="post-nav-card is-prev" href="{{ .RelPermalink }}" rel="prev">
+                <div class="post-nav-kicker">
+                  <span class="post-nav-arrow" aria-hidden="true">←</span>
+                  上一篇
+                </div>
+                <div class="post-nav-title">{{ .Title }}</div>
+                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
+              </a>
+            {{ end }}
+            {{ with $next }}
+              <a class="post-nav-card is-next" href="{{ .RelPermalink }}" rel="next">
+                <div class="post-nav-kicker">
+                  下一篇
+                  <span class="post-nav-arrow" aria-hidden="true">→</span>
+                </div>
+                <div class="post-nav-title">{{ .Title }}</div>
+                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
+              </a>
+            {{ end }}
+          </nav>
+        {{- end -}}
+
+        <!-- Share Section -->
+        <div class="share-section">
+          <div class="share-box">
+             <p class="share-text">"感谢阅读。如果你喜欢这篇文章，欢迎分享给更多人。"</p>
+             <div class="share-buttons">
+               <div class="share-actions" data-share>
+                 <button class="btn btn-primary share-btn" type="button" data-share-trigger>
+                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+                   分享
+                 </button>
+
+                 <div class="share-popover" data-share-popover hidden>
+                   <button type="button" class="share-option" data-share-wechat>
+                     微信
+                     <span class="share-option-desc">复制链接</span>
+                   </button>
+                   <a class="share-option" data-share-qq target="_blank" rel="noopener noreferrer">
+                     QQ
+                     <span class="share-option-desc">打开分享</span>
+                   </a>
+                 </div>
+               </div>
+
+               <button class="btn btn-outline like-btn" type="button" data-like-button>
+                 <svg class="like-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                 <span data-like-label>点赞</span>
+               </button>
+             </div>
+
+             <div class="share-toast" data-share-toast hidden>链接已复制</div>
+          </div>
+        </div>
+
+      </article>
     </div>
-
-    <article class="post">
-      <header class="post-header">
-        <!-- 1. Category Pill -->
-        <div class="post-category-wrapper">
-          {{ range first 1 (.GetTerms "categories") }}
-            <a href="{{ .RelPermalink }}" class="category-pill">{{ .Title }}</a>
-          {{ end }}
-        </div>
-
-        <!-- 2. Title -->
-        <h1 class="post-title">{{ .Title }}</h1>
-
-        <!-- 3. Meta Row -->
-        <div class="post-meta-row">
-           <span class="meta-item">
-             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-             {{ .Date.Format "2006-01-02" }}
-           </span>
-           <span class="meta-dot"></span>
-           <span class="meta-item">
-             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-             {{ .ReadingTime }} 分钟阅读
-           </span>
-           <span class="meta-dot"></span>
-           <span class="meta-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              {{ site.Params.author | default "Alex" }}
-           </span>
-        </div>
-      </header>
-
-      <div class="post-layout">
-        <div class="post-body">
-          <div class="prose">
-            {{ .Content }}
-          </div>
-
-          <!-- Tags Footer -->
-          {{ with .GetTerms "tags" }}
-          <div class="post-tags-footer">
-             {{ range . }}
-               <a href="{{ .RelPermalink }}" class="tag-pill">#{{ .Title }}</a>
-             {{ end }}
-          </div>
-          {{ end }}
-
-          {{ $prev := .PrevInSection }}
-          {{ $next := .NextInSection }}
-          {{ if or $prev $next }}
-            <nav class="post-pagination" aria-label="文章导航">
-              {{ with $prev }}
-                <a class="post-pagination__item" href="{{ .RelPermalink }}" rel="prev">
-                  <span class="post-pagination__label">上一篇</span>
-                  <span class="post-pagination__title">{{ .LinkTitle }}</span>
-                </a>
-              {{ end }}
-              {{ with $next }}
-                <a class="post-pagination__item" href="{{ .RelPermalink }}" rel="next">
-                  <span class="post-pagination__label">下一篇</span>
-                  <span class="post-pagination__title">{{ .LinkTitle }}</span>
-                </a>
-              {{ end }}
-            </nav>
-          {{ end }}
-
-          {{ partial "giscus.html" . }}
-        </div>
-
-        {{ if and (or (not (isset .Params "toc")) .Params.toc) .TableOfContents }}
-          <aside class="post-aside" aria-label="目录">
-            <div class="toc-card">
-              <div class="toc-title">目录</div>
-              {{ .TableOfContents }}
-            </div>
-          </aside>
-        {{ end }}
-      </div>
-    </article>
   </div>
 
   <style>
-    .post-navigation-top {
-      padding: 20px 0;
-    }
-    
-    .back-link {
+    .back-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      color: var(--slate-500);
+      gap: 8px;
+      font-size: 0.875rem;
       font-weight: 500;
+      color: var(--text-muted);
       padding: 8px 16px;
       border-radius: 8px;
       transition: all 0.2s;
+      margin-bottom: 32px;
+    }
+    .back-btn:hover {
+      background: var(--violet-50);
+      color: var(--violet-700);
+    }
+    [data-theme='dark'] .back-btn:hover {
+      background: rgba(124, 58, 237, 0.12);
+      color: var(--violet-500);
+    }
+
+    .post-detail-card {
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      padding: 56px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
     }
     
-    .back-link:hover {
-      background: var(--slate-100);
-      color: var(--violet-600);
+    @media (max-width: 768px) {
+      .post-detail-card { padding: 32px; }
     }
 
-    .post-category-wrapper {
-      margin-bottom: 20px;
+    .card-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(to right, var(--violet-500), #d946ef, var(--indigo-500));
     }
 
-    .category-pill {
+    .detail-header {
+      text-align: center;
+      max-width: 672px; /* max-w-2xl */
+      margin: 0 auto 48px;
+    }
+
+    .category-badge-pill {
       display: inline-block;
       padding: 4px 12px;
-      border-radius: 99px;
-      font-size: 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      background: var(--violet-50);
-      color: var(--violet-600);
-      border: 1px solid var(--violet-200);
+      border: 1px solid;
+      text-decoration: none;
+    }
+    /* Re-use colors from main.css via data-term logic if possible, else hardcode for safety */
+    .category-badge-pill { color: var(--slate-600); background: var(--slate-50); border-color: var(--slate-200); }
+    .category-badge-pill[data-term="技术"] { color: #2563eb; background: #eff6ff; border-color: #dbeafe; } 
+    .category-badge-pill[data-term="生活"] { color: #059669; background: #ecfdf5; border-color: #d1fae5; }
+
+    .detail-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      font-family: var(--font-serif);
+      color: var(--text-heading);
+      line-height: 1.25;
+      margin-bottom: 24px;
+      letter-spacing: -0.025em;
     }
 
-    .post-meta-row {
+    .detail-meta-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
-      margin-top: 16px;
+      gap: 16px;
+      font-size: 0.875rem;
       color: var(--slate-400);
-      font-size: 0.9rem;
-      border-top: 1px solid var(--slate-100);
-      border-bottom: 1px solid var(--slate-100);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       padding: 16px 0;
-      width: 100%;
     }
 
-    .meta-item {
+    .meta-flex { display: flex; align-items: center; gap: 4px; }
+    .meta-dot { width: 4px; height: 4px; background: var(--slate-300); border-radius: 50%; }
+
+    .detail-prose {
+      max-width: 672px;
+      margin: 0 auto;
+    }
+
+    .post-nav {
+      max-width: 672px;
+      margin: 56px auto 0;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 768px) {
+      .post-nav {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .post-nav.has-next:not(.has-prev) .post-nav-card.is-next {
+        grid-column: 2;
+      }
+    }
+
+    .post-nav-card {
       display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 18px 18px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      min-height: 110px;
+    }
+
+    .post-nav-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(139, 92, 246, 0.35);
+      background: var(--hover-bg);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .post-nav-kicker {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .meta-dot {
-      width: 4px;
-      height: 4px;
-      background: var(--slate-300);
-      border-radius: 50%;
+    .post-nav-title {
+      font-family: var(--font-serif);
+      font-weight: 800;
+      line-height: 1.25;
+      color: var(--text-heading);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
-    
-    .post-tags-footer {
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid var(--slate-100);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+
+    .post-nav-meta {
+      margin-top: auto;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
     }
-    
-    .tag-pill {
-      padding: 6px 14px;
-      border-radius: 8px;
-      background: var(--slate-50);
-      color: var(--slate-500);
-      font-size: 0.9rem;
-      border: 1px solid var(--slate-200);
+
+    .post-nav-card.is-next {
+      text-align: right;
+      align-items: flex-end;
     }
-    
-    .tag-pill:hover {
-      background: var(--violet-50);
+
+    .post-nav-arrow {
       color: var(--violet-600);
-      border-color: var(--violet-200);
+      font-weight: 900;
+    }
+
+    .share-section {
+      margin-top: 64px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .share-box {
+      background: linear-gradient(to bottom right, var(--violet-50), var(--indigo-50));
+      padding: 32px;
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    [data-theme='dark'] .share-box {
+      background: linear-gradient(to bottom right, rgba(124, 58, 237, 0.14), rgba(79, 70, 229, 0.12));
+      border: 1px solid rgba(139, 92, 246, 0.18);
+    }
+
+    .share-text {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--text-main);
+      margin-bottom: 24px;
+      font-size: 1rem;
+    }
+
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+    
+    .share-btn {
+      padding: 10px 24px;
+      border-radius: 12px;
+    }
+
+    .share-actions {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .share-popover {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 180px;
+      padding: 8px;
+      border-radius: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xl);
+      display: grid;
+      gap: 6px;
+      z-index: 30;
+    }
+
+    .share-popover[hidden] {
+      display: none;
+    }
+
+    .share-option {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 0;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .share-option:hover {
+      background: var(--hover-bg);
+      color: var(--text-heading);
+    }
+
+    .share-option-desc {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .like-btn.is-liked {
+      border-color: rgba(139, 92, 246, 0.35);
+      background: rgba(124, 58, 237, 0.08);
+      color: var(--violet-600);
+    }
+
+    [data-theme='dark'] .like-btn.is-liked {
+      background: rgba(124, 58, 237, 0.14);
+      border-color: rgba(139, 92, 246, 0.28);
+      color: var(--violet-500);
+    }
+
+    .share-toast {
+      margin-top: 14px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
     }
   </style>
+
+  <script>
+    (() => {
+      const shareRoot = document.querySelector("[data-share]");
+      const shareTrigger = shareRoot && shareRoot.querySelector("[data-share-trigger]");
+      const sharePopover = shareRoot && shareRoot.querySelector("[data-share-popover]");
+      const wechatBtn = shareRoot && shareRoot.querySelector("[data-share-wechat]");
+      const qqLink = shareRoot && shareRoot.querySelector("[data-share-qq]");
+      const toast = document.querySelector("[data-share-toast]");
+
+      const likeBtn = document.querySelector("[data-like-button]");
+      const likeLabel = likeBtn && likeBtn.querySelector("[data-like-label]");
+
+      const pageUrl = window.location.href;
+      const pageTitle = document.title || "分享";
+
+      const setToast = (text) => {
+        if (!toast) return;
+        toast.textContent = text;
+        toast.hidden = false;
+        window.clearTimeout(setToast._t);
+        setToast._t = window.setTimeout(() => {
+          toast.hidden = true;
+        }, 1600);
+      };
+
+      const setPopoverOpen = (open) => {
+        if (!sharePopover) return;
+        sharePopover.hidden = !open;
+      };
+
+      const buildQqHref = () => {
+        if (!qqLink) return;
+        const url = encodeURIComponent(pageUrl);
+        const title = encodeURIComponent(pageTitle);
+        qqLink.href = `https://connect.qq.com/widget/shareqq/index.html?url=${url}&title=${title}`;
+      };
+
+      const copyLink = async () => {
+        try {
+          await navigator.clipboard.writeText(pageUrl);
+          setToast("链接已复制");
+        } catch {
+          window.prompt("复制链接后分享：", pageUrl);
+        }
+      };
+
+      if (qqLink) buildQqHref();
+
+      if (shareTrigger) {
+        shareTrigger.addEventListener("click", async () => {
+          if (navigator.share) {
+            try {
+              await navigator.share({ title: pageTitle, url: pageUrl });
+              return;
+            } catch {
+              // ignore and fall back to popover
+            }
+          }
+          setPopoverOpen(sharePopover && sharePopover.hidden);
+        });
+      }
+
+      if (wechatBtn) {
+        wechatBtn.addEventListener("click", async () => {
+          await copyLink();
+          setPopoverOpen(false);
+        });
+      }
+
+      if (qqLink) {
+        qqLink.addEventListener("click", () => setPopoverOpen(false));
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!shareRoot || !sharePopover || sharePopover.hidden) return;
+        if (shareRoot.contains(event.target)) return;
+        setPopoverOpen(false);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (!sharePopover || sharePopover.hidden) return;
+        setPopoverOpen(false);
+      });
+
+      const likeKey = `ink-like:${window.location.pathname}`;
+      const readLike = () => {
+        try {
+          return window.localStorage.getItem(likeKey) === "1";
+        } catch {
+          return false;
+        }
+      };
+      const writeLike = (value) => {
+        try {
+          window.localStorage.setItem(likeKey, value ? "1" : "0");
+        } catch {
+          // ignore
+        }
+      };
+
+      const renderLike = (liked) => {
+        if (!likeBtn) return;
+        likeBtn.classList.toggle("is-liked", liked);
+        if (likeLabel) likeLabel.textContent = liked ? "已点赞" : "点赞";
+        likeBtn.setAttribute("aria-pressed", liked ? "true" : "false");
+      };
+
+      if (likeBtn) {
+        renderLike(readLike());
+        likeBtn.addEventListener("click", () => {
+          const next = !readLike();
+          writeLike(next);
+          renderLike(next);
+        });
+      }
+    })();
+  </script>
 {{ end }}

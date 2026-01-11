@@ -1,28 +1,171 @@
 {{ define "main" }}
   <div class="container">
-    <div class="content">
-      <header class="page-header">
-        <h1 class="page-title">{{ .Title }}</h1>
-        {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
-      </header>
+    <div class="content post-detail-container page-narrow">
+      <!-- Archive Header Card -->
+      <div class="archive-header-card">
+        <div class="archive-sparkle-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></svg>
+        </div>
+        <h1 class="archive-title">时光归档</h1>
+        <p class="archive-subtitle">共 {{ len (where site.RegularPages "Section" "posts") }} 篇文章，持续更新中...</p>
+      </div>
 
       {{ $pages := where site.RegularPages "Section" "posts" }}
-      <div class="archives">
+      <div class="archives-timeline">
         {{ range ($pages.GroupByDate "2006") }}
-          <section class="archives-year">
-            <h2 class="archives-year__title">{{ .Key }}</h2>
-            <ul class="archives-list">
+          <div class="timeline-year-group">
+            <h2 class="timeline-year">{{ .Key }}</h2>
+            <div class="timeline-items">
               {{ range .Pages.ByDate.Reverse }}
-                <li class="archives-item">
-                  <time class="archives-date" datetime="{{ .Date | time.Format "2006-01-02" }}">{{ .Date | time.Format "01-02" }}</time>
-                  <a class="archives-link" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-                </li>
+                <a href="{{ .RelPermalink }}" class="timeline-item group">
+                  <span class="timeline-date">{{ .Date.Format "01-02" }}</span>
+                  <div class="timeline-content">
+                    <h3 class="timeline-post-title">{{ .LinkTitle }}</h3>
+                    <div class="timeline-tags">
+                      {{ range first 2 (.GetTerms "tags") }}
+                        <span class="timeline-tag">#{{ .Title }}</span>
+                      {{ end }}
+                    </div>
+                  </div>
+                </a>
               {{ end }}
-            </ul>
-          </section>
+            </div>
+          </div>
         {{ end }}
       </div>
     </div>
   </div>
-{{ end }}
 
+  <style>
+    .archive-header-card {
+      background: linear-gradient(to right, var(--violet-600), var(--indigo-600));
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      color: white;
+      position: relative;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+    }
+
+    .archive-sparkle-icon {
+      position: absolute;
+      top: 20px;
+      right: 40px;
+      color: rgba(255,255,255,0.2);
+      transform: scale(3) rotate(12deg);
+    }
+
+    .archive-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: white;
+      position: relative;
+      z-index: 10;
+    }
+
+    .archive-subtitle {
+      color: var(--indigo-50);
+      font-size: 1rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 10;
+    }
+
+    .archives-timeline {
+      padding: 0 16px;
+    }
+
+    .timeline-year-group {
+      position: relative;
+      padding-left: 32px;
+      border-left: 2px solid var(--border);
+      margin-bottom: 48px;
+    }
+    
+    .timeline-year-group::before {
+      content: "";
+      position: absolute;
+      left: -11px; /* Center on border (border is 2px, left -1) - adjustment needed */
+      top: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 4px solid var(--violet-500);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .timeline-year {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--slate-200);
+      position: absolute;
+      top: -20px;
+      left: 32px;
+      margin: 0;
+      line-height: 1;
+      user-select: none;
+      z-index: 0;
+    }
+    
+    .timeline-items {
+      position: relative;
+      z-index: 10;
+      padding-top: 16px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 16px;
+      margin: 0 -16px; /* Negative margin to allow hover expansion */
+      border-radius: var(--radius);
+      transition: all 0.2s;
+    }
+
+    .timeline-item:hover {
+      background: var(--panel);
+      box-shadow: var(--shadow-sm);
+      transform: translateX(4px);
+    }
+
+    .timeline-date {
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: var(--slate-400);
+      background: var(--slate-50);
+      padding: 4px 8px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .timeline-post-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--slate-700);
+      margin: 0;
+      transition: color 0.2s;
+    }
+
+    .timeline-item:hover .timeline-post-title {
+      color: var(--violet-600);
+    }
+    
+    .timeline-tags {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .timeline-tag {
+      font-size: 0.75rem;
+      color: var(--slate-400);
+    }
+  </style>
+{{ end }}

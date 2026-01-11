@@ -10,11 +10,23 @@
 brew install hugo
 ```
 
-启动预览：
+启动预览（推荐，本地使用根路径 `/` 访问）：
 
 ```bash
+cd /Users/ranmoanran/Jing/python-space/moran-blog
+hugo server --buildDrafts --baseURL http://localhost:1313/ --appendPort=false
+```
+
+浏览器打开：`http://localhost:1313/`
+
+如果你想按线上 GitHub Pages 的子目录（`/moran-blog/`）预览，也可以直接：
+
+```bash
+cd /Users/ranmoanran/Jing/python-space/moran-blog
 hugo server --buildDrafts
 ```
+
+浏览器打开：`http://localhost:1313/moran-blog/`
 
 构建产物在 `public/`：
 
@@ -55,4 +67,3 @@ hugo new content posts/my-post/index.md
 ## 站内搜索
 
 构建时会生成 `index.json`，搜索页面在 `/search/`，支持标题 / 摘要 / 正文匹配。
-

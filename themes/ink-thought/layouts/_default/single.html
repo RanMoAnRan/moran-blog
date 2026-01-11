@@ -1,15 +1,355 @@
 {{ define "main" }}
   <div class="container">
-    <div class="content">
-      <header class="page-header">
-        <h1 class="page-title">{{ .Title }}</h1>
-        {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
-      </header>
+    <div class="content post-detail-container page-narrow">
+      <div class="about-card">
+        <!-- Header Gradient -->
+        <div class="about-header-bg">
+          <div class="about-pattern"></div>
+          <div class="about-header-label" aria-hidden="true">About</div>
+          <div class="about-fade-overlay"></div>
+          
+          <div class="about-avatar-wrapper">
+            <div class="about-avatar-inner">
+               {{- with site.Params.profile.avatar -}}
+                {{- if hasPrefix . "http" -}}
+                  <img src="{{ . }}" alt="Avatar" class="about-avatar-img">
+                {{- else -}}
+                  <img src="{{ . | relURL }}" alt="Avatar" class="about-avatar-img">
+                {{- end -}}
+              {{- else -}}
+                <span style="font-size: 3rem;">👋</span>
+              {{- end -}}
+            </div>
+          </div>
+        </div>
 
-      <article class="prose">
-        {{ .Content }}
-      </article>
+        <!-- Content Area -->
+        <div class="about-body">
+          <div class="about-intro-header">
+            {{- $aboutName := .Params.aboutName | default site.Params.profile.name | default site.Params.author | default "Author" -}}
+            {{- $aboutIntro := .Params.aboutIntro | default site.Params.profile.bio | default site.Params.about.intro | default "" -}}
+            <div>
+              <h1 class="about-name">{{ $aboutName }}</h1>
+              {{ if $aboutIntro }}<p class="about-tagline">{{ $aboutIntro }}</p>{{ end }}
+            </div>
+            <div class="about-socials">
+              {{ partial "social.html" . }}
+            </div>
+          </div>
+
+          <div class="about-grid">
+            <div class="about-main-col">
+              <section>
+                <h3 class="about-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  关于我
+                </h3>
+                <div class="prose about-prose">
+                  {{ .Content }}
+                </div>
+              </section>
+
+              <section style="margin-top: 32px;">
+                 <h3 class="about-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></svg>
+                    装备与技能
+                 </h3>
+                 <div class="about-skills">
+                   {{ range $i, $skill := (.Params.skills | default site.Params.about.skills | default (slice "React" "Hugo" "Design" "Photography")) }}
+                     <span class="skill-chip skill-color-{{ mod $i 5 }}">{{ $skill }}</span>
+                   {{ end }}
+                 </div>
+              </section>
+            </div>
+
+            <div class="about-side-col">
+               {{- $dotClasses := slice "bg-green" "bg-blue" "bg-purple" -}}
+               {{- $nowItems := .Params.now | default site.Params.about.now | default (slice "Next.js 15" "AI Agents" "胶片摄影") -}}
+               <div class="about-now-box">
+                  <h4 class="about-now-title">正在关注</h4>
+                  <ul class="about-now-list">
+                    {{ range $i, $item := $nowItems }}
+                      <li>
+                        <span class="dot-status {{ index $dotClasses (mod $i (len $dotClasses)) }}"></span>
+                        {{ $item }}
+                      </li>
+                    {{ end }}
+                  </ul>
+               </div>
+
+               {{- $links := .Params.friendLinks | default site.Params.about.friendLinks | default (slice) -}}
+               <div id="friends" class="about-now-box about-friends-box">
+                 <h4 class="about-now-title">友情链接</h4>
+                 {{ if gt (len $links) 0 }}
+                   <ul class="friends-list">
+                     {{ range $links }}
+                       {{- $name := .name | default .title | default "链接" -}}
+                       {{- $url := .url | default "#" -}}
+                       <li class="friends-item">
+                         <a class="friend-link" href="{{ $url }}" target="_blank" rel="noopener noreferrer">
+                           <span class="friend-name">{{ $name }}</span>
+                           {{ with .desc }}<span class="friend-desc">{{ . }}</span>{{ end }}
+                         </a>
+                       </li>
+                     {{ end }}
+                   </ul>
+                 {{ else }}
+                   <p class="friends-empty">暂无友情链接</p>
+                 {{ end }}
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-{{ end }}
 
+  <style>
+    .about-card {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .about-header-bg {
+      height: 192px; /* h-48 */
+      background: linear-gradient(to right, var(--violet-600), var(--indigo-600), #06b6d4); /* violet-indigo-cyan */
+      position: relative;
+    }
+
+    .about-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.1;
+      background-image: radial-gradient(white 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .about-header-label {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(2.25rem, 4vw, 3.5rem);
+      letter-spacing: -0.04em;
+      color: rgba(255, 255, 255, 0.18);
+      user-select: none;
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+
+    .about-fade-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 96px;
+      background: linear-gradient(to top, rgba(0,0,0,0.2), transparent);
+    }
+
+    .about-avatar-wrapper {
+      position: absolute;
+      bottom: -48px;
+      left: 40px;
+    }
+
+    .about-avatar-inner {
+      width: 128px;
+      height: 128px;
+      background: var(--panel);
+      padding: 8px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-xl);
+      transform: rotate(3deg);
+    }
+    
+    .about-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      background: var(--panel-muted);
+    }
+
+    .about-body {
+      padding: 64px 40px 48px;
+    }
+
+    .about-intro-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start; /* Corrected alignment */
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .about-name {
+      font-size: 2.25rem;
+      font-weight: 900;
+      margin: 0 0 8px;
+      font-family: var(--font-serif);
+      line-height: 1.1;
+    }
+
+    .about-tagline {
+      color: var(--violet-600);
+      font-weight: 500;
+      font-size: 1rem;
+      margin: 0;
+    }
+    
+    .about-socials {
+      margin-top: 8px;
+    }
+
+    .about-grid {
+      display: grid;
+      gap: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .about-grid {
+        grid-template-columns: 2fr 1fr;
+      }
+      .about-intro-header {
+         flex-direction: row;
+         align-items: center;
+      }
+    }
+
+    .about-side-col {
+      display: grid;
+      gap: 16px;
+    }
+
+    .about-section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .about-prose p {
+      margin-bottom: 1.2em;
+      color: var(--text-main);
+      font-size: 1.125rem;
+      line-height: 1.8;
+    }
+
+    .about-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-chip {
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      border: 1px solid;
+    }
+    
+    .skill-color-0 { background: #fff1f2; color: #e11d48; border-color: #ffe4e6; }
+    .skill-color-1 { background: #eef2ff; color: #4f46e5; border-color: #e0e7ff; }
+    .skill-color-2 { background: #f0fdfa; color: #0d9488; border-color: #ccfbf1; }
+    .skill-color-3 { background: #fffbeb; color: #d97706; border-color: #fef3c7; }
+    .skill-color-4 { background: #f5f3ff; color: #7c3aed; border-color: #ede9fe; }
+
+    .about-now-box {
+      background: var(--panel-muted);
+      padding: 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .about-friends-box {
+      scroll-margin-top: calc(var(--header-height) + 24px);
+    }
+    
+    .about-now-title {
+      font-weight: 700;
+      color: var(--text-heading);
+      margin: 0 0 16px;
+      font-size: 1rem;
+    }
+    
+    .about-now-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+    
+    .about-now-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--text-main);
+    }
+    
+    .dot-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .bg-green { background: #22c55e; }
+    .bg-blue { background: #3b82f6; }
+    .bg-purple { background: #a855f7; }
+
+    .friends-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .friend-link {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .friend-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(139, 92, 246, 0.35);
+      background: var(--hover-bg);
+    }
+
+    .friend-name {
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .friend-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .friends-empty {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+  </style>
+{{ end }}

@@ -3,11 +3,15 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <strong>{{ site.Title }}</strong>
-        <span>© {{ now.Year }} {{ site.Params.author | default "Author" }}. Built with Hugo &amp; Tailwind concept.</span>
+        <span>© 2025 {{ site.Params.author | default "Author" }}. Built with Hugo &amp; Tailwind concept.</span>
       </div>
       <div class="footer-links">
-        <a href="{{ "index.xml" | relURL }}" class="footer-link">RSS 订阅</a>
-        <a href="#" class="footer-link">友情链接</a>
+        {{ with site.Home.OutputFormats.Get "RSS" }}
+          <a href="{{ .RelPermalink }}" class="footer-link">RSS 订阅</a>
+        {{ end }}
+        {{ with site.GetPage "about" }}
+          <a href="{{ .RelPermalink }}#friends" class="footer-link">友情链接</a>
+        {{ end }}
         <a href="{{ "about" | relURL }}" class="footer-link">关于本站</a>
       </div>
     </div>

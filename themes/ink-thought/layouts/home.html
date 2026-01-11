@@ -6,16 +6,16 @@
       <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 300px; background: linear-gradient(to right, rgba(221, 214, 254, 0.5), rgba(199, 210, 254, 0.5)); filter: blur(80px); border-radius: 9999px; z-index: -10;"></div>
 
       <h1 style="font-size: clamp(3rem, 5vw, 4.5rem); font-family: var(--font-serif); font-weight: 900; color: var(--slate-900); margin-bottom: 24px; letter-spacing: -0.025em; line-height: 1;">
-        {{ site.Title }}
+        墨然的Blog
       </h1>
       <p style="font-size: clamp(1.25rem, 2vw, 1.5rem); color: var(--slate-500); line-height: 1.625; font-weight: 300; margin-bottom: 32px;">
-        {{ site.Params.slogan | default "记录代码与生活的间隙" }}
+        记录代码与生活的间隙
       </p>
       <div style="display: flex; justify-content: center; gap: 16px;">
         <a href="#latest-posts" class="btn btn-primary" style="padding: 12px 32px; border-radius: 9999px;">
           开始阅读
         </a>
-        <a href="{{ "about" | relURL }}" class="btn btn-outline" style="padding: 12px 32px; border-radius: 9999px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px);">
+        <a href="{{ "about" | relURL }}" class="btn btn-outline hero-glass" style="padding: 12px 32px; border-radius: 9999px;">
           我的项目
         </a>
       </div>
