@@ -43,7 +43,7 @@ enableRobotsTXT = true
 
   [params.profile]
     name = '墨然'
-    bio = '写代码，做产品，偶尔写字。'
+    bio = '程序猿一枚，喜欢瞎捣鼓 . never stand still'
     location = 'Asia/Shanghai'
 
   [[params.social]]
