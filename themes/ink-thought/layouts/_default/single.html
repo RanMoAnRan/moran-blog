@@ -252,11 +252,72 @@
       gap: 8px;
     }
 
-    .about-prose p {
-      margin-bottom: 1.2em;
+    .about-prose {
       color: var(--text-main);
-      font-size: 1.125rem;
-      line-height: 1.8;
+      font-size: 1.0625rem;
+      line-height: 1.95;
+      font-family: var(--font-sans);
+      letter-spacing: 0.01em;
+    }
+
+    .about-prose p {
+      margin: 0 0 1.05em;
+    }
+
+    .about-prose h2,
+    .about-prose h3,
+    .about-prose h4 {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      color: var(--text-heading);
+      line-height: 1.35;
+      margin: 2em 0 0.75em;
+    }
+
+    .about-prose h2 { font-size: 1.35rem; }
+    .about-prose h3 { font-size: 1.15rem; }
+
+    .about-prose h4 {
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      position: relative;
+      padding-left: 12px;
+    }
+
+    .about-prose h4::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.25em;
+      width: 3px;
+      height: 1.1em;
+      border-radius: 9999px;
+      background: var(--primary-gradient);
+    }
+
+    .about-prose ul,
+    .about-prose ol {
+      margin: 0 0 1.05em;
+      padding-left: 1.25em;
+    }
+
+    .about-prose li {
+      margin: 0.35em 0;
+    }
+
+    .about-prose li::marker {
+      color: var(--violet-600);
+      font-weight: 800;
+    }
+
+    .about-prose a {
+      color: var(--violet-600);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(124, 58, 237, 0.28);
+    }
+
+    .about-prose a:hover {
+      border-bottom-color: currentColor;
     }
 
     .about-skills {
