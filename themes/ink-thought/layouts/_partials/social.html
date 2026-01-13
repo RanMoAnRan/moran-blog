@@ -1,11 +1,12 @@
 {{ with site.Params.social }}
   <div class="social">
     {{ range . }}
-      <a class="social-link" href="{{ .url }}" aria-label="{{ .name }}" rel="me noopener noreferrer" target="_blank">
-        {{ partial "icons.html" (dict "name" .icon) }}
-        <span class="sr-only">{{ .name }}</span>
-      </a>
+      {{- if ne (lower (.icon | default "")) "github" -}}
+        <a class="social-link" href="{{ .url }}" aria-label="{{ .name }}" rel="me noopener noreferrer" target="_blank">
+          {{ partial "icons.html" (dict "name" .icon) }}
+          <span class="sr-only">{{ .name }}</span>
+        </a>
+      {{- end -}}
     {{ end }}
   </div>
 {{ end }}
-
