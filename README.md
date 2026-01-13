@@ -4,7 +4,7 @@
 
 ## 本地开发
 
-安装 Hugo（macOS）：
+安装 Hugo:
 
 ```bash
 brew install hugo
