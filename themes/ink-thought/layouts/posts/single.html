@@ -117,15 +117,19 @@
                    分享
                  </button>
 
-                 <div class="share-popover" data-share-popover hidden>
-                   <button type="button" class="share-option" data-share-wechat>
-                     微信
-                     <span class="share-option-desc">复制链接</span>
-                   </button>
-                   <a class="share-option" data-share-qq target="_blank" rel="noopener noreferrer">
-                     QQ
-                     <span class="share-option-desc">打开分享</span>
-                   </a>
+	                 <div class="share-popover" data-share-popover id="share-popover" role="menu" aria-label="分享选项" hidden>
+	                   <button type="button" class="share-option" data-share-native role="menuitem" hidden>
+	                     系统分享
+	                     <span class="share-option-desc">打开系统分享</span>
+	                   </button>
+	                   <button type="button" class="share-option" data-share-wechat role="menuitem">
+	                     微信
+	                     <span class="share-option-desc">复制链接</span>
+	                   </button>
+	                   <a class="share-option" data-share-qq role="menuitem" target="_blank" rel="noopener noreferrer">
+	                     QQ
+	                     <span class="share-option-desc">打开分享</span>
+	                   </a>
                  </div>
                </div>
 
@@ -362,16 +366,16 @@
       justify-content: center;
     }
 
-    .share-popover {
-      position: absolute;
-      bottom: calc(100% + 12px);
-      left: 50%;
-      transform: translateX(-50%);
-      min-width: 180px;
-      padding: 8px;
-      border-radius: 14px;
-      background: var(--panel);
-      border: 1px solid var(--border);
+	    .share-popover {
+	      position: absolute;
+	      bottom: calc(100% + 12px);
+	      left: 50%;
+	      transform: translateX(-50%);
+	      min-width: 220px;
+	      padding: 8px;
+	      border-radius: 14px;
+	      background: var(--panel);
+	      border: 1px solid var(--border);
       box-shadow: var(--shadow-xl);
       display: grid;
       gap: 6px;
@@ -382,13 +386,13 @@
       display: none;
     }
 
-    .share-option {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      width: 100%;
-      padding: 10px 12px;
+	    .share-option {
+	      display: flex;
+	      align-items: center;
+	      justify-content: space-between;
+	      gap: 12px;
+	      width: 100%;
+	      padding: 10px 12px;
       border-radius: 12px;
       border: 0;
       background: transparent;
@@ -405,11 +409,13 @@
       color: var(--text-heading);
     }
 
-    .share-option-desc {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
+	    .share-option-desc {
+	      font-size: 0.75rem;
+	      font-weight: 500;
+	      color: var(--text-muted);
+	      white-space: nowrap;
+	      flex-shrink: 0;
+	    }
 
     .like-btn.is-liked {
       border-color: rgba(139, 92, 246, 0.35);
@@ -430,14 +436,15 @@
     }
   </style>
 
-  <script>
-    (() => {
-      const shareRoot = document.querySelector("[data-share]");
-      const shareTrigger = shareRoot && shareRoot.querySelector("[data-share-trigger]");
-      const sharePopover = shareRoot && shareRoot.querySelector("[data-share-popover]");
-      const wechatBtn = shareRoot && shareRoot.querySelector("[data-share-wechat]");
-      const qqLink = shareRoot && shareRoot.querySelector("[data-share-qq]");
-      const toast = document.querySelector("[data-share-toast]");
+	  <script>
+	    (() => {
+	      const shareRoot = document.querySelector("[data-share]");
+	      const shareTrigger = shareRoot && shareRoot.querySelector("[data-share-trigger]");
+	      const sharePopover = shareRoot && shareRoot.querySelector("[data-share-popover]");
+	      const nativeShareBtn = shareRoot && shareRoot.querySelector("[data-share-native]");
+	      const wechatBtn = shareRoot && shareRoot.querySelector("[data-share-wechat]");
+	      const qqLink = shareRoot && shareRoot.querySelector("[data-share-qq]");
+	      const toast = document.querySelector("[data-share-toast]");
 
       const likeBtn = document.querySelector("[data-like-button]");
       const likeLabel = likeBtn && likeBtn.querySelector("[data-like-label]");
@@ -455,10 +462,11 @@
         }, 1600);
       };
 
-      const setPopoverOpen = (open) => {
-        if (!sharePopover) return;
-        sharePopover.hidden = !open;
-      };
+	      const setPopoverOpen = (open) => {
+	        if (!sharePopover) return;
+	        sharePopover.hidden = !open;
+	        if (shareTrigger) shareTrigger.setAttribute("aria-expanded", open ? "true" : "false");
+	      };
 
       const buildQqHref = () => {
         if (!qqLink) return;
@@ -478,19 +486,30 @@
 
       if (qqLink) buildQqHref();
 
-      if (shareTrigger) {
-        shareTrigger.addEventListener("click", async () => {
-          if (navigator.share) {
-            try {
-              await navigator.share({ title: pageTitle, url: pageUrl });
-              return;
-            } catch {
-              // ignore and fall back to popover
-            }
-          }
-          setPopoverOpen(sharePopover && sharePopover.hidden);
-        });
-      }
+	      const canNativeShare = window.isSecureContext && !!navigator.share;
+	      if (nativeShareBtn) nativeShareBtn.hidden = !canNativeShare;
+
+	      if (shareTrigger) {
+	        shareTrigger.setAttribute("aria-haspopup", "menu");
+	        shareTrigger.setAttribute("aria-controls", "share-popover");
+	        shareTrigger.setAttribute("aria-expanded", "false");
+	        shareTrigger.addEventListener("click", () => {
+	          setPopoverOpen(sharePopover && sharePopover.hidden);
+	        });
+	      }
+
+	      if (nativeShareBtn) {
+	        nativeShareBtn.addEventListener("click", async () => {
+	          if (!canNativeShare) return;
+	          try {
+	            await navigator.share({ title: pageTitle, url: pageUrl });
+	          } catch {
+	            // ignore
+	          } finally {
+	            setPopoverOpen(false);
+	          }
+	        });
+	      }
 
       if (wechatBtn) {
         wechatBtn.addEventListener("click", async () => {
