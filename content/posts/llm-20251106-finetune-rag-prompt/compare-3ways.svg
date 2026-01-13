@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+  <defs>
+    <style>
+      .bg{fill:#0b1020}
+      .grid{fill:#121a33;stroke:#2a3a7a;stroke-width:2}
+      .cell{fill:#141f3d;stroke:#324aa2;stroke-width:1.2}
+      .head{fill:#1b2550;stroke:#3a55c4;stroke-width:1.2}
+      .txt{fill:#e8eefc;font: 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .muted{fill:#b6c2ff;font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .accent{fill:#a78bfa}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="960" height="520" rx="28"/>
+  <text class="txt" x="48" y="62">三种方案对比（够用版）</text>
+  <rect class="grid" x="48" y="96" width="864" height="376" rx="18"/>
+
+  <!-- header row -->
+  <rect class="head" x="72" y="120" width="200" height="52" rx="12"/>
+  <text class="txt" x="110" y="152">方案</text>
+  <rect class="head" x="280" y="120" width="250" height="52" rx="12"/>
+  <text class="txt" x="320" y="152">适合</text>
+  <rect class="head" x="540" y="120" width="180" height="52" rx="12"/>
+  <text class="txt" x="580" y="152">成本</text>
+  <rect class="head" x="728" y="120" width="160" height="52" rx="12"/>
+  <text class="txt" x="760" y="152">注意</text>
+
+  <!-- row 1 -->
+  <rect class="cell" x="72" y="182" width="200" height="86" rx="12"/>
+  <text class="txt" x="100" y="214">提示词 / 约束</text>
+  <text class="muted" x="100" y="238">模板、格式、口吻</text>
+  <rect class="cell" x="280" y="182" width="250" height="86" rx="12"/>
+  <text class="muted" x="300" y="214">输出不稳定、容易跑题</text>
+  <text class="muted" x="300" y="238">需要可控的结构化结果</text>
+  <rect class="cell" x="540" y="182" width="180" height="86" rx="12"/>
+  <text class="muted" x="560" y="214">低</text>
+  <text class="muted" x="560" y="238">迭代快</text>
+  <rect class="cell" x="728" y="182" width="160" height="86" rx="12"/>
+  <text class="muted" x="748" y="214">别写玄学词</text>
+  <text class="muted" x="748" y="238">多给例子</text>
+
+  <!-- row 2 -->
+  <rect class="cell" x="72" y="276" width="200" height="86" rx="12"/>
+  <text class="txt" x="100" y="308">RAG</text>
+  <text class="muted" x="100" y="332">检索增强</text>
+  <rect class="cell" x="280" y="276" width="250" height="86" rx="12"/>
+  <text class="muted" x="300" y="308">资料会变、要引用来源</text>
+  <text class="muted" x="300" y="332">公司文档/手册/FAQ</text>
+  <rect class="cell" x="540" y="276" width="180" height="86" rx="12"/>
+  <text class="muted" x="560" y="308">中</text>
+  <text class="muted" x="560" y="332">数据清洗费时</text>
+  <rect class="cell" x="728" y="276" width="160" height="86" rx="12"/>
+  <text class="muted" x="748" y="308">先把文档整理</text>
+  <text class="muted" x="748" y="332">别把垃圾检索出来</text>
+
+  <!-- row 3 -->
+  <rect class="cell" x="72" y="370" width="200" height="86" rx="12"/>
+  <text class="txt" x="100" y="402">微调</text>
+  <text class="muted" x="100" y="426">训练适配</text>
+  <rect class="cell" x="280" y="370" width="250" height="86" rx="12"/>
+  <text class="muted" x="300" y="402">稳定任务、风格/分类</text>
+  <text class="muted" x="300" y="426">有高质量数据 + 可评测</text>
+  <rect class="cell" x="540" y="370" width="180" height="86" rx="12"/>
+  <text class="muted" x="560" y="402">高</text>
+  <text class="muted" x="560" y="426">训练/回归成本</text>
+  <rect class="cell" x="728" y="370" width="160" height="86" rx="12"/>
+  <text class="muted" x="748" y="402">数据最关键</text>
+  <text class="muted" x="748" y="426">别用来补知识</text>
+</svg>
+

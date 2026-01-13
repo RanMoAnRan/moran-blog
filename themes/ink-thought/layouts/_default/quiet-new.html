@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
+<head>
+  {{ partial "head.html" . }}
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <style>
+    .qn-page {
+      min-height: 100vh;
+      height: 1500px;
+      padding: 24px 16px;
+      background: var(--bg);
+      color: var(--text-main);
+      overflow: hidden;
+    }
+
+    .qn-shell {
+      width: 100%;
+      max-width: none;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+      height: 100%;
+      min-height: 0;
+      grid-template-rows: auto 1fr;
+    }
+
+    .qn-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .qn-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      font-size: 1.6rem;
+      margin: 0;
+    }
+
+    .qn-subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 6px 0 0;
+    }
+
+    .qn-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .qn-card {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .qn-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-muted);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .qn-card-title {
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .qn-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .qn-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text-main);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .qn-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(139, 92, 246, 0.35);
+      background: var(--hover-bg);
+    }
+
+    .qn-btn:focus-visible {
+      outline: 2px solid rgba(139, 92, 246, 0.45);
+      outline-offset: 2px;
+    }
+
+    .qn-btn-primary {
+      border-color: rgba(139, 92, 246, 0.35);
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(79, 70, 229, 0.10));
+    }
+
+    .qn-btn-danger {
+      border-color: rgba(244, 63, 94, 0.25);
+    }
+
+    .qn-body {
+      padding: 16px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .qn-grid {
+      display: grid;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .qn-grid > * {
+      min-width: 0;
+    }
+
+    @media (min-width: 900px) {
+      .qn-grid {
+        grid-template-columns: 1fr 1.1fr;
+        align-items: stretch;
+      }
+    }
+
+    .qn-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .qn-form-top {
+      display: grid;
+      gap: 12px;
+      overflow: auto;
+      padding-right: 4px;
+      min-width: 0;
+      scrollbar-gutter: stable;
+      flex: 0 1 auto;
+      min-height: 0;
+      max-height: 320px;
+    }
+
+    .qn-form-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .qn-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .qn-field-body {
+      height: 100%;
+      min-height: 0;
+      grid-template-rows: auto 1fr;
+    }
+
+    .qn-field-body .qn-label {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 2px 0;
+      background: linear-gradient(to bottom, var(--bg), rgba(0,0,0,0));
+    }
+
+    .qn-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .qn-input,
+    .qn-textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      color: var(--text-main);
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .qn-input-wrap {
+      position: relative;
+      display: grid;
+    }
+
+    .qn-icon-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s;
+    }
+
+    .qn-icon-btn:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+      background: var(--hover-bg);
+      color: var(--text-main);
+      transform: translateY(-50%) translateY(-1px);
+    }
+
+    .qn-icon-btn:focus-visible {
+      outline: 2px solid rgba(139, 92, 246, 0.45);
+      outline-offset: 2px;
+    }
+
+    .qn-date-input {
+      padding-right: 52px;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .qn-date-input::-webkit-calendar-picker-indicator {
+      opacity: 0;
+      width: 1px;
+      margin: 0;
+    }
+
+    .qn-input:focus,
+    .qn-textarea:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.45);
+      background: var(--panel);
+    }
+
+    .qn-textarea {
+      height: 100%;
+      min-height: 0;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9rem;
+    }
+
+    .qn-row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 520px) {
+      .qn-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .qn-checkrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      padding-top: 6px;
+    }
+
+    .qn-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+      font-weight: 650;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    .qn-check input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--violet-600);
+    }
+
+    .qn-meta {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .qn-meta-line {
+      display: grid;
+      gap: 4px;
+    }
+
+    .qn-meta-k {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .qn-meta-v {
+      font-size: 0.92rem;
+      color: var(--text-main);
+      overflow-wrap: anywhere;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .qn-output {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      color: var(--text-main);
+      padding: 12px;
+      height: 100%;
+      min-height: 0;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      white-space: pre;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      min-width: 0;
+      scrollbar-gutter: stable;
+    }
+
+    .qn-right {
+      display: grid;
+      gap: 10px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      grid-template-rows: auto 1fr;
+    }
+
+    .qn-right-panels {
+      position: relative;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .qn-tabs {
+      display: inline-flex;
+      gap: 6px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 9999px;
+      width: fit-content;
+    }
+
+    .qn-tab {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .qn-tab[aria-selected="true"] {
+      background: var(--hover-bg);
+      color: var(--text-main);
+    }
+
+    .qn-panel {
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      padding: 14px 14px 6px;
+      min-width: 0;
+      scrollbar-gutter: stable;
+    }
+
+    .qn-preview {
+      color: var(--text-main);
+      overflow-wrap: anywhere;
+    }
+
+    .qn-preview.prose {
+      font-size: 1.02rem;
+      line-height: 1.85;
+    }
+
+    .qn-preview pre {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      overflow: auto;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .qn-preview code {
+      padding: 0.15em 0.35em;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .qn-preview pre code {
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .qn-hidden {
+      display: none !important;
+    }
+
+    .qn-meta-title {
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .qn-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.86);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-xl);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    [data-theme='dark'] .qn-toast {
+      background: rgba(2, 6, 23, 0.76);
+    }
+
+    .qn-toast.is-on {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    @media (max-width: 899px) {
+      .qn-page {
+        height: 1500px;
+      }
+
+      .qn-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .qn-form-top {
+        max-height: 420px;
+      }
+
+      .qn-panel,
+      .qn-output {
+        min-height: 420px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="qn-page">
+    <div class="qn-shell">
+      <header class="qn-header">
+        <div>
+          <h1 class="qn-title">{{ .Title }}</h1>
+          <p class="qn-subtitle">离线生成：填写后导出 `content/posts/&lt;slug&gt;/index.md`（不联网、不提交）。</p>
+        </div>
+        <span class="qn-chip" title="隐藏页面，不会出现在导航里">路径：{{ .RelPermalink }}</span>
+      </header>
+
+      <section class="qn-card">
+        <div class="qn-card-header">
+          <p class="qn-card-title">编辑</p>
+          <div class="qn-actions">
+            <button class="qn-btn" type="button" id="qn-copy-cmd">复制 hugo 命令</button>
+            <button class="qn-btn" type="button" id="qn-copy-create">复制创建命令（含正文）</button>
+            <button class="qn-btn" type="button" id="qn-copy-md">复制 Markdown</button>
+            <button class="qn-btn qn-btn-primary" type="button" id="qn-download">下载 index.md</button>
+            <button class="qn-btn qn-btn-danger" type="button" id="qn-clear">清空草稿</button>
+          </div>
+        </div>
+
+        <div class="qn-body">
+          <div class="qn-grid">
+            <div class="qn-form" aria-label="新建文章表单">
+              <div class="qn-form-top">
+                <div class="qn-field">
+                  <label class="qn-label" for="qn-title">标题</label>
+                  <input class="qn-input" id="qn-title" autocomplete="off" placeholder="例如：我如何搭建这个博客" />
+                </div>
+
+              <div class="qn-row">
+                <div class="qn-field">
+                  <label class="qn-label" for="qn-slug">slug（用于路径）</label>
+                  <input class="qn-input" id="qn-slug" autocomplete="off" placeholder="例如：how-i-built-this-blog" />
+                </div>
+                <div class="qn-field">
+                  <label class="qn-label" for="qn-date">日期</label>
+                  <div class="qn-input-wrap">
+                    <input class="qn-input qn-date-input" id="qn-date" type="datetime-local" step="60" placeholder="选择日期与时间（本地）" />
+                    <button class="qn-icon-btn" type="button" id="qn-date-open" aria-label="打开日期选择">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="qn-field">
+                <label class="qn-label" for="qn-site-root">站点路径（可选，用于在任意目录执行命令）</label>
+                <input class="qn-input" id="qn-site-root" autocomplete="off" placeholder="/path/to/moran-blog（包含 hugo.toml 与 content/）" />
+              </div>
+
+              <div class="qn-meta" aria-label="更多设置">
+                <div class="qn-meta-title">更多设置</div>
+                <div style="height:10px;"></div>
+
+                  <div class="qn-row">
+                    <div class="qn-field">
+                      <label class="qn-label" for="qn-tags">tags（逗号分隔）</label>
+                      <input class="qn-input" id="qn-tags" autocomplete="off" placeholder="Hugo, 随笔" />
+                    </div>
+                    <div class="qn-field">
+                      <label class="qn-label" for="qn-categories">categories（逗号分隔）</label>
+                      <input class="qn-input" id="qn-categories" autocomplete="off" placeholder="技术, 生活" />
+                    </div>
+                  </div>
+
+                  <div class="qn-field">
+                    <label class="qn-label" for="qn-summary">summary（可选）</label>
+                    <input class="qn-input" id="qn-summary" autocomplete="off" placeholder="一两句话概括这篇文章…" />
+                  </div>
+
+                  <div class="qn-row">
+                    <div class="qn-field">
+                      <label class="qn-label" for="qn-cover">cover（可选）</label>
+                      <input class="qn-input" id="qn-cover" autocomplete="off" placeholder="例如：cover.jpg / https://..." />
+                    </div>
+                    <div class="qn-field">
+                      <label class="qn-label" for="qn-filename">导出文件名</label>
+                      <input class="qn-input" id="qn-filename" autocomplete="off" placeholder="index.md" />
+                    </div>
+                  </div>
+
+                  <div class="qn-checkrow" role="group" aria-label="选项">
+                    <label class="qn-check"><input id="qn-draft" type="checkbox" />draft</label>
+                    <label class="qn-check"><input id="qn-toc" type="checkbox" checked />toc</label>
+                    <label class="qn-check"><input id="qn-math" type="checkbox" checked />math</label>
+                  </div>
+                </div>
+
+                <div class="qn-meta" aria-label="输出信息">
+                  <div class="qn-meta-line">
+                    <div class="qn-meta-k">目标路径</div>
+                    <div class="qn-meta-v" id="qn-path"></div>
+                  </div>
+                  <div class="qn-meta-line">
+                    <div class="qn-meta-k">hugo 命令</div>
+                    <div class="qn-meta-v" id="qn-cmd"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="qn-form-body">
+                <div class="qn-field qn-field-body">
+                  <label class="qn-label" for="qn-body">正文（Markdown）</label>
+                  <textarea class="qn-textarea" id="qn-body" placeholder="从这里开始写正文…"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="qn-right" aria-label="预览与导出">
+              <div class="qn-tabs" role="tablist" aria-label="预览切换">
+                <button class="qn-tab" id="qn-tab-preview" role="tab" aria-selected="true" aria-controls="qn-panel-preview" type="button">预览</button>
+                <button class="qn-tab" id="qn-tab-md" role="tab" aria-selected="false" aria-controls="qn-panel-md" type="button">Markdown</button>
+              </div>
+
+              <div class="qn-right-panels">
+                <div class="qn-panel" id="qn-panel-preview" role="tabpanel" aria-labelledby="qn-tab-preview">
+                  <article class="qn-preview prose" id="qn-preview"></article>
+                </div>
+
+                <pre class="qn-output qn-hidden" id="qn-panel-md" role="tabpanel" aria-labelledby="qn-tab-md"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="qn-toast" id="qn-toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const storageKey = "quietNewPost.v1";
+
+      const elTitle = document.getElementById("qn-title");
+      const elSlug = document.getElementById("qn-slug");
+      const elDate = document.getElementById("qn-date");
+      const elTags = document.getElementById("qn-tags");
+      const elCategories = document.getElementById("qn-categories");
+      const elSummary = document.getElementById("qn-summary");
+      const elCover = document.getElementById("qn-cover");
+      const elFilename = document.getElementById("qn-filename");
+      const elDraft = document.getElementById("qn-draft");
+      const elToc = document.getElementById("qn-toc");
+      const elMath = document.getElementById("qn-math");
+      const elBody = document.getElementById("qn-body");
+      const elSiteRoot = document.getElementById("qn-site-root");
+      const btnDateOpen = document.getElementById("qn-date-open");
+
+      const elPath = document.getElementById("qn-path");
+      const elCmd = document.getElementById("qn-cmd");
+      const elPreview = document.getElementById("qn-preview");
+      const elTabPreview = document.getElementById("qn-tab-preview");
+      const elTabMd = document.getElementById("qn-tab-md");
+      const elPanelPreview = document.getElementById("qn-panel-preview");
+      const elPanelMd = document.getElementById("qn-panel-md");
+
+      const btnCopyCmd = document.getElementById("qn-copy-cmd");
+      const btnCopyCreate = document.getElementById("qn-copy-create");
+      const btnCopyMd = document.getElementById("qn-copy-md");
+      const btnDownload = document.getElementById("qn-download");
+      const btnClear = document.getElementById("qn-clear");
+
+      const toast = document.getElementById("qn-toast");
+      let toastTimer = null;
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("is-on");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("is-on"), 1300);
+      }
+
+      function pad2(n) {
+        return String(n).padStart(2, "0");
+      }
+
+      function formatHugoDate(d) {
+        const year = d.getFullYear();
+        const month = pad2(d.getMonth() + 1);
+        const day = pad2(d.getDate());
+        const hours = pad2(d.getHours());
+        const minutes = pad2(d.getMinutes());
+        const seconds = pad2(d.getSeconds());
+        const offsetMinutes = -d.getTimezoneOffset();
+        const sign = offsetMinutes >= 0 ? "+" : "-";
+        const abs = Math.abs(offsetMinutes);
+        const oh = pad2(Math.floor(abs / 60));
+        const om = pad2(abs % 60);
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${oh}:${om}`;
+      }
+
+      function formatDatetimeLocal(d) {
+        const year = d.getFullYear();
+        const month = pad2(d.getMonth() + 1);
+        const day = pad2(d.getDate());
+        const hours = pad2(d.getHours());
+        const minutes = pad2(d.getMinutes());
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+
+      function toHugoDateString(input) {
+        const v = String(input || "").trim();
+        if (!v) return formatHugoDate(new Date());
+
+        const dt = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/);
+        if (dt) {
+          const d = new Date(
+            Number(dt[1]),
+            Number(dt[2]) - 1,
+            Number(dt[3]),
+            Number(dt[4]),
+            Number(dt[5]),
+            Number(dt[6] || 0)
+          );
+          return formatHugoDate(d);
+        }
+
+        const dd = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (dd) {
+          const d = new Date(Number(dd[1]), Number(dd[2]) - 1, Number(dd[3]), 0, 0, 0);
+          return formatHugoDate(d);
+        }
+
+        return v;
+      }
+
+      function toDatetimeLocalValue(input) {
+        const v = String(input || "").trim();
+        if (!v) return "";
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return "";
+        return formatDatetimeLocal(d);
+      }
+
+      function safeTomlString(value) {
+        return String(value).replace(/\\/g, "\\\\").replace(/\"/g, "\\\"");
+      }
+
+      function parseList(value) {
+        return String(value || "")
+          .split(",")
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+
+      function slugify(input) {
+        const raw = String(input || "").trim().toLowerCase();
+        const ascii = raw
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .replace(/-+/g, "-");
+        if (ascii) return ascii;
+        const d = new Date();
+        return `post-${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}`;
+      }
+
+      function buildFrontMatter(state) {
+        const title = safeTomlString(state.title || "未命名");
+        const date = safeTomlString(toHugoDateString(state.date));
+        const summary = safeTomlString(state.summary || "");
+        const cover = safeTomlString(state.cover || "");
+        const tags = parseList(state.tags);
+        const categories = parseList(state.categories);
+
+        const lines = [];
+        lines.push("+++");
+        lines.push(`draft = ${state.draft ? "true" : "false"}`);
+        lines.push(`title = "${title}"`);
+        lines.push(`date = "${date}"`);
+        lines.push(`tags = [${tags.map(t => `"${safeTomlString(t)}"`).join(", ")}]`);
+        lines.push(`categories = [${categories.map(c => `"${safeTomlString(c)}"`).join(", ")}]`);
+        lines.push(`summary = "${summary}"`);
+        lines.push(`toc = ${state.toc ? "true" : "false"}`);
+        lines.push(`math = ${state.math ? "true" : "false"}`);
+        lines.push(`cover = "${cover}"`);
+        lines.push("+++");
+        return lines.join("\n");
+      }
+
+      function buildMarkdown(state) {
+        const fm = buildFrontMatter(state);
+        const body = String(state.body || "").replace(/\r\n/g, "\n");
+        return `${fm}\n\n${body}\n`;
+      }
+
+      function stripTrailingSlashes(path) {
+        return String(path || "").replace(/\/+$/g, "");
+      }
+
+      function buildCreateCommand(state) {
+        const md = buildMarkdown(state);
+        const relPath = `content/posts/${state.slug}/${state.filename}`;
+        const siteRoot = stripTrailingSlashes(state.siteRoot || "");
+        const outPath = siteRoot ? `${siteRoot}/${relPath}` : relPath;
+        const dirPath = outPath.replace(/\/[^/]+$/g, "");
+
+        let delimiter = "__HUGO_MD__";
+        while (md.includes(delimiter)) delimiter = `_${delimiter}_`;
+
+        const safeOut = outPath.replace(/\"/g, '\\"');
+        const safeDir = dirPath.replace(/\"/g, '\\"');
+        const payload = md.replace(/\n$/, "");
+
+        return `mkdir -p "${safeDir}" && cat > "${safeOut}" <<'${delimiter}'\n${payload}\n${delimiter}\n`;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function sanitizeUrl(url) {
+        const u = String(url || "").trim();
+        if (!u) return "#";
+        if (/^(https?:\/\/|mailto:)/i.test(u)) return u;
+        if (u.startsWith("/") || u.startsWith("#")) return u;
+        return "#";
+      }
+
+      function renderMarkdown(md) {
+        const src = String(md || "").replace(/\r\n/g, "\n");
+        const lines = src.split("\n");
+        let html = "";
+        let i = 0;
+
+        function renderInline(text) {
+          let t = escapeHtml(text);
+          t = t.replace(/`([^`]+?)`/g, "<code>$1</code>");
+          t = t.replace(/\*\*([^*]+?)\*\*/g, "<strong>$1</strong>");
+          t = t.replace(/\*([^*]+?)\*/g, "<em>$1</em>");
+          t = t.replace(/\[([^\]]+?)\]\(([^)]+?)\)/g, (_, label, href) => {
+            const safe = sanitizeUrl(href);
+            const rel = safe.startsWith("http") ? ' rel="noopener noreferrer" target="_blank"' : "";
+            return `<a href="${escapeHtml(safe)}"${rel}>${label}</a>`;
+          });
+          return t;
+        }
+
+        function flushParagraph(buf) {
+          if (!buf.length) return;
+          html += `<p>${renderInline(buf.join(" "))}</p>`;
+          buf.length = 0;
+        }
+
+        function renderList(kind, items) {
+          const tag = kind === "ol" ? "ol" : "ul";
+          html += `<${tag}>`;
+          for (const item of items) html += `<li>${renderInline(item)}</li>`;
+          html += `</${tag}>`;
+        }
+
+        while (i < lines.length) {
+          const line = lines[i];
+
+          if (/^```/.test(line)) {
+            const lang = line.replace(/^```/, "").trim();
+            i++;
+            const buf = [];
+            while (i < lines.length && !/^```/.test(lines[i])) {
+              buf.push(lines[i]);
+              i++;
+            }
+            i++;
+            const code = escapeHtml(buf.join("\n"));
+            const cls = lang ? ` class="language-${escapeHtml(lang)}"` : "";
+            html += `<pre><code${cls}>${code}\n</code></pre>`;
+            continue;
+          }
+
+          if (/^\s*$/.test(line)) {
+            i++;
+            continue;
+          }
+
+          const h = line.match(/^(#{1,6})\s+(.*)$/);
+          if (h) {
+            const level = h[1].length;
+            html += `<h${level}>${renderInline(h[2])}</h${level}>`;
+            i++;
+            continue;
+          }
+
+          const bq = line.match(/^>\s?(.*)$/);
+          if (bq) {
+            const buf = [];
+            while (i < lines.length) {
+              const m = lines[i].match(/^>\s?(.*)$/);
+              if (!m) break;
+              buf.push(m[1]);
+              i++;
+            }
+            html += `<blockquote>${renderInline(buf.join("\n"))}</blockquote>`;
+            continue;
+          }
+
+          const ul = line.match(/^\s*[-*+]\s+(.*)$/);
+          if (ul) {
+            const items = [];
+            while (i < lines.length) {
+              const m = lines[i].match(/^\s*[-*+]\s+(.*)$/);
+              if (!m) break;
+              items.push(m[1]);
+              i++;
+            }
+            renderList("ul", items);
+            continue;
+          }
+
+          const ol = line.match(/^\s*\d+\.\s+(.*)$/);
+          if (ol) {
+            const items = [];
+            while (i < lines.length) {
+              const m = lines[i].match(/^\s*\d+\.\s+(.*)$/);
+              if (!m) break;
+              items.push(m[1]);
+              i++;
+            }
+            renderList("ol", items);
+            continue;
+          }
+
+          const p = [];
+          while (i < lines.length && !/^\s*$/.test(lines[i])) {
+            if (/^```/.test(lines[i])) break;
+            if (/^(#{1,6})\s+/.test(lines[i])) break;
+            if (/^>\s?/.test(lines[i])) break;
+            if (/^\s*[-*+]\s+/.test(lines[i])) break;
+            if (/^\s*\d+\.\s+/.test(lines[i])) break;
+            p.push(lines[i].trim());
+            i++;
+          }
+          flushParagraph(p);
+        }
+
+        return html || "<p style=\"color:var(--text-muted)\">开始输入正文，这里会实时预览。</p>";
+      }
+
+      function currentState() {
+        const title = elTitle.value;
+        const slug = elSlug.value || slugify(title);
+        const filename = (elFilename.value || "index.md").trim() || "index.md";
+        return {
+          title,
+          slug,
+          date: elDate.value,
+          tags: elTags.value,
+          categories: elCategories.value,
+          summary: elSummary.value,
+          cover: elCover.value,
+          filename,
+          draft: !!elDraft.checked,
+          toc: !!elToc.checked,
+          math: !!elMath.checked,
+          body: elBody.value,
+          siteRoot: (elSiteRoot && elSiteRoot.value) ? elSiteRoot.value : ""
+        };
+      }
+
+      let saveTimer = null;
+      function scheduleSave() {
+        if (saveTimer) cancelAnimationFrame(saveTimer);
+        saveTimer = requestAnimationFrame(() => {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(currentState()));
+          } catch {}
+        });
+      }
+
+      function render() {
+        const state = currentState();
+        if (!elSlug.value) elSlug.value = state.slug;
+        if (!elDate.value) elDate.value = formatDatetimeLocal(new Date());
+
+        const path = `content/posts/${state.slug}/${state.filename}`;
+        const rel = `posts/${state.slug}/${state.filename}`;
+        const siteRoot = String(state.siteRoot || "").trim();
+        const cmd = siteRoot
+          ? `hugo -s "${siteRoot.replace(/\"/g, '\\"')}" new content ${rel}`
+          : `hugo new content ${rel}`;
+        elPath.textContent = path;
+        elCmd.textContent = cmd;
+        elPanelMd.textContent = buildMarkdown(state);
+        elPreview.innerHTML = renderMarkdown(state.body);
+        scheduleSave();
+      }
+
+      async function copyText(text, okMessage) {
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast(okMessage);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand("copy");
+            showToast(okMessage);
+          } catch {
+            showToast("复制失败：浏览器不允许");
+          } finally {
+            ta.remove();
+          }
+        }
+      }
+
+      function downloadFile(filename, content) {
+        const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast("已下载");
+      }
+
+      function loadSaved() {
+        try {
+          const raw = localStorage.getItem(storageKey);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (typeof data !== "object" || !data) return;
+          elTitle.value = data.title || "";
+          elSlug.value = data.slug || "";
+          elDate.value = (data.date && toDatetimeLocalValue(data.date)) || data.date || "";
+          elTags.value = data.tags || "";
+          elCategories.value = data.categories || "";
+          elSummary.value = data.summary || "";
+          elCover.value = data.cover || "";
+          elFilename.value = data.filename || "index.md";
+          elDraft.checked = data.draft !== false;
+          elToc.checked = data.toc !== false;
+          elMath.checked = !!data.math;
+          elBody.value = data.body || "";
+          if (elSiteRoot) elSiteRoot.value = data.siteRoot || "";
+        } catch {}
+      }
+
+      function clearSaved() {
+        try { localStorage.removeItem(storageKey); } catch {}
+        elTitle.value = "";
+        elSlug.value = "";
+        elDate.value = formatHugoDate(new Date());
+        elTags.value = "";
+        elCategories.value = "";
+        elSummary.value = "";
+        elCover.value = "";
+        elFilename.value = "index.md";
+        elDraft.checked = false;
+        elToc.checked = true;
+        elMath.checked = true;
+        elBody.value = "";
+        if (elSiteRoot) elSiteRoot.value = "";
+        render();
+        showToast("已清空");
+        elTitle.focus();
+      }
+
+      [
+        elTitle, elSlug, elDate, elTags, elCategories, elSummary, elCover,
+        elFilename, elDraft, elToc, elMath, elBody, elSiteRoot
+      ].forEach(el => el.addEventListener("input", render));
+
+      btnCopyCmd.addEventListener("click", () => copyText(elCmd.textContent, "命令已复制"));
+      if (btnCopyCreate) {
+        btnCopyCreate.addEventListener("click", () => {
+          const state = currentState();
+          copyText(buildCreateCommand(state), "已复制：创建命令");
+        });
+      }
+      btnCopyMd.addEventListener("click", () => copyText(elPanelMd.textContent, "Markdown 已复制"));
+      btnDownload.addEventListener("click", () => {
+        const state = currentState();
+        const filename = state.filename || "index.md";
+        downloadFile(filename, buildMarkdown(state));
+      });
+      btnClear.addEventListener("click", clearSaved);
+
+      if (btnDateOpen) {
+        btnDateOpen.addEventListener("click", () => {
+          if (elDate && typeof elDate.showPicker === "function") elDate.showPicker();
+          else if (elDate) elDate.focus();
+        });
+      }
+
+      window.addEventListener("keydown", (e) => {
+        const isMac = navigator.platform.toLowerCase().includes("mac");
+        const mod = isMac ? e.metaKey : e.ctrlKey;
+        if (mod && e.key === "Enter") {
+          e.preventDefault();
+          btnDownload.click();
+        }
+        if (e.key === "/" && document.activeElement === document.body) {
+          e.preventDefault();
+          elTitle.focus();
+        }
+      });
+
+	      function setTab(which) {
+	        const isPreview = which === "preview";
+	        elTabPreview.setAttribute("aria-selected", String(isPreview));
+	        elTabMd.setAttribute("aria-selected", String(!isPreview));
+	        elPanelPreview.classList.toggle("qn-hidden", !isPreview);
+	        elPanelMd.classList.toggle("qn-hidden", isPreview);
+	        try { localStorage.setItem("quietNewPost.tab", which); } catch {}
+	      }
+
+      elTabPreview.addEventListener("click", () => setTab("preview"));
+      elTabMd.addEventListener("click", () => setTab("md"));
+
+      loadSaved();
+      try {
+        const savedTab = localStorage.getItem("quietNewPost.tab");
+        if (savedTab === "md") setTab("md");
+        else setTab("preview");
+      } catch {
+        setTab("preview");
+      }
+      render();
+      setTimeout(() => elTitle.focus(), 0);
+    })();
+  </script>
+</body>
+</html>

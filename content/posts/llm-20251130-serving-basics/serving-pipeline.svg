@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560">
+  <defs>
+    <style>
+      .bg{fill:#0b1020}
+      .node{fill:#141f3d;stroke:#324aa2;stroke-width:1.5}
+      .node2{fill:#121a33;stroke:#2a3a7a;stroke-width:1.5}
+      .txt{fill:#e8eefc;font: 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .muted{fill:#b6c2ff;font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .line{stroke:#a78bfa;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .tag{fill:#1b2550;stroke:#3a55c4;stroke-width:1.2}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="960" height="560" rx="28"/>
+  <text class="txt" x="48" y="62">推理服务链路（简化版）</text>
+  <text class="muted" x="48" y="92">把问题画成“站点”，你就能定位到底慢在“算”还是慢在“等”。</text>
+
+  <rect class="node" x="72" y="140" width="170" height="76" rx="16"/>
+  <text class="txt" x="98" y="172">客户端</text>
+  <text class="muted" x="98" y="196">Web / App / Bot</text>
+
+  <rect class="node2" x="272" y="140" width="190" height="76" rx="16"/>
+  <text class="txt" x="298" y="172">网关</text>
+  <text class="muted" x="298" y="196">鉴权/限流/路由</text>
+
+  <rect class="node" x="492" y="140" width="200" height="76" rx="16"/>
+  <text class="txt" x="518" y="172">队列 / 调度</text>
+  <text class="muted" x="518" y="196">并发控制、排队</text>
+
+  <rect class="node2" x="722" y="140" width="170" height="76" rx="16"/>
+  <text class="txt" x="748" y="172">推理服务</text>
+  <text class="muted" x="748" y="196">vLLM/TGI 等</text>
+
+  <path class="line" d="M242 178 L 272 178"/>
+  <path class="line" d="M462 178 L 492 178"/>
+  <path class="line" d="M692 178 L 722 178"/>
+
+  <rect class="node" x="272" y="260" width="190" height="92" rx="16"/>
+  <text class="txt" x="298" y="294">重试策略</text>
+  <text class="muted" x="298" y="318">只对网络失败</text>
+  <text class="muted" x="298" y="340">指数退避</text>
+
+  <rect class="node" x="492" y="260" width="200" height="92" rx="16"/>
+  <text class="txt" x="518" y="294">超时策略</text>
+  <text class="muted" x="518" y="318">首 token / 总时长</text>
+  <text class="muted" x="518" y="340">队列等待超时</text>
+
+  <rect class="node" x="722" y="260" width="170" height="92" rx="16"/>
+  <text class="txt" x="748" y="294">监控</text>
+  <text class="muted" x="748" y="318">首 token 延迟</text>
+  <text class="muted" x="748" y="340">队列深度/显存</text>
+
+  <path class="line" d="M367 216 L 367 260"/>
+  <path class="line" d="M592 216 L 592 260"/>
+  <path class="line" d="M807 216 L 807 260"/>
+
+  <rect class="tag" x="72" y="392" width="840" height="108" rx="18"/>
+  <text class="txt" x="96" y="426">常见“看起来像模型问题”的真凶</text>
+  <text class="muted" x="96" y="452">1) 队列堆积（等）  2) 自动重试（雪崩）  3) 超时配置不合理（用户卡死）</text>
+  <text class="muted" x="96" y="476">先保证：可控的并发 + 首 token 反馈 + 有节制的重试</text>
+</svg>
+

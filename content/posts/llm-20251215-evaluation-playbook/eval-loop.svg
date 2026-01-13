@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <style>
+      .bg{fill:#0b1020}
+      .node{fill:#141f3d;stroke:#324aa2;stroke-width:1.5}
+      .node2{fill:#121a33;stroke:#2a3a7a;stroke-width:1.5}
+      .txt{fill:#e8eefc;font: 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .muted{fill:#b6c2ff;font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .line{stroke:#a78bfa;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .tag{fill:#1b2550;stroke:#3a55c4;stroke-width:1.2}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="960" height="540" rx="28"/>
+  <text class="txt" x="48" y="62">小考卷闭环：出题 → 评估 → 约束 → 回归</text>
+  <text class="muted" x="48" y="92">目标不是“拿高分”，而是找到会翻车的题型，并把它们变成规则。</text>
+
+  <rect class="node" x="72" y="150" width="190" height="86" rx="16"/>
+  <text class="txt" x="96" y="182">1. 出题</text>
+  <text class="muted" x="96" y="206">来自真实业务场景</text>
+
+  <rect class="node2" x="288" y="150" width="190" height="86" rx="16"/>
+  <text class="txt" x="312" y="182">2. 跑一遍</text>
+  <text class="muted" x="312" y="206">不同模型/提示词</text>
+
+  <rect class="node" x="504" y="150" width="190" height="86" rx="16"/>
+  <text class="txt" x="528" y="182">3. 判卷</text>
+  <text class="muted" x="528" y="206">可用/参考/不可用</text>
+
+  <rect class="node2" x="720" y="150" width="168" height="86" rx="16"/>
+  <text class="txt" x="744" y="182">4. 规则化</text>
+  <text class="muted" x="744" y="206">引用/自检/验证</text>
+
+  <path class="line" d="M262 193 L 288 193"/>
+  <path class="line" d="M478 193 L 504 193"/>
+  <path class="line" d="M694 193 L 720 193"/>
+
+  <rect class="tag" x="180" y="292" width="600" height="150" rx="18"/>
+  <text class="txt" x="206" y="326">把“常错题”变成可执行约束</text>
+  <text class="muted" x="206" y="352">- 信息不足：必须先反问缺什么</text>
+  <text class="muted" x="206" y="376">- 资料类问题：必须引用来源（文档名/章节）</text>
+  <text class="muted" x="206" y="400">- 方案类问题：必须给 3 个风险点 + 1 个回滚</text>
+
+  <path class="line" d="M804 236 C 804 280, 770 310, 720 340"/>
+  <path class="line" d="M210 340 C 150 320, 120 290, 120 236"/>
+  <path class="line" d="M120 236 L 120 150"/>
+  <text class="muted" x="72" y="470">每次模型/提示词/检索策略有变更，都回归跑一遍。</text>
+</svg>
+

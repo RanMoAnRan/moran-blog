@@ -1,4 +1,11 @@
 <article class="post-card group">
+  {{- $coverUrl := partial "cover-url.html" . -}}
+  {{- if $coverUrl -}}
+    <a class="post-card__cover" href="{{ .RelPermalink }}" aria-label="打开：{{ .Title }}">
+      <img src="{{ $coverUrl }}" alt="{{ .Title }} 封面" loading="lazy" decoding="async">
+    </a>
+  {{- end -}}
+
   <!-- 1. Meta Header: Category | Date | Time -->
   <div class="post-card__meta-header">
     {{ with .GetTerms "categories" }}

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+  <defs>
+    <style>
+      .bg{fill:#0b1020}
+      .node{fill:#141f3d;stroke:#324aa2;stroke-width:1.5}
+      .node2{fill:#121a33;stroke:#2a3a7a;stroke-width:1.5}
+      .txt{fill:#e8eefc;font: 15px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .muted{fill:#b6c2ff;font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .accent{fill:#a78bfa}
+      .line{stroke:#a78bfa;stroke-width:2.2;fill:none;stroke-linecap:round}
+      .tag{fill:#1b2550;stroke:#3a55c4;stroke-width:1.2}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="960" height="620" rx="28"/>
+  <text class="txt" x="48" y="62">微调 / RAG / 提示词：一个够用的决策树</text>
+  <text class="muted" x="48" y="92">先判断“缺知识”还是“缺规范”，再决定要不要上训练。</text>
+
+  <rect class="node" x="280" y="120" width="400" height="80" rx="18"/>
+  <text class="txt" x="310" y="156">你的问题主要是：输出不稳定 / 格式不对 / 语气不对？</text>
+  <text class="muted" x="310" y="180">（像“写得太散、太营销、没按模板”）</text>
+
+  <path class="line" d="M480 200 L 260 258"/>
+  <path class="line" d="M480 200 L 700 258"/>
+
+  <rect class="tag" x="210" y="232" width="90" height="34" rx="12"/>
+  <text class="muted" x="236" y="254">是</text>
+  <rect class="tag" x="662" y="232" width="90" height="34" rx="12"/>
+  <text class="muted" x="690" y="254">否</text>
+
+  <rect class="node2" x="80" y="270" width="360" height="100" rx="18"/>
+  <text class="txt" x="110" y="305">优先：提示词 / 结构化约束</text>
+  <text class="muted" x="110" y="330">加模板、禁忌、自检、引用格式</text>
+  <text class="muted" x="110" y="354">先把“写法”稳定下来</text>
+
+  <rect class="node" x="520" y="270" width="360" height="100" rx="18"/>
+  <text class="txt" x="550" y="305">你的问题主要是：缺资料 / 资料会变？</text>
+  <text class="muted" x="550" y="330">（像“政策更新、产品手册、内部规范”）</text>
+
+  <path class="line" d="M700 370 L 560 444"/>
+  <path class="line" d="M700 370 L 840 444"/>
+
+  <rect class="tag" x="520" y="416" width="90" height="34" rx="12"/>
+  <text class="muted" x="546" y="438">是</text>
+  <rect class="tag" x="796" y="416" width="90" height="34" rx="12"/>
+  <text class="muted" x="824" y="438">否</text>
+
+  <rect class="node2" x="360" y="456" width="320" height="120" rx="18"/>
+  <text class="txt" x="390" y="490">优先：RAG（检索增强）</text>
+  <text class="muted" x="390" y="516">把资料放外部，每次只取相关片段</text>
+  <text class="muted" x="390" y="540">输出带来源：文档/章节/链接</text>
+
+  <rect class="node2" x="700" y="456" width="220" height="120" rx="18"/>
+  <text class="txt" x="730" y="490">再考虑：微调</text>
+  <text class="muted" x="730" y="516">前提：稳定任务 + 有数据</text>
+  <text class="muted" x="730" y="540">且能评测、能回归</text>
+</svg>
+

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+  <defs>
+    <style>
+      .bg{fill:#0b1020}
+      .panel{fill:#121a33;stroke:#2a3a7a;stroke-width:2}
+      .pill{fill:#1b2550;stroke:#3a55c4;stroke-width:1.5}
+      .txt{fill:#e8eefc;font: 16px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .muted{fill:#b6c2ff;font: 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .warn{fill:#ffd6a5}
+      .accent{fill:#a78bfa}
+      .arrow{stroke:#a78bfa;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="960" height="520" rx="28"/>
+
+  <text class="txt" x="48" y="62">上下文窗口（Context Window）= 这一刻模型“能看到”的盒子</text>
+  <text class="muted" x="48" y="92">对话越长、贴的资料越多，盒子越容易装满；装满后会丢掉一部分内容。</text>
+
+  <rect class="panel" x="48" y="126" width="864" height="330" rx="22"/>
+  <text class="muted" x="72" y="160">盒子里的常见组成</text>
+
+  <rect class="pill" x="72" y="188" width="360" height="70" rx="16"/>
+  <text class="txt" x="96" y="220">系统/角色指令</text>
+  <text class="muted" x="96" y="244">“你是谁、要怎么回答”</text>
+
+  <rect class="pill" x="72" y="272" width="360" height="70" rx="16"/>
+  <text class="txt" x="96" y="304">对话历史</text>
+  <text class="muted" x="96" y="328">前几轮问答、确认过的规则</text>
+
+  <rect class="pill" x="72" y="356" width="360" height="70" rx="16"/>
+  <text class="txt" x="96" y="388">你贴的材料</text>
+  <text class="muted" x="96" y="412">文档片段、代码、截图文字</text>
+
+  <rect class="pill" x="456" y="214" width="432" height="98" rx="18"/>
+  <text class="txt" x="480" y="246">“约束卡”（建议）</text>
+  <text class="muted" x="480" y="272">把关键规则汇总成 5-10 行，每次请求都带上。</text>
+  <text class="muted" x="480" y="296">比散落在对话里更不容易丢。</text>
+
+  <rect class="pill" x="456" y="332" width="432" height="94" rx="18"/>
+  <text class="txt" x="480" y="364">检索片段（RAG）</text>
+  <text class="muted" x="480" y="390">不把整本书塞进盒子，每次只取“相关几页”。</text>
+
+  <path class="arrow" d="M430 306 C 460 306, 470 296, 492 280"/>
+  <path class="arrow" d="M430 366 C 468 366, 476 372, 500 384"/>
+  <text class="muted warn" x="456" y="186">盒子满了会“挤掉”内容 → 先收纳，再提问</text>
+</svg>
+

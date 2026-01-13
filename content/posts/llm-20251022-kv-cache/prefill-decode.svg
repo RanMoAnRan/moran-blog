@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+  <defs>
+    <style>
+      .bg{fill:#0b1020}
+      .panel{fill:#121a33;stroke:#2a3a7a;stroke-width:2}
+      .card{fill:#141f3d;stroke:#324aa2;stroke-width:1.5}
+      .txt{fill:#e8eefc;font: 16px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .muted{fill:#b6c2ff;font: 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .accent{fill:#a78bfa}
+      .good{fill:#86efac}
+      .warn{fill:#ffd6a5}
+      .bar{fill:#1b2550}
+      .bar2{fill:#233064}
+      .arrow{stroke:#a78bfa;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="960" height="520" rx="28"/>
+  <text class="txt" x="48" y="62">生成一次回答的两段：Prefill（读输入） + Decode（逐 token 生成）</text>
+  <text class="muted" x="48" y="92">KV Cache 主要加速的是 Decode：旧上下文的注意力结果不用重复算。</text>
+
+  <rect class="panel" x="48" y="126" width="864" height="330" rx="22"/>
+
+  <rect class="card" x="72" y="162" width="380" height="260" rx="18"/>
+  <text class="txt" x="96" y="196">Prefill：把输入“读一遍”</text>
+  <text class="muted" x="96" y="222">成本随上下文长度增长（越长越慢）</text>
+  <rect class="bar" x="96" y="252" width="320" height="18" rx="9"/>
+  <rect class="bar2" x="96" y="282" width="260" height="18" rx="9"/>
+  <rect class="bar2" x="96" y="312" width="210" height="18" rx="9"/>
+  <text class="muted" x="96" y="352">常见优化：摘要、删冗余、RAG 只取相关片段</text>
+
+  <rect class="card" x="500" y="162" width="388" height="260" rx="18"/>
+  <text class="txt" x="524" y="196">Decode：一个 token 一个 token 往外吐</text>
+  <text class="muted" x="524" y="222">KV Cache：旧 token 的 K/V 存下来</text>
+
+  <rect x="524" y="256" width="340" height="22" rx="11" fill="#1b2550"/>
+  <rect x="524" y="256" width="220" height="22" rx="11" fill="#a78bfa"/>
+  <text class="muted" x="524" y="294">后续每步：复用旧 K/V + 只算新 token</text>
+
+  <path class="arrow" d="M452 292 C 470 292, 485 292, 500 292"/>
+  <text class="muted good" x="524" y="340">好处：续写更稳、更快（尤其是长对话）</text>
+  <text class="muted warn" x="524" y="366">代价：占显存，压力大时可能被清理</text>
+</svg>
+

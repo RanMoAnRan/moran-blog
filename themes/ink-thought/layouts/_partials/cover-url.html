@@ -1,0 +1,17 @@
+{{- $page := . -}}
+{{- $cover := $page.Params.cover | default "" -}}
+{{- if not $cover -}}
+  {{- /* no cover */ -}}
+{{- end -}}
+
+{{- $coverStr := $cover | string -}}
+
+{{- if or (hasPrefix $coverStr "http://") (hasPrefix $coverStr "https://") (hasPrefix $coverStr "data:") -}}
+  {{- $coverStr -}}
+{{- else if $coverStr -}}
+  {{- with $page.Resources.GetMatch (printf "%s*" $coverStr) -}}
+    {{- .RelPermalink -}}
+  {{- else -}}
+    {{- $coverStr | relURL -}}
+  {{- end -}}
+{{- end -}}

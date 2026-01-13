@@ -320,6 +320,75 @@
       border-bottom-color: currentColor;
     }
 
+    .about-prose h4[id="联系方式"] + ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0 0 1.05em;
+      display: grid;
+      gap: 10px;
+    }
+
+    .about-prose h4[id="联系方式"] + ul li {
+      margin: 0;
+    }
+
+    .about-prose h4[id="联系方式"] + ul li a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-width: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text-main);
+      text-decoration: none;
+      border-bottom: none;
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .about-prose h4[id="联系方式"] + ul li a:hover {
+      transform: translateY(-1px);
+      border-color: rgba(139, 92, 246, 0.35);
+      background: var(--hover-bg);
+    }
+
+    .about-prose h4[id="联系方式"] + ul li a:focus-visible {
+      outline: 2px solid rgba(139, 92, 246, 0.45);
+      outline-offset: 2px;
+    }
+
+    .about-prose h4[id="联系方式"] + ul li a::after {
+      content: "↗";
+      margin-left: auto;
+      color: var(--text-muted);
+      font-weight: 800;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .about-prose h4[id="联系方式"] + ul li a:hover::after,
+    .about-prose h4[id="联系方式"] + ul li a:focus-visible::after {
+      opacity: 0.85;
+      transform: translateX(0);
+    }
+
+    .about-prose h4[id="联系方式"] + ul li a code {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      max-width: 100%;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      color: var(--text-muted);
+      font-size: 0.85em;
+      overflow-wrap: anywhere;
+    }
+
     .about-skills {
       display: flex;
       flex-wrap: wrap;

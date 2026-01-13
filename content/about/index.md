@@ -23,7 +23,6 @@ friendLinks = [{ name = 'watermark-studio', url = 'https://watermark-studio.onre
 
 #### 联系方式
 
-- GitHub：[github.com/RanMoAnRan](https://github.com/RanMoAnRan)
-- Email：[ranmoanran@gmail.com](mailto:ranmoanran@gmail.com)
-
+- [GitHub · `github.com/RanMoAnRan`](https://github.com/RanMoAnRan)
+- [Email · `ranmoanran@gmail.com`](mailto:ranmoanran@gmail.com)
 

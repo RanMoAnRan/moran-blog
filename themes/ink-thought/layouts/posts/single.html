@@ -23,56 +23,88 @@
           <!-- Title -->
           <h1 class="detail-title">{{ .Title }}</h1>
 
-          <!-- Meta -->
-          <div class="detail-meta-row">
-             <span class="meta-flex">
-               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-               {{ .Date.Format "2006-01-02" }}
-             </span>
-             <span class="meta-dot"></span>
+	          <!-- Meta -->
+	          <div class="detail-meta-row">
+	            {{- $authorName := .Params.author | default site.Params.author | default site.Params.profile.name | default "Author" -}}
+	             <span class="meta-flex">
+	               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+	               {{ .Date.Format "2006-01-02" }}
+	             </span>
+	             <span class="meta-dot"></span>
              <span class="meta-flex">
                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                {{ .ReadingTime }} min read
              </span>
-             <span class="meta-dot"></span>
-             <span class="meta-flex">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                {{ site.Params.author | default "Alex" }}
-             </span>
-          </div>
-        </header>
+	             <span class="meta-dot"></span>
+	             <span class="meta-flex">
+	                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+	                {{ $authorName }}
+	             </span>
+	          </div>
+	        </header>
+
+        {{- $coverUrl := partial "cover-url.html" . -}}
+        {{- if $coverUrl -}}
+          <figure class="detail-cover">
+            <img src="{{ $coverUrl }}" alt="{{ .Title }} 封面" decoding="async" loading="eager">
+          </figure>
+        {{- end -}}
 
         <div class="prose detail-prose">
           {{ .Content }}
         </div>
 
-        <!-- Post Navigation -->
-        {{- $prev := .PrevInSection -}}
-        {{- $next := .NextInSection -}}
-        {{- if or $prev $next -}}
-          <nav class="post-nav{{ if $prev }} has-prev{{ end }}{{ if $next }} has-next{{ end }}" aria-label="文章导航">
-            {{ with $prev }}
-              <a class="post-nav-card is-prev" href="{{ .RelPermalink }}" rel="prev">
-                <div class="post-nav-kicker">
-                  <span class="post-nav-arrow" aria-hidden="true">←</span>
-                  上一篇
-                </div>
-                <div class="post-nav-title">{{ .Title }}</div>
-                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
-              </a>
-            {{ end }}
-            {{ with $next }}
-              <a class="post-nav-card is-next" href="{{ .RelPermalink }}" rel="next">
-                <div class="post-nav-kicker">
-                  下一篇
-                  <span class="post-nav-arrow" aria-hidden="true">→</span>
-                </div>
-                <div class="post-nav-title">{{ .Title }}</div>
-                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
-              </a>
-            {{ end }}
-          </nav>
-        {{- end -}}
+	        <!-- Post Navigation -->
+	        {{- $p1 := .PrevInSection -}}
+	        {{- $p2 := .NextInSection -}}
+		        {{- $older := "" -}}
+		        {{- $newer := "" -}}
+	        {{- if and $p1 $p2 -}}
+	          {{- if gt $p1.Date $p2.Date -}}
+	            {{- $newer = $p1 -}}
+	            {{- $older = $p2 -}}
+	          {{- else -}}
+	            {{- $newer = $p2 -}}
+	            {{- $older = $p1 -}}
+	          {{- end -}}
+	        {{- else if $p1 -}}
+	          {{- if lt $p1.Date .Date -}}
+	            {{- $older = $p1 -}}
+	          {{- else -}}
+	            {{- $newer = $p1 -}}
+	          {{- end -}}
+	        {{- else if $p2 -}}
+	          {{- if lt $p2.Date .Date -}}
+	            {{- $older = $p2 -}}
+	          {{- else -}}
+	            {{- $newer = $p2 -}}
+	          {{- end -}}
+	        {{- end -}}
+
+	        {{- if or $older $newer -}}
+	          <nav class="post-nav{{ if $older }} has-prev{{ end }}{{ if $newer }} has-next{{ end }}" aria-label="文章导航">
+	            {{ with $older }}
+	              <a class="post-nav-card is-prev" href="{{ .RelPermalink }}" rel="prev">
+	                <div class="post-nav-kicker">
+	                  <span class="post-nav-arrow" aria-hidden="true">←</span>
+	                  上一篇
+	                </div>
+	                <div class="post-nav-title">{{ .Title }}</div>
+	                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
+	              </a>
+	            {{ end }}
+	            {{ with $newer }}
+	              <a class="post-nav-card is-next" href="{{ .RelPermalink }}" rel="next">
+	                <div class="post-nav-kicker">
+	                  下一篇
+	                  <span class="post-nav-arrow" aria-hidden="true">→</span>
+	                </div>
+	                <div class="post-nav-title">{{ .Title }}</div>
+	                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
+	              </a>
+	            {{ end }}
+	          </nav>
+	        {{- end -}}
 
         <!-- Share Section -->
         <div class="share-section">

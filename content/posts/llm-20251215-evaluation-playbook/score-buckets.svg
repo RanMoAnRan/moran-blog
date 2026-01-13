@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420">
+  <defs>
+    <style>
+      .bg{fill:#0b1020}
+      .panel{fill:#121a33;stroke:#2a3a7a;stroke-width:2}
+      .txt{fill:#e8eefc;font: 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .muted{fill:#b6c2ff;font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+      .bar1{fill:#86efac}
+      .bar2{fill:#a78bfa}
+      .bar3{fill:#ffd6a5}
+      .axis{stroke:#3a55c4;stroke-width:1.2}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="960" height="420" rx="28"/>
+  <text class="txt" x="48" y="62">评测结果分布（示意）</text>
+  <text class="muted" x="48" y="92">三档足够：可直接用 / 可参考 / 不可用（乱编或矛盾）。</text>
+
+  <rect class="panel" x="48" y="120" width="864" height="252" rx="18"/>
+  <line class="axis" x1="120" y1="330" x2="860" y2="330"/>
+  <line class="axis" x1="120" y1="160" x2="120" y2="330"/>
+
+  <rect class="bar1" x="200" y="210" width="160" height="120" rx="10"/>
+  <text class="txt" x="214" y="354">可直接用</text>
+  <text class="muted" x="214" y="374">（稳定 + 有依据）</text>
+
+  <rect class="bar2" x="420" y="180" width="160" height="150" rx="10"/>
+  <text class="txt" x="434" y="354">可参考</text>
+  <text class="muted" x="434" y="374">（思路对但缺细节）</text>
+
+  <rect class="bar3" x="640" y="248" width="160" height="82" rx="10"/>
+  <text class="txt" x="654" y="354">不可用</text>
+  <text class="muted" x="654" y="374">（乱编/自相矛盾）</text>
+</svg>
+

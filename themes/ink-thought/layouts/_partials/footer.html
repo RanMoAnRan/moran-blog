@@ -1,9 +1,10 @@
 <footer class="site-footer">
+  {{- $authorName := site.Params.author | default site.Params.profile.name | default "Author" -}}
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
         <strong>{{ site.Title }}</strong>
-        <span>© 2025 {{ site.Params.author | default "Author" }}. Built with Hugo &amp; Tailwind concept.</span>
+        <span>© {{ now.Format "2006" }} {{ $authorName }}. Built with Hugo &amp; Tailwind concept.</span>
       </div>
       <div class="footer-links">
         {{ with site.Home.OutputFormats.Get "RSS" }}
