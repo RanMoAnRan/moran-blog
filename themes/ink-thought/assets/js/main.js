@@ -164,3 +164,80 @@
     enhanceCodeBlocks();
   }
 })();
+
+(() => {
+  const selector = ".post-detail-card .detail-prose img";
+
+  const ensureLightbox = () => {
+    let root = document.querySelector("[data-img-lightbox]");
+    if (root) return root;
+
+    root = document.createElement("div");
+    root.className = "img-lightbox";
+    root.dataset.imgLightbox = "1";
+    root.innerHTML = `
+      <div class="img-lightbox__backdrop" data-img-lightbox-close></div>
+      <figure class="img-lightbox__figure" role="dialog" aria-modal="true" aria-label="图片预览">
+        <img class="img-lightbox__img" alt="">
+        <figcaption class="img-lightbox__caption" data-img-lightbox-caption></figcaption>
+      </figure>
+      <button class="img-lightbox__close" type="button" aria-label="关闭" data-img-lightbox-close>×</button>
+    `;
+    document.body.appendChild(root);
+    return root;
+  };
+
+  const openLightbox = (img) => {
+    const root = ensureLightbox();
+    const elImg = root.querySelector(".img-lightbox__img");
+    const elCaption = root.querySelector("[data-img-lightbox-caption]");
+    if (!elImg || !elCaption) return;
+
+    const src = img.currentSrc || img.src;
+    const alt = img.getAttribute("alt") || "";
+    elImg.src = src;
+    elImg.alt = alt;
+    elCaption.textContent = alt;
+    elCaption.style.display = alt ? "block" : "none";
+
+    root.classList.add("is-open");
+    document.body.classList.add("is-lightbox-open");
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") closeLightbox();
+    };
+    const closeLightbox = () => {
+      root.classList.remove("is-open");
+      document.body.classList.remove("is-lightbox-open");
+      elImg.removeAttribute("src");
+      document.removeEventListener("keydown", onKeyDown);
+    };
+
+    root.querySelectorAll("[data-img-lightbox-close]").forEach((el) => {
+      el.addEventListener("click", closeLightbox, { once: true });
+    });
+    elImg.addEventListener("click", closeLightbox, { once: true });
+    document.addEventListener("keydown", onKeyDown);
+  };
+
+  const enhanceImages = () => {
+    const images = document.querySelectorAll(selector);
+    if (!images.length) return;
+
+    images.forEach((img) => {
+      if (!(img instanceof HTMLImageElement)) return;
+      if (img.dataset.noZoom === "1") return;
+      if (img.closest("a")) return;
+      if (img.classList.contains("img-zoomable")) return;
+
+      img.classList.add("img-zoomable");
+      img.addEventListener("click", () => openLightbox(img));
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", enhanceImages);
+  } else {
+    enhanceImages();
+  }
+})();
