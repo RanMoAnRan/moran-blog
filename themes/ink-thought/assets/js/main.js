@@ -83,3 +83,84 @@
     });
   }
 })();
+
+(() => {
+  const copiedLabel = "已复制";
+  const copyLabel = "复制";
+
+  const getCodeText = (codeEl) => {
+    if (!codeEl) return "";
+    return String(codeEl.textContent || "").replace(/\n$/, "");
+  };
+
+  const copyToClipboard = async (text) => {
+    if (!text) return false;
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // fallback below
+    }
+
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-9999px";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return !!ok;
+    } catch {
+      return false;
+    }
+  };
+
+  const enhanceCodeBlocks = () => {
+    const pres = document.querySelectorAll(".prose pre");
+    if (!pres.length) return;
+
+    pres.forEach((pre) => {
+      const container = pre.closest(".highlight") || pre;
+      if (container.dataset.codeCopyReady === "1") return;
+
+      const codeEl = pre.querySelector("code") || pre;
+      const codeText = getCodeText(codeEl);
+      if (!codeText.trim()) return;
+
+      container.dataset.codeCopyReady = "1";
+      container.classList.add("has-copy-btn");
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "code-copy-btn";
+      btn.textContent = copyLabel;
+      btn.setAttribute("aria-label", "复制代码");
+
+      let timer = null;
+      btn.addEventListener("click", async () => {
+        const ok = await copyToClipboard(codeText);
+        if (timer) window.clearTimeout(timer);
+        btn.textContent = ok ? copiedLabel : "复制失败";
+        btn.classList.toggle("is-copied", ok);
+        timer = window.setTimeout(() => {
+          btn.textContent = copyLabel;
+          btn.classList.remove("is-copied");
+        }, 1200);
+      });
+
+      container.insertBefore(btn, container.firstChild);
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", enhanceCodeBlocks);
+  } else {
+    enhanceCodeBlocks();
+  }
+})();
