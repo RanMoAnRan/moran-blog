@@ -1,0 +1,98 @@
+<div class="pet-cat-fishing" aria-hidden="true">
+  <svg class="pet-cat-fishing__svg" viewBox="0 0 160 160" width="160" height="160" role="presentation" focusable="false">
+    <defs>
+      <linearGradient id="cat-fur" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--cat-fur-top)"/>
+        <stop offset="1" stop-color="var(--cat-fur-bottom)"/>
+      </linearGradient>
+      <linearGradient id="cat-belly" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="var(--cat-belly-top)"/>
+        <stop offset="1" stop-color="var(--cat-belly-bottom)"/>
+      </linearGradient>
+      <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="rgba(56,189,248,0.34)"/>
+        <stop offset="1" stop-color="rgba(2,132,199,0.22)"/>
+      </linearGradient>
+      <filter id="pet-ink-shadow" x="-40%" y="-40%" width="180%" height="180%">
+        <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="rgba(15,23,42,0.18)"/>
+      </filter>
+    </defs>
+
+    <!-- Ground shadow -->
+    <ellipse cx="84" cy="142" rx="38" ry="10" fill="rgba(15,23,42,0.12)"/>
+
+    <!-- Water puddle -->
+    <g filter="url(#pet-ink-shadow)">
+      <path d="M88 130c28 0 52 7 52 14s-24 12-52 12-54-5-54-12 26-14 54-14z"
+            fill="url(#water)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M64 140c10-3 20-3 30 0" fill="none" stroke="rgba(2,132,199,0.35)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M98 145c8-2 16-2 24 0" fill="none" stroke="rgba(2,132,199,0.30)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- Cat (comic-real) -->
+    <g class="pet-cat-fishing__cat" filter="url(#pet-ink-shadow)">
+      <!-- Tail (animated) -->
+      <path class="pet-cat-fishing__tail"
+            d="M40 98c-14 2-20 12-12 18 7 5 20 2 24-6"
+            fill="none" stroke="url(#cat-fur)" stroke-width="9" stroke-linecap="round"/>
+      <path class="pet-cat-fishing__tail"
+            d="M40 98c-14 2-20 12-12 18 7 5 20 2 24-6"
+            fill="none" stroke="var(--cat-ink)" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+
+      <!-- Body -->
+      <path d="M46 86c-10 12-8 34 10 40 24 8 46-10 48-28 2-14-8-26-24-26-14 0-26 6-34 14z"
+            fill="url(#cat-fur)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M76 92c-9 8-8 20 2 25 10 5 20-2 22-12 2-10-5-18-14-18-4 0-7 2-10 5z"
+            fill="url(#cat-belly)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round" opacity="0.96"/>
+
+      <!-- Legs -->
+      <path d="M64 122c-2 9 4 14 10 12 5-2 6-10 2-14-4-4-10-3-12 2z"
+            fill="url(#cat-fur)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M88 122c-2 9 4 14 10 12 5-2 6-10 2-14-4-4-10-3-12 2z"
+            fill="url(#cat-fur)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round" opacity="0.96"/>
+
+      <!-- Head -->
+      <g class="pet-cat-fishing__head">
+        <path d="M90 58c-10 0-20 8-22 18-2 12 8 22 22 22 13 0 24-8 24-20 0-12-10-20-24-20z"
+              fill="url(#cat-fur)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round"/>
+        <!-- Ears -->
+        <path d="M74 64c-2-12 8-18 16-10" fill="none" stroke="var(--cat-ink)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M114 64c2-12-8-18-16-10" fill="none" stroke="var(--cat-ink)" stroke-width="3" stroke-linecap="round"/>
+        <!-- Face -->
+        <circle cx="86" cy="78" r="2.4" fill="var(--cat-ink)"/>
+        <circle cx="104" cy="78" r="2.4" fill="var(--cat-ink)"/>
+        <path d="M96 82c-2 2-4 2-6 0" fill="none" stroke="var(--cat-ink)" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M92 85c3 2 5 2 8 0" fill="none" stroke="var(--cat-ink)" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+        <!-- Whiskers -->
+        <path d="M78 86c-6 0-10 2-14 4" fill="none" stroke="rgba(15,23,42,0.62)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M78 90c-6 1-10 3-14 6" fill="none" stroke="rgba(15,23,42,0.56)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M112 86c6 0 10 2 14 4" fill="none" stroke="rgba(15,23,42,0.62)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M112 90c6 1 10 3 14 6" fill="none" stroke="rgba(15,23,42,0.56)" stroke-width="2" stroke-linecap="round"/>
+        <!-- Highlight -->
+        <circle cx="84" cy="70" r="6" fill="rgba(255,255,255,0.14)"/>
+      </g>
+    </g>
+
+    <!-- Fishing rod + line -->
+    <g class="pet-cat-fishing__rod" filter="url(#pet-ink-shadow)">
+      <path d="M98 90c18 6 34 10 50 10" fill="none" stroke="rgba(124,45,18,0.92)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M98 90c18 6 34 10 50 10" fill="none" stroke="var(--cat-ink)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <path d="M148 100c-6 14-12 24-12 34" fill="none" stroke="rgba(15,23,42,0.65)" stroke-width="2.4" stroke-linecap="round"/>
+    </g>
+
+    <!-- Bobber (animated) -->
+    <g class="pet-cat-fishing__bobber">
+      <circle cx="136" cy="132" r="6.5" fill="rgba(239,68,68,0.90)" stroke="var(--cat-ink)" stroke-width="3"/>
+      <path d="M130 132c3-2 9-2 12 0" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- Fish jump (animated) -->
+    <g class="pet-cat-fishing__fish" opacity="0">
+      <path d="M122 132c10-10 20-8 26 2-6 10-16 12-26 4-2 2-6 4-8 2 2-2 4-6 2-8 2-2 4-2 6 0z"
+            fill="rgba(56,189,248,0.92)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="138" cy="132" r="2" fill="var(--cat-ink)"/>
+      <path d="M140 140c6 2 12 2 18-2" fill="none" stroke="rgba(15,23,42,0.58)" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </svg>
+</div>
+

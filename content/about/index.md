@@ -2,7 +2,7 @@
 title = '关于'
 description = '我是谁 / 我在做什么'
 skills = ['React', 'Python', 'Java', 'Msql','Vue','MongoDB']
-now = ['skills','Burner-X', 'tweakcn', 'dyad','motia','ui-ux-pro-max-skill','streampark','dinky','MoneyPrinterTurbo','awesome-mcp-servers']
+now = ['OpenSpec','skills','Burner-X', 'tweakcn', 'dyad','motia','ui-ux-pro-max-skill','streampark','dinky','MoneyPrinterTurbo','awesome-mcp-servers']
 friendLinks = [{ name = 'watermark-studio', url = 'https://watermark-studio.onrender.com/'}]
 +++
 
