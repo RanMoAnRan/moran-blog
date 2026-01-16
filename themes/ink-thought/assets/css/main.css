@@ -728,6 +728,50 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0;
 }
 
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 896px;
+  margin: 28px auto 0;
+  flex-wrap: wrap;
+}
+
+.page-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.page-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(139, 92, 246, 0.35);
+  background: var(--hover-bg);
+  color: var(--violet-700);
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+}
+
+.page-link.is-disabled {
+  color: var(--text-muted);
+  background: transparent;
+  border-color: var(--border);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 .icon-button {
   display: inline-flex;
   align-items: center;
