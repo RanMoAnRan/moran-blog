@@ -1,5 +1,5 @@
 baseURL = 'https://ranmoanran.github.io/moran-blog/'
-title = '墨然的博客'
+title = '笔墨文思'
 languageCode = 'zh-cn'
 defaultContentLanguage = 'zh'
 timeZone = 'Asia/Shanghai'
