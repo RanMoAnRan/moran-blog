@@ -25,7 +25,7 @@ OpenCode 是一个开源的 AI coding agent，提供终端 UI（TUI）为核心�
 
 ## 它和同类工具的差异点
 
-README 的 FAQ 里，OpenCode 特别拿它和 Claude Code 做对比。核心差异主要有几条：
+OpenCode 特别拿它和 Claude Code 做对比。核心差异主要有几条：
 
 - **100% 开源**：可以审计、可以改、可以 fork
 - **模型提供方无绑定**：可接 Claude、OpenAI、Google，甚至本地模型
