@@ -541,50 +541,42 @@
                   <input class="qn-input" id="qn-title" autocomplete="off" placeholder="例如：我如何搭建这个博客" />
                 </div>
 
-              <div class="qn-row">
-                <div class="qn-field">
-                  <label class="qn-label" for="qn-slug">slug（用于路径）</label>
-                  <input class="qn-input" id="qn-slug" autocomplete="off" placeholder="例如：how-i-built-this-blog" />
-                </div>
-                <div class="qn-field">
-                  <label class="qn-label" for="qn-date">日期</label>
-                  <div class="qn-input-wrap">
-                    <input class="qn-input qn-date-input" id="qn-date" type="datetime-local" step="60" placeholder="选择日期与时间（本地）" />
-                    <button class="qn-icon-btn" type="button" id="qn-date-open" aria-label="打开日期选择">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
-                    </button>
+                <div class="qn-row">
+                  <div class="qn-field">
+                    <label class="qn-label" for="qn-tags">tags（逗号分隔）</label>
+                    <input class="qn-input" id="qn-tags" autocomplete="off" placeholder="Hugo, 随笔" />
+                  </div>
+                  <div class="qn-field">
+                    <label class="qn-label" for="qn-categories">categories（逗号分隔）</label>
+                    <input class="qn-input" id="qn-categories" autocomplete="off" placeholder="技术, 生活" />
                   </div>
                 </div>
-              </div>
 
-              <div class="qn-field">
-                <label class="qn-label" for="qn-site-root">站点路径（可选，用于在任意目录执行命令）</label>
-                <input class="qn-input" id="qn-site-root" autocomplete="off" placeholder="/path/to/moran-blog（包含 hugo.toml 与 content/）" />
-              </div>
+                <div class="qn-field">
+                  <label class="qn-label" for="qn-summary">summary（可选）</label>
+                  <input class="qn-input" id="qn-summary" autocomplete="off" placeholder="一两句话概括这篇文章…" />
+                </div>
+
+                <div class="qn-row">
+                  <div class="qn-field">
+                    <label class="qn-label" for="qn-slug">slug（用于路径）</label>
+                    <input class="qn-input" id="qn-slug" autocomplete="off" placeholder="例如：how-i-built-this-blog" />
+                  </div>
+                  <div class="qn-field">
+                    <label class="qn-label" for="qn-date">日期</label>
+                    <div class="qn-input-wrap">
+                      <input class="qn-input qn-date-input" id="qn-date" type="datetime-local" step="60" placeholder="选择日期与时间（本地）" />
+                      <button class="qn-icon-btn" type="button" id="qn-date-open" aria-label="打开日期选择">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
               <div class="qn-meta" aria-label="更多设置">
-                <div class="qn-meta-title">更多设置</div>
-                <div style="height:10px;"></div>
-
-                  <div class="qn-row">
-                    <div class="qn-field">
-                      <label class="qn-label" for="qn-tags">tags（逗号分隔）</label>
-                      <input class="qn-input" id="qn-tags" autocomplete="off" placeholder="Hugo, 随笔" />
-                    </div>
-                    <div class="qn-field">
-                      <label class="qn-label" for="qn-categories">categories（逗号分隔）</label>
-                      <input class="qn-input" id="qn-categories" autocomplete="off" placeholder="技术, 生活" />
-                    </div>
-                  </div>
-
+                <div class="qn-row">
                   <div class="qn-field">
-                    <label class="qn-label" for="qn-summary">summary（可选）</label>
-                    <input class="qn-input" id="qn-summary" autocomplete="off" placeholder="一两句话概括这篇文章…" />
-                  </div>
-
-                  <div class="qn-row">
-                    <div class="qn-field">
-                      <label class="qn-label" for="qn-cover">cover（可选）</label>
+                    <label class="qn-label" for="qn-cover">cover（可选）</label>
                       <input class="qn-input" id="qn-cover" autocomplete="off" placeholder="例如：cover.jpg / https://..." />
                     </div>
                     <div class="qn-field">
@@ -601,6 +593,10 @@
                 </div>
 
                 <div class="qn-meta" aria-label="输出信息">
+                  <div class="qn-meta-line">
+                    <label class="qn-meta-k" for="qn-site-root">站点路径（可选，用于在任意目录执行命令）</label>
+                    <input class="qn-input" id="qn-site-root" autocomplete="off" placeholder="/path/to/moran-blog（包含 hugo.toml 与 content/）" />
+                  </div>
                   <div class="qn-meta-line">
                     <div class="qn-meta-k">目标路径</div>
                     <div class="qn-meta-v" id="qn-path"></div>
