@@ -1,0 +1,484 @@
+{{ define "main" }}
+  <div class="container">
+    <div class="content post-detail-container page-narrow subscribe-page posts-page">
+      <header class="page-header">
+        <h1 class="page-title">{{ .Title }}</h1>
+        {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+      </header>
+      {{ with .Content }}<div class="prose subscribe-intro">{{ . }}</div>{{ end }}
+
+      {{- $feeds := site.Data.subscriptions.feeds | default (slice) -}}
+      {{- $accents := slice "violet" "teal" "pink" "amber" -}}
+      {{- if eq (len $feeds) 0 -}}
+        <div class="subscribe-empty">还没有配置 RSS 源。</div>
+      {{- else -}}
+        <div class="subscribe-sections">
+          <section class="subscribe-section">
+            <h2 class="subscribe-section-title">订阅源</h2>
+            <div class="feed-grid">
+              {{ range $i, $feed := $feeds }}
+                {{- $accent := index $accents (mod $i (len $accents)) -}}
+                <div class="feed-card" data-accent="{{ $accent }}">
+                  <div class="feed-card__title">{{ .name }}</div>
+                  {{ with .desc }}<div class="feed-card__desc">{{ . }}</div>{{ end }}
+                  <div class="feed-card__links">
+                    {{ with .site }}
+                      <a class="feed-card__link" href="{{ . }}" target="_blank" rel="noopener noreferrer">打开网站</a>
+                    {{ end }}
+                    {{ with .url }}
+                      <a class="feed-card__link" href="{{ . }}" target="_blank" rel="noopener noreferrer">RSS 源</a>
+                    {{ end }}
+                  </div>
+                </div>
+              {{ end }}
+            </div>
+          </section>
+
+          <section class="subscribe-section">
+            <h2 class="subscribe-section-title">最新文章</h2>
+            <div class="feed-articles">
+              {{ range $i, $feed := $feeds }}
+                {{- $accent := index $accents (mod $i (len $accents)) -}}
+                {{- $itemsRaw := slice -}}
+                {{- $items := slice -}}
+                {{- $remote := try (resources.GetRemote .url (dict "headers" (dict "User-Agent" "Mozilla/5.0" "Accept" "application/rss+xml,application/atom+xml,application/xml,text/xml,*/*"))) -}}
+                {{- $remoteErr := $remote.Err -}}
+                {{- $parseErr := "" -}}
+                {{- if not $remoteErr -}}
+                  {{- with $remote.Value -}}
+                    {{- $parsed := try (transform.Unmarshal (dict "format" "xml") .) -}}
+                    {{- $parseErr = $parsed.Err -}}
+                    {{- if not $parseErr -}}
+                      {{- $data := $parsed.Value -}}
+                      {{- $feed := or $data.feed (index $data "atom:feed") -}}
+                      {{- if $feed -}}
+                        {{- if reflect.IsSlice $feed -}}
+                          {{- $feed = index $feed 0 -}}
+                        {{- end -}}
+                        {{- with $feed.entry -}}
+                          {{- $itemsRaw = . -}}
+                        {{- end -}}
+                      {{- end -}}
+                      {{- if not $itemsRaw -}}
+                        {{- $rss := or $data.rss (index $data "rss") -}}
+                        {{- if $rss -}}
+                          {{- $channel := $rss.channel -}}
+                          {{- if reflect.IsSlice $channel -}}
+                            {{- $channel = index $channel 0 -}}
+                          {{- end -}}
+                          {{- with $channel.item -}}
+                            {{- $itemsRaw = . -}}
+                          {{- end -}}
+                        {{- end -}}
+                      {{- end -}}
+                      {{- if not $itemsRaw -}}
+                        {{- $channel := $data.channel -}}
+                        {{- if $channel -}}
+                          {{- if reflect.IsSlice $channel -}}
+                            {{- $channel = index $channel 0 -}}
+                          {{- end -}}
+                          {{- with $channel.item -}}
+                            {{- $itemsRaw = . -}}
+                          {{- end -}}
+                        {{- end -}}
+                      {{- end -}}
+                      {{- if not $itemsRaw -}}
+                        {{- $rdf := or (index $data "rdf:RDF") (index $data "rdf") -}}
+                        {{- with $rdf.item -}}
+                          {{- $itemsRaw = . -}}
+                        {{- end -}}
+                      {{- end -}}
+                    {{- end -}}
+                  {{- end -}}
+                {{- end -}}
+
+                {{- if reflect.IsMap $itemsRaw -}}
+                  {{- $items = slice $itemsRaw -}}
+                {{- else if reflect.IsSlice $itemsRaw -}}
+                  {{- $items = $itemsRaw -}}
+                {{- end -}}
+                {{- $items = first 6 $items -}}
+
+                <div class="feed-block" data-accent="{{ $accent }}">
+                  <div class="feed-block__header">
+                    <div class="feed-block__title">
+                      <div class="feed-block__name">{{ .name }}</div>
+                      {{ if gt (len $items) 0 }}
+                        <span class="feed-block__count">{{ len $items }} 条</span>
+                      {{ end }}
+                    </div>
+                    {{ with .site }}
+                      <a class="feed-block__site" href="{{ . }}" target="_blank" rel="noopener noreferrer">网站</a>
+                    {{ end }}
+                  </div>
+
+                  {{ if gt (len $items) 0 }}
+                    <ul class="feed-list">
+                      {{ range $items }}
+                        {{- $title := "" -}}
+                        {{- with .title -}}
+                          {{- if reflect.IsMap . -}}
+                            {{- $title = index . "#text" | default (index . "text") | default "" -}}
+                          {{- else -}}
+                            {{- $title = . -}}
+                          {{- end -}}
+                        {{- end -}}
+                        {{- $summary := .summary | default .description | default .content -}}
+                        {{- if reflect.IsMap $summary -}}
+                          {{- $summary = index $summary "#text" | default (index $summary "content") | default "" -}}
+                        {{- end -}}
+                        {{- $summaryText := $summary | plainify | truncate 120 -}}
+                        {{- $dateText := .published | default .updated | default .pubDate | default .date | default "" -}}
+                        {{- $link := "" -}}
+                        {{- with .link -}}
+                          {{- if reflect.IsSlice . -}}
+                            {{- range . -}}
+                              {{- $href := index . "@href" | default .href -}}
+                              {{- $rel := index . "@rel" | default .rel -}}
+                              {{- if and $href (or (eq $rel "alternate") (eq $link "")) -}}
+                                {{- $link = $href -}}
+                              {{- end -}}
+                            {{- end -}}
+                          {{- else if reflect.IsMap . -}}
+                            {{- $link = index . "@href" | default .href -}}
+                          {{- else -}}
+                            {{- $link = . -}}
+                          {{- end -}}
+                        {{- end -}}
+                        {{- if and (not $link) .id -}}
+                          {{- $link = .id -}}
+                        {{- end -}}
+
+                        <li class="feed-item">
+                          <a class="feed-item__link" href="{{ $link | default "#" }}" target="_blank" rel="noopener noreferrer">
+                            <div class="feed-item__title">{{ $title | default "未命名文章" }}</div>
+                            {{ with $summaryText }}<div class="feed-item__summary">{{ . }}</div>{{ end }}
+                            {{ with $dateText }}<div class="feed-item__meta">{{ . | plainify | truncate 40 }}</div>{{ end }}
+                          </a>
+                        </li>
+                      {{ end }}
+                    </ul>
+                  {{ else }}
+                    <div class="feed-empty">
+                      {{- if or $remoteErr $parseErr -}}
+                        读取失败，请稍后再试。
+                        {{- if hugo.IsDevelopment -}}
+                          <span class="feed-empty__err">{{ $remoteErr | default $parseErr }}</span>
+                        {{- end -}}
+                      {{- else -}}
+                        暂时无法解析该源内容。
+                      {{- end -}}
+                    </div>
+                  {{ end }}
+                </div>
+              {{ end }}
+            </div>
+          </section>
+        </div>
+      {{- end -}}
+    </div>
+  </div>
+
+  <style>
+    .subscribe-page {
+      display: grid;
+      gap: 20px;
+    }
+
+    .subscribe-page.posts-page {
+      padding-top: 0;
+    }
+
+    .subscribe-page .page-header {
+      max-width: none;
+      width: 100%;
+      margin: 0 0 16px;
+      padding: 28px 24px;
+    }
+
+    .subscribe-intro {
+      max-width: 896px;
+      margin: 0 auto 12px;
+    }
+
+    .subscribe-sections {
+      display: grid;
+      gap: 28px;
+      max-width: 896px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .subscribe-section {
+      display: grid;
+      gap: 16px;
+    }
+
+    .subscribe-section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin: 0;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subscribe-section-title::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 9999px;
+      background: rgba(139, 92, 246, 0.55);
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12);
+    }
+
+    .feed-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .feed-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .feed-card {
+      --accent: #7c3aed;
+      --accent-soft: rgba(124, 58, 237, 0.18);
+      --accent-bg: rgba(124, 58, 237, 0.08);
+      --accent-bg-strong: rgba(124, 58, 237, 0.14);
+      --accent-glow: rgba(124, 58, 237, 0.2);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: var(--radius);
+      background: linear-gradient(160deg, var(--panel), var(--accent-bg));
+      padding: 16px 18px;
+      display: grid;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .feed-card[data-accent="teal"],
+    .feed-block[data-accent="teal"] {
+      --accent: #0d9488;
+      --accent-soft: rgba(13, 148, 136, 0.18);
+      --accent-bg: rgba(13, 148, 136, 0.08);
+      --accent-bg-strong: rgba(13, 148, 136, 0.14);
+      --accent-glow: rgba(13, 148, 136, 0.2);
+    }
+
+    .feed-card[data-accent="pink"],
+    .feed-block[data-accent="pink"] {
+      --accent: #db2777;
+      --accent-soft: rgba(219, 39, 119, 0.18);
+      --accent-bg: rgba(219, 39, 119, 0.08);
+      --accent-bg-strong: rgba(219, 39, 119, 0.14);
+      --accent-glow: rgba(219, 39, 119, 0.2);
+    }
+
+    .feed-card[data-accent="amber"],
+    .feed-block[data-accent="amber"] {
+      --accent: #d97706;
+      --accent-soft: rgba(217, 119, 6, 0.18);
+      --accent-bg: rgba(217, 119, 6, 0.08);
+      --accent-bg-strong: rgba(217, 119, 6, 0.14);
+      --accent-glow: rgba(217, 119, 6, 0.2);
+    }
+
+    .feed-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 16px 20px -12px var(--accent-glow);
+      background: linear-gradient(160deg, var(--panel), var(--accent-bg-strong));
+    }
+
+    .feed-card__title {
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+
+    .feed-card__desc {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .feed-card__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.875rem;
+    }
+
+    .feed-card__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .feed-card__link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--panel);
+    }
+
+    .feed-articles {
+      display: grid;
+      gap: 18px;
+    }
+
+    .feed-block {
+      --accent: #7c3aed;
+      --accent-soft: rgba(124, 58, 237, 0.18);
+      --accent-bg: rgba(124, 58, 237, 0.08);
+      --accent-bg-strong: rgba(124, 58, 237, 0.14);
+      --accent-glow: rgba(124, 58, 237, 0.2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--panel), var(--accent-bg));
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feed-block__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .feed-block__title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .feed-block__name {
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .feed-block__count {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      border: 1px solid var(--accent-soft);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .feed-block__site {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .feed-block__site:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--panel);
+    }
+
+    .feed-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .feed-item {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .feed-item__link {
+      display: grid;
+      gap: 6px;
+      padding: 12px 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: color 0.2s;
+    }
+
+    .feed-item__title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .feed-item__summary {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .feed-item__meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .feed-block .feed-item:hover {
+      border-color: var(--accent);
+      background: var(--panel);
+      box-shadow: 0 12px 18px -14px var(--accent-glow);
+    }
+
+    .feed-block .feed-item:hover .feed-item__title {
+      color: var(--accent);
+    }
+
+    .feed-empty {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--panel-muted);
+      padding: 14px 16px;
+    }
+
+    .feed-empty__err {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--slate-400);
+      word-break: break-word;
+    }
+
+    .subscribe-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 32px 16px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--panel-muted);
+      max-width: 896px;
+      margin: 0 auto;
+    }
+  </style>
+{{ end }}

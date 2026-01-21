@@ -10,6 +10,14 @@ enableRobotsTXT = true
 [outputs]
   home = ['HTML', 'RSS', 'JSON']
 
+[security]
+  [security.http]
+    methods = ['GET']
+    urls = [
+      'https://plink.anyfeeder.com/.*',
+      'https://www.huxiu.com/.*'
+    ]
+
 [outputFormats]
   [outputFormats.RSS]
     baseName = 'atom'
@@ -32,6 +40,27 @@ enableRobotsTXT = true
     endLevel = 4
     ordered = false
 
+[related]
+  threshold = 80
+  includeNewer = true
+  toLower = true
+
+  [[related.indices]]
+    name = 'tags'
+    weight = 120
+
+  [[related.indices]]
+    name = 'categories'
+    weight = 100
+
+  [[related.indices]]
+    name = 'keywords'
+    weight = 80
+
+  [[related.indices]]
+    name = 'date'
+    weight = 10
+
 [pagination]
   pagerSize = 10
 
@@ -40,6 +69,8 @@ enableRobotsTXT = true
   slogan = '记录代码与生活的间隙'
   accent = '#0B3D91'
   homeLatestCount = 6
+  socialImage = ''
+  socialImageAlt = ''
 
   [params.profile]
     name = '墨然'
@@ -60,17 +91,18 @@ enableRobotsTXT = true
     license = '本文采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议。'
 
   [params.giscus]
-    enabled = false
-    repo = 'RanMoAnRan/moran-blog'
-    repoId = ''
+    enabled = true
+    repo = 'RanMoAnRan/giscus-blog'
+    repoId = 'R_kgDOQ9Wupg'
     category = 'Announcements'
-    categoryId = ''
+    categoryId = 'DIC_kwDOQ9Wups4C1LrJ'
     mapping = 'pathname'
     reactionsEnabled = '1'
     emitMetadata = '0'
     inputPosition = 'top'
-    theme = 'preferred_color_scheme'
+    theme = 'light'
     lang = 'zh-CN'
+    crossorigin = "anonymous"
 
   [params.analytics]
     umamiWebsiteId = ''
@@ -97,6 +129,11 @@ enableRobotsTXT = true
     name = '分类'
     pageRef = '/categories/'
     weight = 40
+
+  [[menu.main]]
+    name = '订阅'
+    pageRef = '/subscribe/'
+    weight = 45
 
   [[menu.main]]
     name = '关于'

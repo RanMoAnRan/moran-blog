@@ -14,21 +14,31 @@
       <div class="archives-timeline">
         {{ $groups := sort ($pages.GroupByDate "2006") "Key" "desc" }}
         {{ $accents := slice "violet" "teal" "pink" "amber" }}
+        {{ $itemAccents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" }}
+        {{ $scratch := newScratch }}
         {{ range $i, $group := $groups }}
           {{ $accent := index $accents (mod $i (len $accents)) }}
           <div class="timeline-year-group" data-accent="{{ $accent }}">
             <h2 class="timeline-year">{{ $group.Key }}</h2>
             <div class="timeline-items">
-              {{ range $group.Pages.ByDate.Reverse }}
-                <a href="{{ .RelPermalink }}" class="timeline-item">
-                  <time class="timeline-date" datetime="{{ .Date.Format "2006-01-02" }}">
-                    <span class="timeline-date__month">{{ .Date.Format "01" }}月</span>
-                    <span class="timeline-date__day">{{ .Date.Format "02" }}</span>
+              {{ range $j, $p := $group.Pages.ByDate.Reverse }}
+                {{ $itemAccentIndex := mod (add $i $j) (len $itemAccents) }}
+                {{ $itemAccent := index $itemAccents $itemAccentIndex }}
+                {{ $lastAccent := $scratch.Get "lastAccent" }}
+                {{ if and $lastAccent (eq $itemAccent $lastAccent) }}
+                  {{ $itemAccentIndex = mod (add $itemAccentIndex 1) (len $itemAccents) }}
+                  {{ $itemAccent = index $itemAccents $itemAccentIndex }}
+                {{ end }}
+                {{ $scratch.Set "lastAccent" $itemAccent }}
+                <a href="{{ $p.RelPermalink }}" class="timeline-item" data-accent="{{ $itemAccent }}">
+                  <time class="timeline-date" datetime="{{ $p.Date.Format "2006-01-02" }}">
+                    <span class="timeline-date__month">{{ $p.Date.Format "01" }}月</span>
+                    <span class="timeline-date__day">{{ $p.Date.Format "02" }}</span>
                   </time>
                   <div class="timeline-content">
-                    <h3 class="timeline-post-title">{{ .LinkTitle }}</h3>
+                    <h3 class="timeline-post-title">{{ $p.LinkTitle }}</h3>
                     <div class="timeline-tags">
-                      {{ range first 2 (.GetTerms "tags") }}
+                      {{ range first 2 ($p.GetTerms "tags") }}
                         <span class="timeline-tag">#{{ .Title }}</span>
                       {{ end }}
                     </div>
@@ -172,6 +182,9 @@
     }
 
     .timeline-item {
+      --item-accent: var(--year-accent);
+      --item-accent-soft: var(--year-accent-soft);
+      --item-line: var(--year-line);
       display: flex;
       align-items: center;
       gap: 16px;
@@ -187,17 +200,47 @@
     }
 
     .timeline-item:hover {
-      border-color: var(--year-accent);
+      border-color: var(--item-accent);
       box-shadow: var(--shadow-xl);
       transform: translateY(-2px);
+    }
+
+    .timeline-item[data-accent="teal"] {
+      --item-accent: #0d9488;
+      --item-accent-soft: rgba(13, 148, 136, 0.18);
+      --item-line: rgba(13, 148, 136, 0.40);
+    }
+
+    .timeline-item[data-accent="pink"] {
+      --item-accent: #db2777;
+      --item-accent-soft: rgba(219, 39, 119, 0.18);
+      --item-line: rgba(219, 39, 119, 0.40);
+    }
+
+    .timeline-item[data-accent="amber"] {
+      --item-accent: #d97706;
+      --item-accent-soft: rgba(217, 119, 6, 0.18);
+      --item-line: rgba(217, 119, 6, 0.40);
+    }
+
+    .timeline-item[data-accent="indigo"] {
+      --item-accent: #4f46e5;
+      --item-accent-soft: rgba(79, 70, 229, 0.18);
+      --item-line: rgba(79, 70, 229, 0.40);
+    }
+
+    .timeline-item[data-accent="emerald"] {
+      --item-accent: #059669;
+      --item-accent-soft: rgba(5, 150, 105, 0.18);
+      --item-line: rgba(5, 150, 105, 0.40);
     }
 
     .timeline-date {
       width: 52px;
       height: 52px;
       border-radius: 14px;
-      border: 1px solid var(--year-line);
-      background: var(--year-accent-soft);
+      border: 1px solid var(--item-line);
+      background: var(--item-accent-soft);
       display: grid;
       grid-template-rows: 18px 1fr;
       overflow: hidden;
@@ -212,7 +255,7 @@
       font-weight: 900;
       letter-spacing: 0.1em;
       color: #fff;
-      background: var(--year-accent);
+      background: var(--item-accent);
       line-height: 1;
     }
 
@@ -222,7 +265,7 @@
       justify-content: center;
       font-size: 1.25rem;
       font-weight: 900;
-      color: var(--year-accent);
+      color: var(--item-accent);
       background: var(--panel);
       line-height: 1;
     }
@@ -236,7 +279,7 @@
     }
 
     .timeline-item:hover .timeline-post-title {
-      color: var(--year-accent);
+      color: var(--item-accent);
     }
     
     .timeline-tags {

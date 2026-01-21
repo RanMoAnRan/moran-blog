@@ -8,6 +8,31 @@
     root.setAttribute("data-theme", normalizeTheme(theme));
   };
 
+  const giscusThemeFor = (theme) => (normalizeTheme(theme) === "dark" ? "dark_dimmed" : "light");
+
+  const setGiscusTheme = () => {
+    const frame = document.querySelector("iframe.giscus-frame");
+    if (!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: giscusThemeFor(root.getAttribute("data-theme")) } } },
+      "https://giscus.app",
+    );
+  };
+
+  const observeGiscus = () => {
+    if (document.querySelector("iframe.giscus-frame")) {
+      setGiscusTheme();
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      if (!document.querySelector("iframe.giscus-frame")) return;
+      setGiscusTheme();
+      observer.disconnect();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  };
+
   const getStoredTheme = () => {
     try {
       return normalizeTheme(localStorage.getItem(storageKey));
@@ -30,6 +55,7 @@
 
   let theme = getStoredTheme();
   applyTheme(theme);
+  observeGiscus();
 
   const button = document.querySelector("[data-theme-toggle]");
   if (button) button.setAttribute("aria-label", getThemeLabel(theme));
@@ -40,6 +66,7 @@
       setStoredTheme(theme);
       applyTheme(theme);
       button.setAttribute("aria-label", getThemeLabel(theme));
+      setGiscusTheme();
     });
   }
 

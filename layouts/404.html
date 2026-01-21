@@ -1,0 +1,103 @@
+{{ define "main" }}
+  <div class="container">
+    <div class="not-found">
+      <div class="not-found-card">
+        <div class="not-found-code">404</div>
+        <h1 class="not-found-title">页面走丢了</h1>
+        <p class="not-found-desc">你访问的地址不存在，可能已被移动或删除。</p>
+
+        <form class="not-found-search" action="{{ "search" | relURL }}" method="get" role="search">
+          <label class="sr-only" for="not-found-input">搜索文章</label>
+          <input
+            id="not-found-input"
+            class="not-found-input"
+            type="search"
+            name="q"
+            inputmode="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="试试搜索你想看的内容…"
+          >
+          <button class="btn btn-primary" type="submit">搜索</button>
+        </form>
+
+        <div class="not-found-actions">
+          <a class="btn btn-outline" href="{{ site.Home.RelPermalink }}">返回首页</a>
+          <a class="btn btn-outline" href="{{ "archives" | relURL }}">查看归档</a>
+          <a class="btn btn-outline" href="{{ "tags" | relURL }}">浏览标签</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .not-found {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 0 200px;
+    }
+
+    .not-found-card {
+      width: min(880px, 100%);
+      text-align: center;
+      padding: 48px 40px 248px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      gap: 16px;
+    }
+
+    .not-found-code {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: var(--violet-600);
+    }
+
+    .not-found-title {
+      margin: 0;
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+    }
+
+    .not-found-desc {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .not-found-search {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .not-found-input {
+      flex: 1 1 240px;
+      min-width: 220px;
+      max-width: 360px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      background: var(--panel-muted);
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .not-found-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    [data-theme='dark'] .not-found-input {
+      background: rgba(15, 23, 42, 0.5);
+    }
+  </style>
+{{ end }}

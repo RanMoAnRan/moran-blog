@@ -1,0 +1,17 @@
+[[feeds]]
+name = "36氪"
+url = "https://plink.anyfeeder.com/36kr"
+site = "https://36kr.com/"
+desc = "创业与科技资讯"
+
+[[feeds]]
+name = "虎嗅"
+url = "https://www.huxiu.com/rss/0.xml"
+site = "https://www.huxiu.com/"
+desc = "科技与商业"
+
+[[feeds]]
+name = "CSDN 资讯"
+url = "https://plink.anyfeeder.com/weixin/CSDNnews"
+site = "https://mp.weixin.qq.com/"
+desc = "CSDN 资讯精选"

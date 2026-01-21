@@ -16,10 +16,13 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
               分类 Categories
             </h3>
+            {{- $accents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" -}}
             <div class="discovery-category-grid">
-              {{ range site.Taxonomies.categories.ByCount }}
-                {{- $title := .Page.Title -}}
-                <a href="{{ .Page.RelPermalink }}" class="discovery-category-card" data-term="{{ $title }}">
+              {{ range $i, $category := site.Taxonomies.categories.ByCount }}
+                {{- $title := $category.Page.Title -}}
+                {{- $accent := index $accents (mod $i (len $accents)) -}}
+                {{- $iconIndex := mod $i 6 -}}
+                <a href="{{ $category.Page.RelPermalink }}" class="discovery-category-card" data-term="{{ $title }}" data-accent="{{ $accent }}">
                   <span class="discovery-category-icon" aria-hidden="true">
                     {{- if eq $title "技术" -}}
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -29,6 +32,16 @@
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5h-3.2l-1.2-2H8.4L7.2 5H4a2 2 0 0 0-2 2v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a2 2 0 0 0-2-2Z"/><circle cx="12" cy="13" r="3"/></svg>
                     {{- else if eq $title "博客" -}}
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 6h8"/><path d="M8 10h8"/></svg>
+                    {{- else if eq $iconIndex 0 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16 8 14 14 8 16 10 10 16 8"/></svg>
+                    {{- else if eq $iconIndex 1 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                    {{- else if eq $iconIndex 2 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18 8 4a2 2 0 0 1 0 3.64l-8 4a2 2 0 0 1-1.66 0l-8-4a2 2 0 0 1 0-3.64l8-4a2 2 0 0 1 1.66 0Z"/><path d="m2 12 8 4a2 2 0 0 0 1.66 0l8-4"/><path d="m2 16 8 4a2 2 0 0 0 1.66 0l8-4"/></svg>
+                    {{- else if eq $iconIndex 3 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0-10-10 2 2 0 0 0 2 2h2a2 2 0 0 1 2 2 4 4 0 0 0 4 4Z"/><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/></svg>
+                    {{- else if eq $iconIndex 4 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 0 20"/><path d="M12 2a15.3 15.3 0 0 0 0 20"/></svg>
                     {{- else -}}
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
                     {{- end -}}
@@ -37,9 +50,9 @@
                   <span class="discovery-category-body">
                     <span class="discovery-category-name">{{ $title }}</span>
                     <span class="discovery-category-meta">
-                      <span class="discovery-category-count">{{ .Count }} 篇</span>
-                    </span>
+                    <span class="discovery-category-count">{{ $category.Count }} 篇</span>
                   </span>
+                </span>
 
                   <svg class="discovery-category-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </a>
@@ -205,12 +218,16 @@
       gap: 14px;
       padding: 18px 18px;
       border-radius: var(--radius);
-      background: var(--panel);
+      background: linear-gradient(160deg, var(--panel), var(--accent-bg));
       border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
       transition: all 0.3s;
       position: relative;
       overflow: hidden;
+      --accent: #7c3aed;
+      --accent-soft: rgba(124, 58, 237, 0.18);
+      --accent-bg: rgba(124, 58, 237, 0.08);
+      --accent-glow: rgba(124, 58, 237, 0.2);
     }
 
     .discovery-category-card > * {
@@ -225,7 +242,7 @@
       right: 0;
       width: 128px;
       height: 128px;
-      background: linear-gradient(to bottom right, rgba(237, 233, 254, 0.5), rgba(238, 242, 255, 0.5));
+      background: linear-gradient(to bottom right, var(--accent-bg), rgba(255, 255, 255, 0.3));
       border-bottom-left-radius: 9999px;
       margin-right: -64px;
       margin-top: -64px;
@@ -237,16 +254,17 @@
     }
 
     [data-theme='dark'] .discovery-category-card::before {
-      background: linear-gradient(to bottom right, rgba(124, 58, 237, 0.18), rgba(79, 70, 229, 0.12));
+      background: linear-gradient(to bottom right, var(--accent-bg), rgba(15, 23, 42, 0.4));
     }
 
     .discovery-category-card:hover {
-      border-color: var(--violet-200);
-      box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.1);
+      border-color: var(--accent);
+      box-shadow: 0 20px 25px -5px var(--accent-glow);
+      transform: translateY(-1px);
     }
 
     [data-theme='dark'] .discovery-category-card:hover {
-      border-color: rgba(139, 92, 246, 0.35);
+      border-color: var(--accent);
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
     }
 
@@ -263,9 +281,15 @@
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      background: var(--panel-muted);
-      border: 1px solid var(--border);
-      color: var(--violet-600);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-soft);
+      color: var(--accent);
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .discovery-category-card:hover .discovery-category-icon {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 18px -12px var(--accent-glow);
     }
 
     .discovery-category-icon svg {
@@ -302,14 +326,14 @@
       color: var(--text-muted);
       padding: 3px 10px;
       border-radius: 9999px;
-      border: 1px solid var(--border);
-      background: var(--panel-muted);
+      border: 1px solid var(--accent-soft);
+      background: var(--accent-bg);
     }
 
     .discovery-category-arrow {
       width: 18px;
       height: 18px;
-      color: var(--text-muted);
+      color: var(--accent);
       opacity: 0.7;
       flex: 0 0 auto;
       transition: transform 0.2s, opacity 0.2s;
@@ -320,11 +344,40 @@
       opacity: 1;
     }
 
-    /* Term-specific accents */
-    .discovery-category-card[data-term="技术"] .discovery-category-icon { background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.22); color: var(--indigo-600); }
-    .discovery-category-card[data-term="生活"] .discovery-category-icon { background: rgba(5, 150, 105, 0.10); border-color: rgba(5, 150, 105, 0.22); color: var(--emerald-600); }
-    .discovery-category-card[data-term="摄影"] .discovery-category-icon { background: rgba(234, 88, 12, 0.10); border-color: rgba(234, 88, 12, 0.22); color: var(--orange-600); }
-    .discovery-category-card[data-term="博客"] .discovery-category-icon { background: rgba(124, 58, 237, 0.10); border-color: rgba(124, 58, 237, 0.22); color: var(--violet-600); }
+    .discovery-category-card[data-accent="teal"] {
+      --accent: #0d9488;
+      --accent-soft: rgba(13, 148, 136, 0.2);
+      --accent-bg: rgba(13, 148, 136, 0.08);
+      --accent-glow: rgba(13, 148, 136, 0.2);
+    }
+
+    .discovery-category-card[data-accent="pink"] {
+      --accent: #db2777;
+      --accent-soft: rgba(219, 39, 119, 0.2);
+      --accent-bg: rgba(219, 39, 119, 0.08);
+      --accent-glow: rgba(219, 39, 119, 0.2);
+    }
+
+    .discovery-category-card[data-accent="amber"] {
+      --accent: #d97706;
+      --accent-soft: rgba(217, 119, 6, 0.2);
+      --accent-bg: rgba(217, 119, 6, 0.08);
+      --accent-glow: rgba(217, 119, 6, 0.2);
+    }
+
+    .discovery-category-card[data-accent="indigo"] {
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.2);
+      --accent-bg: rgba(79, 70, 229, 0.08);
+      --accent-glow: rgba(79, 70, 229, 0.2);
+    }
+
+    .discovery-category-card[data-accent="emerald"] {
+      --accent: #059669;
+      --accent-soft: rgba(5, 150, 105, 0.2);
+      --accent-bg: rgba(5, 150, 105, 0.08);
+      --accent-glow: rgba(5, 150, 105, 0.2);
+    }
 
     /* Tags Styling */
     .discovery-list-tags {
