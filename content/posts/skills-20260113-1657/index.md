@@ -1,7 +1,7 @@
 +++
 draft = false
 title = "彻底搞懂 Cloud Skills：从概念到实战，零代码打造自动化 PPT 生成器"
-date = "2026-01-13T16:57:00+08:00"
+date = "2026-01-26T16:57:00+08:00"
 tags = ["AI编程", "Cloud Skills", "Code Body", "自动化工作流", "MCP", "Prompt Engineering"]
 categories = ["AI 技术", "效率工具"]
 summary = "本文深度解析 Cloud Skill 功能的核心概念，通过腾讯 Code Body 演示如何零代码打造自动化 PPT 生成器，并清晰阐述 Skill 与 MCP、Sub-agent、Command 的本质区别。"
