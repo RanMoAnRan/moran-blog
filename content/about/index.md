@@ -3,7 +3,7 @@ title = '关于'
 description = '我是谁 / 我在做什么'
 skills = ['React', 'Python', 'Java', 'Msql','Vue','MongoDB']
 now = ['opencode','OpenSpec','skills','Burner-X', 'tweakcn', 'dyad','motia','ui-ux-pro-max-skill','streampark','dinky','MoneyPrinterTurbo','awesome-mcp-servers']
-friendLinks = [{ name = 'watermark-studio', url = 'https://watermark-studio.onrender.com/'}]
+friendLinks = [{ name = 'watermark-studio', url = 'https://watermark-studio.onrender.com/'},{ name = '幼博连读', url = 'https://youboliandu.com/'}]
 +++
 
 你好，我是MoRan。
