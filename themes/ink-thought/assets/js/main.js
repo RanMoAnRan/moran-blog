@@ -4,6 +4,18 @@
 
   const normalizeTheme = (value) => (value === "dark" ? "dark" : "light");
 
+  // 背景动效只在“首次进入当前标签页会话”播放一次，后续页面跳转保持静止以降低资源占用。
+  try {
+    const ambientKey = "ink-ambient-played";
+    if (sessionStorage.getItem(ambientKey) === "1") {
+      root.setAttribute("data-ambient", "static");
+    } else {
+      sessionStorage.setItem(ambientKey, "1");
+    }
+  } catch {
+    // ignore
+  }
+
   const applyTheme = (theme) => {
     root.setAttribute("data-theme", normalizeTheme(theme));
   };

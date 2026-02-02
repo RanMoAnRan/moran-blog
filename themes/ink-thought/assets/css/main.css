@@ -165,8 +165,18 @@ body::before {
   z-index: -10;
   pointer-events: none;
   transform: translate3d(0, 0, 0);
+  will-change: auto;
+  animation: none;
+}
+
+html[data-ambient='static'] body::before {
+  animation: none;
+}
+
+html:not([data-ambient='static']) body::before {
   will-change: transform;
-  animation: ambient-float 28s ease-in-out infinite alternate;
+  /* 仅首次进入/加载时做一次轻微动效，结束后保持静止，避免持续占用 CPU/GPU */
+  animation: ambient-float 2.6s ease-in-out 1 both;
 }
 
 body::after {
@@ -268,25 +278,24 @@ body::after {
   width: 100%;
   position: relative;
   isolation: isolate;
-  background-image: var(--side-ambient);
-  background-repeat: no-repeat;
-  background-position: left center, right center;
-  background-size: 38vw 80vh, 38vw 80vh;
 }
 
 .site-main::before {
   content: "";
-  position: absolute;
+  /* 作为全局装饰层固定在视口，避免滚动时出现“分屏/断层”感 */
+  position: fixed;
   inset: 0;
-  background-image: var(--sand-streaks);
-  background-size: 240px 240px, 160px 160px;
-  background-position: 0 0, 0 0;
+  background-image: var(--sand-streaks), var(--side-ambient);
+  background-size: 240px 240px, 160px 160px, 38vw 80vh, 38vw 80vh;
+  background-position: 0 0, 0 0, left center, right center;
+  background-repeat: repeat, repeat, no-repeat, no-repeat;
   opacity: 0.35;
   pointer-events: none;
   z-index: 0;
   mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.7));
   -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.7));
-  animation: sand-drift 36s linear infinite;
+  /* 仅首次进入时播放一次（同一标签页会话后续页面将由 data-ambient=static 禁用） */
+  animation: sand-drift 2.6s linear 1 both;
 }
 
 .site-main > * {
@@ -298,6 +307,10 @@ body::after {
   .site-main::before {
     animation: none;
   }
+}
+
+html[data-ambient='static'] .site-main::before {
+  animation: none;
 }
 
 a {
