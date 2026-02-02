@@ -24,6 +24,7 @@
   pointer-events: none;
   opacity: 0.96;
   filter: drop-shadow(0 14px 28px rgba(15, 23, 42, 0.14));
+  overflow: visible;
 }
 
 .pet-cat-fishing__svg {
@@ -31,21 +32,34 @@
   height: 100%;
   display: block;
   transform-origin: 96px 132px;
-  animation: pet-cat-fishing-float 3.4s ease-in-out infinite;
 }
 
 .pet-cat-fishing__tail {
   transform-origin: 44px 104px;
-  animation: pet-cat-fishing-tail 1.1s ease-in-out infinite;
 }
 
 .pet-cat-fishing__bobber {
   transform-origin: 136px 132px;
-  animation: pet-cat-fishing-bobber 1.7s ease-in-out infinite;
 }
 
 .pet-cat-fishing__fish {
   transform-origin: 136px 138px;
+}
+
+/* 默认关闭动效：只有开启开关后才会跑动画（降低 CPU/GPU 占用） */
+html[data-pet-cat='on'] .pet-cat-fishing__svg {
+  animation: pet-cat-fishing-float 3.4s ease-in-out infinite;
+}
+
+html[data-pet-cat='on'] .pet-cat-fishing__tail {
+  animation: pet-cat-fishing-tail 1.1s ease-in-out infinite;
+}
+
+html[data-pet-cat='on'] .pet-cat-fishing__bobber {
+  animation: pet-cat-fishing-bobber 1.7s ease-in-out infinite;
+}
+
+html[data-pet-cat='on'] .pet-cat-fishing__fish {
   animation: pet-cat-fishing-fish 5.2s ease-in-out infinite;
 }
 
@@ -87,6 +101,137 @@
   }
 }
 
+/* Toggle UI */
+.pet-cat-fishing {
+  /* 默认不挡页面交互；只让 toggle 可点 */
+  pointer-events: none;
+}
+
+.pet-cat-fishing__toggle {
+  pointer-events: auto;
+  position: absolute;
+  /* 放在猫头正上方（SVG 头部中心大约在 viewBox 的 60% 处） */
+  top: 2px;
+  left: 60%;
+  right: auto;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  width: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  color: rgba(15, 23, 42, 0.88);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+  font: 600 12px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* 默认更“安静”：只露出图标；悬停/聚焦才展开文字 */
+  max-width: 28px;
+  overflow: hidden;
+  opacity: 0.9;
+  transform: translate(-50%, 1px);
+  transition: max-width 180ms ease, padding 180ms ease, gap 180ms ease, opacity 180ms ease, transform 180ms ease,
+    background-color 180ms ease;
+}
+
+[data-theme='dark'] .pet-cat-fishing__toggle {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.70);
+  color: rgba(226, 232, 240, 0.92);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+}
+
+.pet-cat-fishing__toggle:hover,
+.pet-cat-fishing__toggle:focus-visible {
+  max-width: 120px;
+  width: auto;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 10px;
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.pet-cat-fishing__toggle:focus-visible {
+  outline: 2px solid rgba(124, 58, 237, 0.35);
+  outline-offset: 2px;
+}
+
+.pet-cat-fishing__toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.pet-cat-fishing__icon {
+  display: block;
+}
+
+.pet-cat-fishing__icon-play {
+  /* 视觉居中：该 play path 本身略偏左 */
+  transform: translateX(0.8px);
+}
+
+.pet-cat-fishing__icon-pause {
+  display: none;
+}
+
+.pet-cat-fishing__toggle-label {
+  display: none;
+  white-space: nowrap;
+  opacity: 0.95;
+}
+
+.pet-cat-fishing__toggle:hover .pet-cat-fishing__toggle-label,
+.pet-cat-fishing__toggle:focus-visible .pet-cat-fishing__toggle-label {
+  display: inline;
+}
+
+.pet-cat-fishing__label-on {
+  display: none;
+}
+
+html[data-pet-cat='on'] .pet-cat-fishing__icon-play {
+  display: none;
+}
+
+html[data-pet-cat='on'] .pet-cat-fishing__icon-pause {
+  display: block;
+}
+
+html[data-pet-cat='on'] .pet-cat-fishing__label-off {
+  display: none;
+}
+
+html[data-pet-cat='on'] .pet-cat-fishing__label-on {
+  display: inline;
+}
+
+/* 触屏设备没有 hover：直接展开，方便发现/点击 */
+@media (hover: none) {
+  .pet-cat-fishing__toggle {
+    max-width: 120px;
+    width: auto;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .pet-cat-fishing__toggle-label {
+    display: inline;
+  }
+}
+
 @media (max-width: 640px) {
   .pet-cat-fishing {
     width: 112px;
@@ -94,6 +239,10 @@
     left: 10px;
     bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     opacity: 0.92;
+  }
+
+  .pet-cat-fishing__toggle {
+    top: 2px;
   }
 }
 

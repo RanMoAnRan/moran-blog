@@ -1,4 +1,28 @@
-<div class="pet-cat-fishing" aria-hidden="true">
+<div class="pet-cat-fishing">
+  <button
+    class="pet-cat-fishing__toggle"
+    type="button"
+    data-pet-cat-toggle
+    aria-pressed="false"
+    aria-label="开启小猫动效"
+    title="小猫动效"
+  >
+    <span class="pet-cat-fishing__toggle-icon" aria-hidden="true">
+      <!-- Play -->
+      <svg class="pet-cat-fishing__icon pet-cat-fishing__icon-play" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <!-- Pause -->
+      <svg class="pet-cat-fishing__icon pet-cat-fishing__icon-pause" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+      </svg>
+    </span>
+    <span class="pet-cat-fishing__toggle-label" aria-hidden="true">
+      <span class="pet-cat-fishing__label-off">动效：关</span>
+      <span class="pet-cat-fishing__label-on">动效：开</span>
+    </span>
+    <span class="sr-only">切换小猫钓鱼动效</span>
+  </button>
   <svg class="pet-cat-fishing__svg" viewBox="0 0 160 160" width="160" height="160" role="presentation" focusable="false">
     <defs>
       <linearGradient id="cat-fur" x1="0" y1="0" x2="0" y2="1">
@@ -95,4 +119,3 @@
     </g>
   </svg>
 </div>
-
