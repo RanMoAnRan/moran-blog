@@ -65,7 +65,8 @@
     repeating-linear-gradient(-18deg, rgba(245, 214, 159, 0.14) 0 1px, rgba(255, 255, 255, 0) 1px 26px),
     repeating-linear-gradient(-18deg, rgba(245, 214, 159, 0.08) 0 1px, rgba(255, 255, 255, 0) 1px 16px);
   --bg-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
-  
+  --bg-grid: radial-gradient(var(--slate-300) 1.5px, transparent 1.5px);
+
   --primary: var(--violet-600);
   --primary-gradient: linear-gradient(to right, var(--violet-600), var(--indigo-600));
   
@@ -296,6 +297,17 @@ body::after {
   -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.7));
   /* 仅首次进入时播放一次（同一标签页会话后续页面将由 data-ambient=static 禁用） */
   animation: sand-drift 2.6s linear 1 both;
+}
+
+.site-main::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(var(--violet-300) 2px, transparent 2px);
+  background-size: 24px 24px;
+  opacity: 0.4;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .site-main > * {
