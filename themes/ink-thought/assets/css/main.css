@@ -947,39 +947,41 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post-card:hover {
-  border-color: var(--violet-200);
-  box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.1); /* shadow-xl shadow-violet-500/10 */
+  transform: translateY(-4px);
+  border-color: var(--violet-300);
+  box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.15), 0 8px 10px -6px rgba(124, 58, 237, 0.1);
 }
 
 [data-theme='dark'] .post-card:hover {
-  border-color: rgba(139, 92, 246, 0.35);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
+  transform: translateY(-4px);
+  border-color: var(--violet-500);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  background: rgba(30, 41, 59, 0.4); /* Slightly lighter background */
 }
 
 /* Decorative blob on hover */
 .post-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 128px;
-  height: 128px;
-  background: linear-gradient(to bottom right, rgba(237, 233, 254, 0.5), rgba(238, 242, 255, 0.5));
-  border-bottom-left-radius: 9999px; /* rounded-bl-full */
-  margin-right: -64px;
-  margin-top: -64px;
-  transition: transform 0.5s, opacity 0.5s;
-  transform: scale(0);
+  top: -150px;
+  right: -150px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+  border-radius: 50%;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s;
+  transform: scale(0.8);
   opacity: 0;
   pointer-events: none;
+  filter: blur(20px);
 }
 
 [data-theme='dark'] .post-card::before {
-  background: linear-gradient(to bottom right, rgba(124, 58, 237, 0.18), rgba(79, 70, 229, 0.12));
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, rgba(139, 92, 246, 0) 70%);
 }
 
 .post-card:hover::before {
-  transform: scale(1.5);
+  transform: scale(1.2);
   opacity: 1;
 }
 

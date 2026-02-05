@@ -971,13 +971,15 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   top: 0;
   right: 0;
+  /* Hover 时右上角光晕区域（适当做大一些） */
   width: 128px;
   height: 128px;
   background: linear-gradient(to bottom right, rgba(237, 233, 254, 0.5), rgba(238, 242, 255, 0.5));
   border-bottom-left-radius: 9999px; /* rounded-bl-full */
-  margin-right: -64px;
-  margin-top: -64px;
+  margin-right: -90px;
+  margin-top: -90px;
   transition: transform 0.5s, opacity 0.5s;
+  transform-origin: top right;
   transform: scale(0);
   opacity: 0;
   pointer-events: none;
@@ -988,7 +990,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post-card:hover::before {
-  transform: scale(1.5);
+  transform: scale(1.9);
   opacity: 1;
 }
 
