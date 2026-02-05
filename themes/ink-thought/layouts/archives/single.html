@@ -20,32 +20,42 @@
           {{ $accent := index $accents (mod $i (len $accents)) }}
           <div class="timeline-year-group" data-accent="{{ $accent }}">
             <h2 class="timeline-year">{{ $group.Key }}</h2>
-            <div class="timeline-items">
-              {{ range $j, $p := $group.Pages.ByDate.Reverse }}
-                {{ $itemAccentIndex := mod (add $i $j) (len $itemAccents) }}
-                {{ $itemAccent := index $itemAccents $itemAccentIndex }}
-                {{ $lastAccent := $scratch.Get "lastAccent" }}
-                {{ if and $lastAccent (eq $itemAccent $lastAccent) }}
-                  {{ $itemAccentIndex = mod (add $itemAccentIndex 1) (len $itemAccents) }}
-                  {{ $itemAccent = index $itemAccents $itemAccentIndex }}
-                {{ end }}
-                {{ $scratch.Set "lastAccent" $itemAccent }}
-                <a href="{{ $p.RelPermalink }}" class="timeline-item" data-accent="{{ $itemAccent }}">
-                  <time class="timeline-date" datetime="{{ $p.Date.Format "2006-01-02" }}">
-                    <span class="timeline-date__month">{{ $p.Date.Format "01" }}月</span>
-                    <span class="timeline-date__day">{{ $p.Date.Format "02" }}</span>
-                  </time>
-                  <div class="timeline-content">
-                    <h3 class="timeline-post-title">{{ $p.LinkTitle }}</h3>
-                    <div class="timeline-tags">
-                      {{ range first 2 ($p.GetTerms "tags") }}
-                        <span class="timeline-tag">#{{ .Title }}</span>
-                      {{ end }}
+
+            {{ $monthGroups := sort ($group.Pages.GroupByDate "01") "Key" "desc" }}
+            {{ range $monthGroup := $monthGroups }}
+            <div class="timeline-month-section">
+              <div class="timeline-month-header">
+                <span class="timeline-month-dot"></span>
+                <span class="timeline-month-label">{{ (index $monthGroup.Pages 0).Date.Format "January" }}</span>
+              </div>
+              <div class="timeline-items">
+                {{ range $j, $p := $monthGroup.Pages.ByDate.Reverse }}
+                  {{ $itemAccentIndex := mod (add $i $j) (len $itemAccents) }}
+                  {{ $itemAccent := index $itemAccents $itemAccentIndex }}
+                  {{ $lastAccent := $scratch.Get "lastAccent" }}
+                  {{ if and $lastAccent (eq $itemAccent $lastAccent) }}
+                    {{ $itemAccentIndex = mod (add $itemAccentIndex 1) (len $itemAccents) }}
+                    {{ $itemAccent = index $itemAccents $itemAccentIndex }}
+                  {{ end }}
+                  {{ $scratch.Set "lastAccent" $itemAccent }}
+                  <a href="{{ $p.RelPermalink }}" class="timeline-item" data-accent="{{ $itemAccent }}">
+                    <time class="timeline-date" datetime="{{ $p.Date.Format "2006-01-02" }}">
+                      <span class="timeline-date__month">{{ $p.Date.Format "01" }}月</span>
+                      <span class="timeline-date__day">{{ $p.Date.Format "02" }}</span>
+                    </time>
+                    <div class="timeline-content">
+                      <h3 class="timeline-post-title">{{ $p.LinkTitle }}</h3>
+                      <div class="timeline-tags">
+                        {{ range first 2 ($p.GetTerms "tags") }}
+                          <span class="timeline-tag">#{{ .Title }}</span>
+                        {{ end }}
+                      </div>
                     </div>
-                  </div>
-                </a>
-              {{ end }}
+                  </a>
+                {{ end }}
+              </div>
             </div>
+            {{ end }}
           </div>
         {{ end }}
       </div>
@@ -298,6 +308,43 @@
       color: var(--text-muted);
       background: var(--slate-50);
       border: 1px solid var(--border);
+    }
+
+    /* Month grouping styles */
+    .timeline-month-section {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .timeline-month-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .timeline-month-dot {
+      position: absolute;
+      left: -39px; /* Reaches back to the timeline border */
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 3px solid var(--year-accent);
+      box-shadow: var(--shadow-sm);
+      z-index: 2;
+    }
+
+    /* Adjust dot colors based on parent accent */
+    .timeline-year-group[data-accent="teal"] .timeline-month-dot { border-color: #0d9488; }
+    .timeline-year-group[data-accent="pink"] .timeline-month-dot { border-color: #db2777; }
+    .timeline-year-group[data-accent="amber"] .timeline-month-dot { border-color: #d97706; }
+
+    .timeline-month-label {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--year-accent);
+      line-height: 1;
     }
 
     [data-theme='dark'] .timeline-post-title {
