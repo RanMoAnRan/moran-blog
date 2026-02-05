@@ -1,19 +1,23 @@
 {{ define "main" }}
   <!-- Hero Section with Background Image -->
-  <div style="position: relative; width: 100vw; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; overflow: hidden; margin-bottom: 0;">
+  <!--
+    这里不需要用 100vw + 负 margin 的“全出血”写法。
+    该写法在有滚动条的浏览器里会把滚动条宽度也算进 vw，容易导致页面出现横向滚动条。
+  -->
+  <div style="position: relative; width: 100%; overflow: hidden; margin-bottom: 0;">
     <!-- Background Image -->
     <div style="position: absolute; inset: 0; z-index: -2;" id="hero-bg-container">
-      <img id="hero-bg-img" src="{{ "img/bg/bg-01.jpg" | relURL }}" alt="Hero Background" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease-in-out;">
+      <img id="hero-bg-img" src="{{ "img/bg/bg-01.jpg" | relURL }}" alt="bg" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease-in-out;">
     </div>
 
     <!-- Background Toggle Button -->
-    <button id="bg-toggle-btn" aria-label="切换背景" style="position: absolute; top: 24px; right: 24px; z-index: 10; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 9999px; padding: 8px; cursor: pointer; color: var(--slate-700); transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+    <button id="bg-toggle-btn" class="hero-toggle-btn" aria-label="切换背景" style="position: absolute; top: 24px; right: 24px; z-index: 10; backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 9999px; padding: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center;">
+      <!-- Lucide 'Images' icon - cleaner, more relevant -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
     </button>
     <script>
       (function() {
-        // 使用 Hugo 的 relURL 生成带 baseURL 子路径前缀的地址（例如 GitHub Pages /moran-blog/）。
-        // 否则在子路径部署时，`/img/...` 会指向站点根目录导致 404，从而“背景显示不出来”。
+        // 使用 Hugo 的 relURL 生成带 baseURL 子路径前缀的地址
         const bgImages = [
           "{{ "img/bg/bg-01.jpg" | relURL }}",
           "{{ "img/bg/bg-02.jpg" | relURL }}",
@@ -33,69 +37,48 @@
 
         let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) || "0");
 
-        // Ensure index is valid
         if (isNaN(currentIndex) || currentIndex < 0 || currentIndex >= bgImages.length) {
           currentIndex = 0;
         }
 
-        // Initialize image from storage
-        // 设置默认图片路径（初始加载）
         const setInitialImage = () => {
              img.src = bgImages[currentIndex];
-             // 强制显示，防止之前 opacity 被设置为 0 后卡住
              img.style.opacity = '1';
         };
 
         setInitialImage();
 
         btn.addEventListener('click', () => {
-          // Add rotation animation to icon
           const icon = btn.querySelector('svg');
           icon.style.transition = 'transform 0.5s ease';
           icon.style.transform = 'rotate(180deg)';
           setTimeout(() => { icon.style.transform = 'rotate(0deg)'; }, 500);
 
-          // Update index
           currentIndex = (currentIndex + 1) % bgImages.length;
-
-          // Save preference
           localStorage.setItem(STORAGE_KEY, currentIndex);
-
-          // Change image DIRECTLY (No complex fade logic to avoid bugs)
           img.src = bgImages[currentIndex];
-        });
-
-        // Hover effect
-        btn.addEventListener('mouseenter', () => {
-          btn.style.background = 'rgba(255, 255, 255, 0.8)';
-          btn.style.transform = 'scale(1.05)';
-        });
-        btn.addEventListener('mouseleave', () => {
-          btn.style.background = 'rgba(255, 255, 255, 0.6)';
-          btn.style.transform = 'scale(1)';
         });
       })();
     </script>
 
     <!-- Gradient Overlay for readability -->
-    <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, var(--bg) 100%); z-index: -1;"></div>
-    <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(255,255,255,0.1), transparent 15%, transparent 85%, rgba(255,255,255,0.1)); z-index: -1;"></div>
+    <div class="hero-gradient-v" style="position: absolute; inset: 0; z-index: -1;"></div>
+    <div class="hero-gradient-h" style="position: absolute; inset: 0; z-index: -1;"></div>
 
     <div class="container" style="position: relative; padding: 110px 0 120px; text-align: center; max-width: 896px; margin: 0 auto;">
-      <!-- Hero Background Glow Elements (Optional, kept for subtle effect) -->
-      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 300px; background: rgba(255,255,255,0.6); filter: blur(80px); border-radius: 9999px; z-index: -1; pointer-events: none;"></div>
+      <!-- Hero Background Glow Elements -->
 
-      <h1 style="font-size: clamp(3rem, 5vw, 4.5rem); font-family: var(--font-serif); font-weight: 900; color: var(--slate-900); margin-bottom: 24px; letter-spacing: -0.025em; line-height: 1; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">
+      <h1 class="hero-title" style="font-size: clamp(3rem, 5vw, 4.5rem); font-family: var(--font-serif); font-weight: 900; margin-bottom: 24px; letter-spacing: -0.025em; line-height: 1;">
         Ink & Thought
       </h1>
-      <p style="font-size: clamp(1.25rem, 2vw, 1.5rem); color: var(--slate-700); line-height: 1.625; font-weight: 500; margin-bottom: 32px; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">
+      <p class="hero-desc" style="font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.625; font-weight: 500; margin-bottom: 32px;">
         记录代码与生活的间隙
       </p>
       <div style="display: flex; justify-content: center; gap: 16px;">
         <a href="#latest-posts" class="btn btn-primary" style="padding: 12px 32px; border-radius: 9999px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">
           开始阅读
         </a>
-        <a href="{{ "subscribe" | relURL }}" class="btn btn-outline hero-glass" style="padding: 12px 32px; border-radius: 9999px; background: rgba(255,255,255,0.8);">
+        <a href="{{ "subscribe" | relURL }}" class="btn btn-outline hero-glass hero-btn-sub" style="padding: 12px 32px; border-radius: 9999px;">
           订阅清单
         </a>
       </div>
@@ -113,11 +96,11 @@
           最新文章
         </h2>
         <a href="{{ "posts" | relURL }}" style="font-size: 0.875rem; font-weight: 500; color: var(--slate-500); display: flex; align-items: center; gap: 4px; transition: color 0.2s;" onmouseover="this.style.color='var(--violet-600)'" onmouseout="this.style.color='var(--slate-500)'">
-          查看全部 
+          查看全部
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </a>
       </div>
-      
+
       <div style="display: grid; gap: 0px;">
         {{ $pages := where site.RegularPages "Section" "posts" }}
         {{ $limit := int (site.Params.homelatestcount | default 8) }}
@@ -127,4 +110,62 @@
       </div>
     </div>
   </div>
+
+  <style>
+    /* Hero Text & Elements - Light Mode Defaults */
+    .hero-title {
+      color: var(--slate-900);
+      /* Removed white glow, added subtle dark shadow for lift */
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .hero-desc {
+      color: var(--slate-700);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .hero-btn-sub {
+      background: rgba(255,255,255,0.8) !important;
+      border-color: rgba(255,255,255,0.9);
+      color: var(--slate-900);
+    }
+    .hero-toggle-btn {
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--slate-700);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .hero-gradient-v {
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, var(--bg) 100%);
+    }
+    .hero-gradient-h {
+      background: linear-gradient(to right, rgba(255,255,255,0.1), transparent 15%, transparent 85%, rgba(255,255,255,0.1));
+    }
+
+    /* Dark Mode Overrides */
+    [data-theme='dark'] .hero-title {
+      color: #f1f5f9; /* slate-100 */
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    [data-theme='dark'] .hero-desc {
+      color: #cbd5e1; /* slate-300 */
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+    [data-theme='dark'] .hero-btn-sub {
+      background: rgba(30, 41, 59, 0.7) !important; /* slate-800 semi-transparent */
+      border-color: rgba(148, 163, 184, 0.2);
+      color: #e2e8f0;
+    }
+    [data-theme='dark'] .hero-toggle-btn {
+      background: rgba(15, 23, 42, 0.6); /* slate-900 */
+      color: #cbd5e1;
+      border-color: rgba(148, 163, 184, 0.2);
+    }
+    [data-theme='dark'] #hero-bg-img {
+      filter: brightness(0.6) contrast(1.1); /* Dim background in dark mode */
+    }
+    [data-theme='dark'] .hero-gradient-v {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, var(--bg) 100%);
+    }
+    [data-theme='dark'] .hero-gradient-h {
+      background: linear-gradient(to right, rgba(0,0,0,0.3), transparent 15%, transparent 85%, rgba(0,0,0,0.3));
+    }
+  </style>
 {{ end }}

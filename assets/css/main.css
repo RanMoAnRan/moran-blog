@@ -140,6 +140,10 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden; /* 防止全宽元素/小数像素导致的横向滚动条 */
+}
+
 body {
   margin: 0;
   background-color: var(--bg);

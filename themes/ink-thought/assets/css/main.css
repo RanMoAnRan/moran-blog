@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  overflow-x: hidden; /* Fix horizontal scrollbar at root level */
 
   /* Tailwind Palette - Exact Replication */
   --slate-50: #f8fafc;
@@ -155,6 +156,7 @@ body {
   min-height: 100vh;
   position: relative;
   z-index: 0;
+  overflow-x: hidden; /* Prevent horizontal scrollbars from full-width elements */
 }
 
 /* Global ambient background (subtle, animated) */
