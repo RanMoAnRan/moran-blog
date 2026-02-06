@@ -86,7 +86,7 @@
     "Courier New", monospace;
   
   --container: 1024px; /* max-w-5xl */
-  --header-height: 72px;
+  --header-height: 64px;
 }
 
 [data-theme='dark'] {
