@@ -1,0 +1,693 @@
+{{ define "main" }}
+  <div class="container archives-container">
+    <div class="content post-detail-container page-narrow">
+      <!-- Archive Header Card -->
+      <div class="archive-header-card">
+        <div class="archive-sparkle-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></svg>
+        </div>
+        <div class="archive-actions" aria-label="归档操作">
+          <button
+            class="archive-layout-toggle"
+            type="button"
+            data-archive-layout-toggle
+            aria-pressed="false"
+            aria-label="切换归档布局"
+            title="切换归档布局"
+          >
+            <span class="archive-layout-toggle__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+            </span>
+            <span class="archive-layout-toggle__label" data-archive-layout-label>布局：单列</span>
+          </button>
+        </div>
+        <h1 class="archive-title">时光归档</h1>
+        <p class="archive-subtitle">共 {{ len (where site.RegularPages "Section" "posts") }} 篇文章，持续更新中...</p>
+      </div>
+
+      {{ $pages := where site.RegularPages "Section" "posts" }}
+      <div class="archives-timeline">
+        {{ $groups := sort ($pages.GroupByDate "2006") "Key" "desc" }}
+        {{ $accents := slice "violet" "teal" "pink" "amber" }}
+        {{ $itemAccents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" }}
+        {{ $scratch := newScratch }}
+        {{ range $i, $group := $groups }}
+          {{ $accent := index $accents (mod $i (len $accents)) }}
+          <div class="timeline-year-group" data-accent="{{ $accent }}">
+            <h2 class="timeline-year">{{ $group.Key }}</h2>
+
+            {{ $monthGroups := sort ($group.Pages.GroupByDate "01") "Key" "desc" }}
+            {{ range $monthGroup := $monthGroups }}
+            <div class="timeline-month-section" data-month="{{ $monthGroup.Key }}">
+              <div class="timeline-month-header">
+                <span class="timeline-month-dot"></span>
+                <span class="timeline-month-label">{{ (index $monthGroup.Pages 0).Date.Format "1月" }}</span>
+              </div>
+              <div class="timeline-items">
+                {{ range $j, $p := $monthGroup.Pages.ByDate.Reverse }}
+                  {{ $itemSide := cond (eq (mod $j 2) 0) "left" "right" }}
+                  {{ $itemAccentIndex := mod (add $i $j) (len $itemAccents) }}
+                  {{ $itemAccent := index $itemAccents $itemAccentIndex }}
+                  {{ $lastAccent := $scratch.Get "lastAccent" }}
+                  {{ if and $lastAccent (eq $itemAccent $lastAccent) }}
+                    {{ $itemAccentIndex = mod (add $itemAccentIndex 1) (len $itemAccents) }}
+                    {{ $itemAccent = index $itemAccents $itemAccentIndex }}
+                  {{ end }}
+                  {{ $scratch.Set "lastAccent" $itemAccent }}
+                  <a href="{{ $p.RelPermalink }}" class="timeline-item is-{{ $itemSide }}" data-accent="{{ $itemAccent }}">
+                    <time class="timeline-date" datetime="{{ $p.Date.Format "2006-01-02" }}">
+                      <span class="timeline-date__month">{{ $p.Date.Format "01" }}月</span>
+                      <span class="timeline-date__day">{{ $p.Date.Format "02" }}</span>
+                    </time>
+                    <div class="timeline-content">
+                      <h3 class="timeline-post-title">{{ $p.LinkTitle }}</h3>
+                      <div class="timeline-tags">
+                        {{ range first 2 ($p.GetTerms "tags") }}
+                          <span class="timeline-tag">#{{ .Title }}</span>
+                        {{ end }}
+                      </div>
+                    </div>
+                  </a>
+                {{ end }}
+              </div>
+            </div>
+            {{ end }}
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+
+  <style>
+	    .archive-header-card {
+      background:
+        repeating-radial-gradient(circle at 82% 24%, rgba(15, 23, 42, 0.028) 0 1px, transparent 1px 22px),
+        radial-gradient(1000px 420px at 18% 0%, rgba(251, 191, 36, 0.16), transparent 60%),
+        radial-gradient(700px 360px at 90% 0%, rgba(244, 63, 94, 0.07), transparent 55%),
+        linear-gradient(to bottom right, rgba(255, 251, 235, 0.98), rgba(254, 243, 199, 0.70), rgba(255, 255, 255, 0.82));
+	      border-radius: var(--radius-lg);
+	      padding: 22px 28px;
+	      color: var(--text-heading);
+	      position: relative;
+	      margin-bottom: 28px;
+	      border: 1px solid var(--border);
+	      box-shadow: var(--shadow-sm);
+	      overflow: hidden;
+	    }
+
+    [data-theme='dark'] .archive-header-card {
+      background:
+        repeating-radial-gradient(circle at 82% 24%, rgba(226, 232, 240, 0.05) 0 1px, transparent 1px 22px),
+        radial-gradient(900px 400px at 18% 0%, rgba(217, 119, 6, 0.12), transparent 60%),
+        radial-gradient(750px 380px at 90% 0%, rgba(124, 58, 237, 0.10), transparent 55%),
+        linear-gradient(to bottom right, rgba(15, 23, 42, 0.86), rgba(30, 41, 59, 0.82));
+      border-color: rgba(148, 163, 184, 0.18);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+	    @media (max-width: 640px) {
+	      .archive-header-card {
+	        padding: 18px 16px;
+	      }
+	    }
+
+	    .archive-sparkle-icon {
+	      position: absolute;
+	      top: 12px;
+	      right: 136px;
+	      color: rgba(217, 119, 6, 0.18);
+	      transform: scale(2.35) rotate(12deg);
+	      pointer-events: none;
+	    }
+
+    [data-theme='dark'] .archive-sparkle-icon {
+      color: rgba(251, 191, 36, 0.14);
+    }
+
+	    .archive-title {
+	      font-family: var(--font-serif);
+	      font-size: 1.85rem;
+	      font-weight: 700;
+	      margin: 0 0 6px;
+	      color: var(--text-heading);
+	      position: relative;
+	      z-index: 10;
+	    }
+
+    .archive-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 10;
+    }
+
+    [data-theme='dark'] .archive-subtitle {
+      color: rgba(226, 232, 240, 0.85);
+      opacity: 1;
+    }
+
+	    .archive-actions {
+	      position: absolute;
+	      top: 12px;
+	      right: 12px;
+	      z-index: 20;
+	      display: flex;
+	      align-items: center;
+	      gap: 10px;
+	    }
+
+	    .archive-layout-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+	      height: 34px;
+	      padding: 0 12px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      color: rgba(15, 23, 42, 0.78);
+      cursor: pointer;
+	      font-size: 0.8125rem;
+	      font-weight: 700;
+	      letter-spacing: 0.01em;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+      transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
+    }
+
+    .archive-layout-toggle:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.78);
+      border-color: rgba(124, 58, 237, 0.25);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
+      color: rgba(15, 23, 42, 0.88);
+    }
+
+    .archive-layout-toggle:active {
+      transform: translateY(0);
+    }
+
+    .archive-layout-toggle:focus-visible {
+      outline: 2px solid rgba(124, 58, 237, 0.85);
+      outline-offset: 3px;
+    }
+
+    .archive-layout-toggle[aria-pressed="true"] {
+      border-color: rgba(124, 58, 237, 0.35);
+      background: rgba(124, 58, 237, 0.10);
+      color: rgba(124, 58, 237, 0.95);
+    }
+
+    [data-theme='dark'] .archive-layout-toggle {
+      background: rgba(15, 23, 42, 0.55);
+      border-color: rgba(148, 163, 184, 0.18);
+      color: rgba(226, 232, 240, 0.88);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
+    }
+
+    [data-theme='dark'] .archive-layout-toggle:hover {
+      background: rgba(15, 23, 42, 0.72);
+      border-color: rgba(148, 163, 184, 0.22);
+      color: rgba(241, 245, 249, 0.92);
+    }
+
+    [data-theme='dark'] .archive-layout-toggle[aria-pressed="true"] {
+      background: rgba(124, 58, 237, 0.18);
+      border-color: rgba(124, 58, 237, 0.35);
+      color: rgba(221, 214, 254, 0.95);
+    }
+
+    .archives-timeline {
+      padding: 0 16px;
+    }
+
+    /* When in split layout, allow more horizontal room on desktop. */
+    @media (min-width: 1024px) {
+      html[data-archives-layout="split"] .archives-container {
+        max-width: 1200px;
+      }
+
+      html[data-archives-layout="split"] .page-narrow.post-detail-container {
+        max-width: 1200px;
+      }
+    }
+
+    .timeline-year-group {
+      --year-accent: #7c3aed;          /* violet-600 */
+      --year-accent-soft: rgba(124, 58, 237, 0.18);
+      --year-line: rgba(124, 58, 237, 0.40);
+      position: relative;
+      padding-left: 32px;
+      border-left: 2px solid var(--year-line);
+      margin-bottom: 48px;
+    }
+
+    .timeline-year-group[data-accent="teal"] {
+      --year-accent: #0d9488;          /* teal-600 */
+      --year-accent-soft: rgba(13, 148, 136, 0.18);
+      --year-line: rgba(13, 148, 136, 0.40);
+    }
+
+    .timeline-year-group[data-accent="pink"] {
+      --year-accent: #db2777;          /* pink-600 */
+      --year-accent-soft: rgba(219, 39, 119, 0.18);
+      --year-line: rgba(219, 39, 119, 0.40);
+    }
+
+    .timeline-year-group[data-accent="amber"] {
+      --year-accent: #d97706;          /* amber-600 */
+      --year-accent-soft: rgba(217, 119, 6, 0.18);
+      --year-line: rgba(217, 119, 6, 0.40);
+    }
+
+    .timeline-year-group::before {
+      content: "";
+      position: absolute;
+      left: -11px;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 4px solid var(--year-accent);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .timeline-year {
+      display: inline-block;
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 900;
+      color: var(--year-accent);
+      margin: 0 0 16px;
+      line-height: 1;
+      user-select: none;
+      letter-spacing: -0.02em;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .timeline-items {
+      position: relative;
+      z-index: 10;
+      padding-top: 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .timeline-item {
+      --item-accent: var(--year-accent);
+      --item-accent-soft: var(--year-accent-soft);
+      --item-line: var(--year-line);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 16px;
+      margin: 0;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timeline-item:hover {
+      border-color: var(--item-accent);
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-2px);
+    }
+
+    .timeline-item[data-accent="teal"] {
+      --item-accent: #0d9488;
+      --item-accent-soft: rgba(13, 148, 136, 0.18);
+      --item-line: rgba(13, 148, 136, 0.40);
+    }
+
+    .timeline-item[data-accent="pink"] {
+      --item-accent: #db2777;
+      --item-accent-soft: rgba(219, 39, 119, 0.18);
+      --item-line: rgba(219, 39, 119, 0.40);
+    }
+
+    .timeline-item[data-accent="amber"] {
+      --item-accent: #d97706;
+      --item-accent-soft: rgba(217, 119, 6, 0.18);
+      --item-line: rgba(217, 119, 6, 0.40);
+    }
+
+    .timeline-item[data-accent="indigo"] {
+      --item-accent: #4f46e5;
+      --item-accent-soft: rgba(79, 70, 229, 0.18);
+      --item-line: rgba(79, 70, 229, 0.40);
+    }
+
+    .timeline-item[data-accent="emerald"] {
+      --item-accent: #059669;
+      --item-accent-soft: rgba(5, 150, 105, 0.18);
+      --item-line: rgba(5, 150, 105, 0.40);
+    }
+
+    .timeline-date {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      border: 1px solid var(--item-line);
+      background: var(--item-accent-soft);
+      display: grid;
+      grid-template-rows: 18px 1fr;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .timeline-date__month {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      color: #fff;
+      background: var(--item-accent);
+      line-height: 1;
+    }
+
+    .timeline-date__day {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--item-accent);
+      background: var(--panel);
+      line-height: 1;
+    }
+
+    .timeline-post-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--slate-700);
+      margin: 0;
+      transition: color 0.2s;
+    }
+
+    .timeline-item:hover .timeline-post-title {
+      color: var(--item-accent);
+    }
+    
+    .timeline-tags {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .timeline-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--slate-50);
+      border: 1px solid var(--border);
+    }
+
+	    /* Month grouping styles */
+	    .timeline-month-section {
+	      position: relative;
+	      margin-bottom: 32px;
+	      /* Defaults (overridden by [data-month=".."] mapping below) */
+	      --month-accent: var(--year-accent);
+	      --month-accent-dark: var(--year-accent);
+	      --month-accent-soft: var(--year-accent-soft);
+	      --month-border: rgba(124, 58, 237, 0.22);
+	      --month-border-dark: rgba(124, 58, 237, 0.32);
+	    }
+
+	    /* Month color mapping (per-month accents)
+	       Use a high-contrast hue wheel so each month reads as a distinct color at a glance. */
+	    .timeline-month-section[data-month="01"] { --month-accent: #e11d48; --month-accent-dark: #fda4af; --month-accent-soft: rgba(225, 29, 72, 0.16); --month-border: rgba(225, 29, 72, 0.28); --month-border-dark: rgba(225, 29, 72, 0.38); }
+	    .timeline-month-section[data-month="02"] { --month-accent: #f97316; --month-accent-dark: #fed7aa; --month-accent-soft: rgba(249, 115, 22, 0.16); --month-border: rgba(249, 115, 22, 0.28); --month-border-dark: rgba(249, 115, 22, 0.40); }
+	    .timeline-month-section[data-month="03"] { --month-accent: #eab308; --month-accent-dark: #fde68a; --month-accent-soft: rgba(234, 179, 8, 0.16); --month-border: rgba(234, 179, 8, 0.30); --month-border-dark: rgba(234, 179, 8, 0.42); }
+	    .timeline-month-section[data-month="04"] { --month-accent: #84cc16; --month-accent-dark: #d9f99d; --month-accent-soft: rgba(132, 204, 22, 0.16); --month-border: rgba(132, 204, 22, 0.28); --month-border-dark: rgba(132, 204, 22, 0.40); }
+	    .timeline-month-section[data-month="05"] { --month-accent: #22c55e; --month-accent-dark: #bbf7d0; --month-accent-soft: rgba(34, 197, 94, 0.16); --month-border: rgba(34, 197, 94, 0.28); --month-border-dark: rgba(34, 197, 94, 0.40); }
+	    .timeline-month-section[data-month="06"] { --month-accent: #14b8a6; --month-accent-dark: #99f6e4; --month-accent-soft: rgba(20, 184, 166, 0.16); --month-border: rgba(20, 184, 166, 0.28); --month-border-dark: rgba(20, 184, 166, 0.40); }
+	    .timeline-month-section[data-month="07"] { --month-accent: #06b6d4; --month-accent-dark: #a5f3fc; --month-accent-soft: rgba(6, 182, 212, 0.16); --month-border: rgba(6, 182, 212, 0.28); --month-border-dark: rgba(6, 182, 212, 0.40); }
+	    .timeline-month-section[data-month="08"] { --month-accent: #3b82f6; --month-accent-dark: #bfdbfe; --month-accent-soft: rgba(59, 130, 246, 0.16); --month-border: rgba(59, 130, 246, 0.28); --month-border-dark: rgba(59, 130, 246, 0.40); }
+	    .timeline-month-section[data-month="09"] { --month-accent: #6366f1; --month-accent-dark: #c7d2fe; --month-accent-soft: rgba(99, 102, 241, 0.16); --month-border: rgba(99, 102, 241, 0.28); --month-border-dark: rgba(99, 102, 241, 0.40); }
+	    .timeline-month-section[data-month="10"] { --month-accent: #8b5cf6; --month-accent-dark: #ddd6fe; --month-accent-soft: rgba(139, 92, 246, 0.16); --month-border: rgba(139, 92, 246, 0.28); --month-border-dark: rgba(139, 92, 246, 0.40); }
+	    .timeline-month-section[data-month="11"] { --month-accent: #d946ef; --month-accent-dark: #f5d0fe; --month-accent-soft: rgba(217, 70, 239, 0.16); --month-border: rgba(217, 70, 239, 0.28); --month-border-dark: rgba(217, 70, 239, 0.40); }
+	    .timeline-month-section[data-month="12"] { --month-accent: #ec4899; --month-accent-dark: #fbcfe8; --month-accent-soft: rgba(236, 72, 153, 0.16); --month-border: rgba(236, 72, 153, 0.28); --month-border-dark: rgba(236, 72, 153, 0.40); }
+
+	    .timeline-month-header {
+	      position: relative;
+	      display: flex;
+	      align-items: center;
+	      margin-bottom: 16px;
+	    }
+
+	    .timeline-month-dot {
+	      position: absolute;
+	      left: -39px; /* Reaches back to the timeline border */
+	      width: 12px;
+	      height: 12px;
+	      border-radius: 50%;
+	      background: var(--month-accent);
+	      border: 3px solid var(--panel);
+	      box-shadow: var(--shadow-sm);
+	      z-index: 2;
+	    }
+
+	    .timeline-month-label {
+	      font-size: 1.25rem;
+	      font-weight: 700;
+	      color: var(--month-accent);
+	      line-height: 1;
+	      display: inline-flex;
+	      align-items: center;
+	      padding: 6px 12px;
+	      border-radius: 9999px;
+	      border: 1px solid var(--month-border);
+	      background: var(--month-accent-soft);
+	    }
+
+	    [data-theme='dark'] .timeline-month-label {
+	      color: var(--month-accent-dark);
+	      border-color: var(--month-border-dark);
+	      background: rgba(255, 255, 255, 0.03);
+	    }
+
+	    /* Split timeline (Scheme 1): desktop only; mobile remains single-column. */
+		    @media (min-width: 1024px) {
+	      .archives-timeline[data-layout="split"] {
+	        padding: 0;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-year-group {
+	        padding-left: 0;
+	        border-left: 0;
+	        margin-bottom: 64px;
+	      }
+
+	      /* Arrow between years: show it in the gap above each year group (except the first). */
+	      .archives-timeline[data-layout="split"] .timeline-year-group::before {
+	        content: "";
+	        display: none;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-year-group::after {
+	        content: "";
+	        position: absolute;
+	        left: 50%;
+	        top: 0;
+	        bottom: 2px;
+	        width: 2px;
+	        transform: translateX(-1px);
+	        background: var(--year-line);
+	        border-radius: 9999px;
+	        opacity: 0.9;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-year-group + .timeline-year-group::after {
+	        /* extend into the previous group's margin-bottom to visually connect years */
+	        top: -64px;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-year-group + .timeline-year-group::before {
+	        display: block;
+	        position: absolute;
+	        left: 50%;
+	        top: -46px; /* centered inside the 64px inter-year gap */
+	        width: 22px;
+	        height: 16px;
+	        transform: translateX(-50%);
+	        background: var(--year-line);
+	        /* Up arrow */
+	        clip-path: polygon(50% 0, 0 100%, 100% 100%);
+	        opacity: 0.95;
+	        pointer-events: none;
+	        filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.10));
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-year {
+	        display: block;
+	        text-align: center;
+	        margin: 0 0 24px;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-month-section {
+	        margin-bottom: 40px;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-month-dot {
+	        display: none;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-month-header {
+	        justify-content: center;
+	        margin-bottom: 18px;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-month-label {
+	        display: inline-flex;
+	        align-items: center;
+	        justify-content: center;
+	        padding: 8px 14px;
+	        border-radius: 9999px;
+	        background: var(--month-accent);
+	        border: 1px solid rgba(255, 255, 255, 0.22);
+	        box-shadow: 0 14px 34px -18px var(--month-accent);
+	        color: rgba(255, 255, 255, 0.98);
+	        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.16);
+	      }
+
+	      [data-theme='dark'] .archives-timeline[data-layout="split"] .timeline-month-label {
+	        background: var(--month-accent);
+	        border-color: rgba(0, 0, 0, 0.28);
+	        box-shadow: 0 16px 38px -18px rgba(0, 0, 0, 0.55);
+	        color: rgba(255, 255, 255, 0.98);
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-items {
+	        grid-template-columns: 1fr 1fr;
+	        column-gap: 96px;
+	        row-gap: 14px;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-item {
+	        width: min(640px, 100%);
+	        overflow: visible; /* allow connector line to reach the center line */
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-item.is-left {
+	        grid-column: 1;
+	        justify-self: end;
+	      }
+
+	      .archives-timeline[data-layout="split"] .timeline-item.is-right {
+	        grid-column: 2;
+	        justify-self: start;
+	      }
+
+		      .archives-timeline[data-layout="split"] .timeline-item::after {
+		        content: "";
+		        position: absolute;
+		        top: 26px;
+		        width: 48px; /* half of column-gap */
+		        height: 2px;
+		        background: var(--year-line);
+		        opacity: 0.7;
+		        pointer-events: none;
+		      }
+
+		      .archives-timeline[data-layout="split"] .timeline-item.is-left::after {
+		        right: -48px;
+		      }
+
+		      .archives-timeline[data-layout="split"] .timeline-item.is-right::after {
+		        left: -48px;
+		      }
+
+		      /* Small arrow head at the end of the connector line (points toward the center timeline). */
+		      .archives-timeline[data-layout="split"] .timeline-item::before {
+		        content: "";
+		        position: absolute;
+		        top: 20px;
+		        width: 0;
+		        height: 0;
+		        border-top: 6px solid transparent;
+		        border-bottom: 6px solid transparent;
+		        opacity: 0.85;
+		        pointer-events: none;
+		      }
+
+		      .archives-timeline[data-layout="split"] .timeline-item.is-left::before {
+		        right: -58px; /* line end (48) + arrow width (10) */
+		        border-left: 10px solid var(--year-line);
+		      }
+
+		      .archives-timeline[data-layout="split"] .timeline-item.is-right::before {
+		        left: -58px;
+		        border-right: 10px solid var(--year-line);
+		      }
+		    }
+
+    [data-theme='dark'] .timeline-post-title {
+      color: var(--text-main);
+    }
+
+    [data-theme='dark'] .timeline-tag {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(148, 163, 184, 0.18);
+      color: rgba(226, 232, 240, 0.85);
+    }
+  </style>
+
+  <script>
+    (() => {
+      const KEY = "ink-archives-layout";
+      const btn = document.querySelector("[data-archive-layout-toggle]");
+      const label = document.querySelector("[data-archive-layout-label]");
+      const timeline = document.querySelector(".archives-timeline");
+
+      if (!btn || !label || !timeline) return;
+
+      const normalize = (v) => (v === "classic" ? "classic" : "split");
+
+      const read = () => {
+        try {
+          return normalize(localStorage.getItem(KEY));
+        } catch {
+          return "split";
+        }
+      };
+
+      const write = (v) => {
+        try {
+          localStorage.setItem(KEY, normalize(v));
+        } catch {
+          // ignore
+        }
+      };
+
+      const apply = (layout) => {
+        const v = normalize(layout);
+        document.documentElement.dataset.archivesLayout = v;
+        timeline.dataset.layout = v;
+        btn.setAttribute("aria-pressed", v === "split" ? "true" : "false");
+        label.textContent = v === "split" ? "布局：左右" : "布局：单列";
+      };
+
+      let current = read();
+      apply(current);
+
+      btn.addEventListener("click", () => {
+        current = current === "split" ? "classic" : "split";
+        write(current);
+        apply(current);
+      });
+    })();
+  </script>
+{{ end }}
