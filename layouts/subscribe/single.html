@@ -1,6 +1,6 @@
 {{ define "main" }}
-  <div class="container">
-    <div class="content post-detail-container page-narrow subscribe-page posts-page">
+  <div class="container detail-container">
+    <div class="content post-detail-container subscribe-page posts-page">
       <header class="page-header">
         <h1 class="page-title">{{ .Title }}</h1>
         {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
@@ -197,14 +197,14 @@
     }
 
     .subscribe-intro {
-      max-width: 896px;
+      max-width: 1080px;
       margin: 0 auto 12px;
     }
 
     .subscribe-sections {
       display: grid;
       gap: 28px;
-      max-width: 896px;
+      max-width: 1080px;
       margin: 0 auto;
       width: 100%;
     }
@@ -477,7 +477,7 @@
       border: 1px dashed var(--border);
       border-radius: var(--radius);
       background: var(--panel-muted);
-      max-width: 896px;
+      max-width: 1080px;
       margin: 0 auto;
     }
   </style>

@@ -1,0 +1,149 @@
+{{ define "main" }}
+  {{- $postCount := len (where site.RegularPages "Section" "posts") -}}
+  {{- $catCount := len site.Taxonomies.categories -}}
+  {{- $tagCount := len site.Taxonomies.tags -}}
+  {{- $accents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" -}}
+
+  <div class="container discovery-container">
+    <div class="content discovery-page">
+      <header class="discovery-header">
+        <div class="discovery-header__sparkle" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></svg>
+        </div>
+
+        <h1 class="discovery-title">内容探索</h1>
+        <p class="discovery-subtitle">共 {{ $postCount }} 篇文章 · {{ $catCount }} 个分类 · {{ $tagCount }} 个标签</p>
+
+        <div class="discovery-toolbar" aria-label="探索工具">
+          <div class="discovery-search">
+            <svg class="discovery-search__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input
+              class="discovery-search__input"
+              type="search"
+              placeholder="搜索分类或标签…"
+              autocomplete="off"
+              spellcheck="false"
+              data-discovery-filter
+            >
+          </div>
+          <span class="discovery-filter-status" data-discovery-status aria-live="polite"></span>
+        </div>
+      </header>
+
+      <div class="discovery-layout">
+        <section class="discovery-panel discovery-panel--categories" aria-label="分类">
+          <header class="discovery-panel__head">
+            <h2 class="discovery-panel__title">
+              <span class="discovery-panel__dot" data-accent="violet" aria-hidden="true"></span>
+              分类
+            </h2>
+            <span class="discovery-panel__meta">{{ $catCount }}</span>
+          </header>
+
+          <div class="discovery-cards discovery-cards--categories">
+            {{ range $i, $category := site.Taxonomies.categories.ByCount }}
+              {{- $title := $category.Page.Title -}}
+              {{- $accent := index $accents (mod $i (len $accents)) -}}
+              {{- $iconIndex := mod $i 6 -}}
+              <a
+                class="discovery-term-card"
+                href="{{ $category.Page.RelPermalink }}"
+                data-accent="{{ $accent }}"
+                data-discovery-item
+                data-label="{{ $title }}"
+              >
+                <span class="discovery-term-card__left">
+                  <span class="discovery-term-icon" aria-hidden="true">
+                    {{- /* 线性风格图标（“字体图标感”），按分类名称优先匹配，其次按序轮换 */ -}}
+                    {{- if eq $title "技术" -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    {{- else if eq $title "生活" -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12.6 12 20l-7.5-7.4A5.5 5.5 0 0 1 12 5.8a5.5 5.5 0 0 1 7.5 6.8Z"/></svg>
+                    {{- else if eq $title "摄影" -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5h-3.2l-1.2-2H8.4L7.2 5H4a2 2 0 0 0-2 2v11a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a2 2 0 0 0-2-2Z"/><circle cx="12" cy="13" r="3"/></svg>
+                    {{- else if eq $iconIndex 0 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16 8 14 14 8 16 10 10 16 8"/></svg>
+                    {{- else if eq $iconIndex 1 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18 8 4a2 2 0 0 1 0 3.64l-8 4a2 2 0 0 1-1.66 0l-8-4a2 2 0 0 1 0-3.64l8-4a2 2 0 0 1 1.66 0Z"/><path d="m2 12 8 4a2 2 0 0 0 1.66 0l8-4"/><path d="m2 16 8 4a2 2 0 0 0 1.66 0l8-4"/></svg>
+                    {{- else if eq $iconIndex 2 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6a4 4 0 0 1 4 4"/><path d="M21 18a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a4 4 0 0 0-4 4"/></svg>
+                    {{- else if eq $iconIndex 3 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                    {{- else if eq $iconIndex 4 -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 0 20"/><path d="M12 2a15.3 15.3 0 0 0 0 20"/></svg>
+                    {{- else -}}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                    {{- end -}}
+                  </span>
+                  <span class="discovery-term-name">{{ $title }}</span>
+                </span>
+                <span class="discovery-term-card__right">
+                  <span class="discovery-term-count">{{ $category.Count }} 篇</span>
+                  <svg class="discovery-term-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </span>
+              </a>
+            {{ end }}
+          </div>
+        </section>
+
+        <section class="discovery-panel discovery-panel--tags" aria-label="标签">
+          <header class="discovery-panel__head">
+            <h2 class="discovery-panel__title">
+              <span class="discovery-panel__dot" data-accent="amber" aria-hidden="true"></span>
+              标签
+            </h2>
+            <span class="discovery-panel__meta">{{ $tagCount }}</span>
+          </header>
+
+          <div class="discovery-chips">
+            {{ range $i, $tag := site.Taxonomies.tags.ByCount }}
+              {{- $title := $tag.Page.Title -}}
+              {{- $accent := index $accents (mod $i (len $accents)) -}}
+              <a
+                class="discovery-chip"
+                href="{{ $tag.Page.RelPermalink }}"
+                data-accent="{{ $accent }}"
+                data-discovery-item
+                data-label="{{ $title }}"
+              >
+                <span class="discovery-chip__icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>
+                </span>
+                <span class="discovery-chip__name">{{ $title }}</span>
+                <span class="discovery-chip__count">{{ $tag.Count }}</span>
+              </a>
+            {{ end }}
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const input = document.querySelector("[data-discovery-filter]");
+      const items = Array.from(document.querySelectorAll("[data-discovery-item]"));
+      const status = document.querySelector("[data-discovery-status]");
+      if (!input || items.length === 0) return;
+
+      const norm = (s) => (s || "").toString().trim().toLowerCase();
+
+      const apply = () => {
+        const q = norm(input.value);
+        let shown = 0;
+        for (const el of items) {
+          const label = norm(el.getAttribute("data-label"));
+          const ok = !q || label.includes(q);
+          el.style.display = ok ? "" : "none";
+          if (ok) shown++;
+        }
+        if (status) {
+          status.textContent = q ? `匹配 ${shown} 项` : "";
+        }
+      };
+
+      input.addEventListener("input", apply, { passive: true });
+      apply();
+    })();
+  </script>
+{{ end }}
