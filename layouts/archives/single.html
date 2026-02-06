@@ -11,14 +11,14 @@
             class="archive-layout-toggle"
             type="button"
             data-archive-layout-toggle
-            aria-pressed="false"
+            aria-pressed="true"
             aria-label="切换归档布局"
             title="切换归档布局"
           >
             <span class="archive-layout-toggle__icon" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
             </span>
-            <span class="archive-layout-toggle__label" data-archive-layout-label>布局：单列</span>
+            <span class="archive-layout-toggle__label" data-archive-layout-label>布局：左右</span>
           </button>
         </div>
         <h1 class="archive-title">时光归档</h1>
@@ -26,7 +26,8 @@
       </div>
 
       {{ $pages := where site.RegularPages "Section" "posts" }}
-      <div class="archives-timeline">
+      <!-- 给首屏一个默认左右布局（JS 仍可切换），避免首次渲染闪烁成单列 -->
+      <div class="archives-timeline" data-layout="split">
         {{ $groups := sort ($pages.GroupByDate "2006") "Key" "desc" }}
         {{ $accents := slice "violet" "teal" "pink" "amber" }}
         {{ $itemAccents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" }}
@@ -221,16 +222,16 @@
       padding: 0 16px;
     }
 
-    /* When in split layout, allow more horizontal room on desktop. */
-    @media (min-width: 1024px) {
-      html[data-archives-layout="split"] .archives-container {
-        max-width: 1200px;
-      }
+	    /* Split 布局：页面整体宽度稍微收窄一点（原来 1200px 会显得过宽） */
+	    @media (min-width: 1024px) {
+	      html[data-archives-layout="split"] .archives-container {
+	        max-width: 1080px;
+	      }
 
-      html[data-archives-layout="split"] .page-narrow.post-detail-container {
-        max-width: 1200px;
-      }
-    }
+	      html[data-archives-layout="split"] .page-narrow.post-detail-container {
+	        max-width: 1080px;
+	      }
+	    }
 
     .timeline-year-group {
       --year-accent: #7c3aed;          /* violet-600 */
@@ -482,6 +483,10 @@
 	    /* Split timeline (Scheme 1): desktop only; mobile remains single-column. */
 		    @media (min-width: 1024px) {
 	      .archives-timeline[data-layout="split"] {
+	        --split-gap: 84px;
+	        --split-connector: calc(var(--split-gap) / 2);
+	        --split-arrow: 10px;
+	        --split-item-max: 560px;
 	        padding: 0;
 	      }
 
@@ -572,12 +577,12 @@
 
 	      .archives-timeline[data-layout="split"] .timeline-items {
 	        grid-template-columns: 1fr 1fr;
-	        column-gap: 96px;
+	        column-gap: var(--split-gap);
 	        row-gap: 14px;
 	      }
 
 	      .archives-timeline[data-layout="split"] .timeline-item {
-	        width: min(640px, 100%);
+	        width: min(var(--split-item-max), 100%);
 	        overflow: visible; /* allow connector line to reach the center line */
 	      }
 
@@ -595,7 +600,7 @@
 		        content: "";
 		        position: absolute;
 		        top: 26px;
-		        width: 48px; /* half of column-gap */
+		        width: var(--split-connector); /* half of column-gap */
 		        height: 2px;
 		        background: var(--year-line);
 		        opacity: 0.7;
@@ -603,11 +608,11 @@
 		      }
 
 		      .archives-timeline[data-layout="split"] .timeline-item.is-left::after {
-		        right: -48px;
+		        right: calc(-1 * var(--split-connector));
 		      }
 
 		      .archives-timeline[data-layout="split"] .timeline-item.is-right::after {
-		        left: -48px;
+		        left: calc(-1 * var(--split-connector));
 		      }
 
 		      /* Small arrow head at the end of the connector line (points toward the center timeline). */
@@ -624,13 +629,13 @@
 		      }
 
 		      .archives-timeline[data-layout="split"] .timeline-item.is-left::before {
-		        right: -58px; /* line end (48) + arrow width (10) */
-		        border-left: 10px solid var(--year-line);
+		        right: calc(-1 * (var(--split-connector) + var(--split-arrow)));
+		        border-left: var(--split-arrow) solid var(--year-line);
 		      }
 
 		      .archives-timeline[data-layout="split"] .timeline-item.is-right::before {
-		        left: -58px;
-		        border-right: 10px solid var(--year-line);
+		        left: calc(-1 * (var(--split-connector) + var(--split-arrow)));
+		        border-right: var(--split-arrow) solid var(--year-line);
 		      }
 		    }
 
@@ -647,7 +652,8 @@
 
   <script>
     (() => {
-      const KEY = "ink-archives-layout";
+      // 换 key 以避免旧的本地缓存把布局锁死在“单列”
+      const KEY = "ink-archives-layout-v2";
       const btn = document.querySelector("[data-archive-layout-toggle]");
       const label = document.querySelector("[data-archive-layout-label]");
       const timeline = document.querySelector(".archives-timeline");
