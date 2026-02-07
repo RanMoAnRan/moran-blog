@@ -354,10 +354,14 @@ img {
 @media (min-width: 1024px) {
   .container.posts-container,
   .container.search-container,
-  .container.discovery-container,
   .container.term-container,
   .container.detail-container {
     --container: 1080px;
+  }
+
+  /* Discovery page: slightly narrower reading width than the default container */
+  .container.discovery-container {
+    --container: 950px;
   }
 }
 
@@ -838,7 +842,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .discovery-header {
-  max-width: 1080px;
+  max-width: var(--container);
   margin: 0 auto 24px;
   padding: 28px 24px;
   border-radius: var(--radius-lg);
@@ -966,7 +970,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .discovery-layout {
-  max-width: 1080px;
+  max-width: var(--container);
   margin: 0 auto;
   display: grid;
   gap: 18px;
@@ -1176,24 +1180,25 @@ h1, h2, h3, h4, h5, h6 {
 .discovery-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .discovery-chip {
-  --accent: #7c3aed;
-  --accent-soft: rgba(124, 58, 237, 0.18);
+  /* Deeper accent system: darker accent + slightly calmer tint background */
+  --accent: #5b21b6;
+  --accent-soft: rgba(91, 33, 182, 0.26);
   /* 期望效果：背景浅（同色系淡底），文字/图标深（同色系深字） */
-  --accent-bg: rgba(124, 58, 237, 0.10);
-  --accent-bg-strong: rgba(124, 58, 237, 0.16);
-  --accent-text: #5b21b6;      /* violet-800 (更深) */
+  --accent-bg: rgba(91, 33, 182, 0.12);
+  --accent-bg-strong: rgba(91, 33, 182, 0.20);
+  --accent-text: #4c1d95;      /* violet-900 */
   --accent-text-dark: #ddd6fe; /* violet-200 */
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8125rem;
-  padding: 7px 12px;
+  gap: 6px;
+  font-size: 0.75rem;
+  padding: 5px 10px;
   border-radius: 9999px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent-soft);
   background: linear-gradient(160deg, var(--panel), var(--accent-bg));
   color: var(--accent-text);
   transition: border-color 0.2s, transform 0.2s, background-color 0.2s, box-shadow 0.2s;
@@ -1203,10 +1208,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .discovery-chip:hover {
-  border-color: var(--accent-soft);
+  border-color: var(--accent);
   transform: translateY(-1px);
   background: linear-gradient(160deg, var(--panel), var(--accent-bg-strong));
-  box-shadow: 0 16px 26px -22px rgba(15, 23, 42, 0.22);
+  box-shadow:
+    0 16px 26px -22px rgba(15, 23, 42, 0.22),
+    0 18px 38px -30px var(--accent-soft);
 }
 
 [data-theme='dark'] .discovery-chip {
@@ -1230,21 +1237,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .discovery-chip__icon {
-  width: 20px;
-  height: 20px;
-  border-radius: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 7px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--accent-text);
-  background: var(--accent-bg);
+  background: var(--accent-bg-strong);
   border: 1px solid var(--accent-soft);
   flex: 0 0 auto;
 }
 
 .discovery-chip__icon svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
 }
 
 [data-theme='dark'] .discovery-chip__icon {
@@ -1261,10 +1268,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .discovery-chip__count {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 800;
   color: var(--accent-text);
-  padding: 2px 8px;
+  padding: 1px 7px;
   border-radius: 9999px;
   border: 1px solid var(--accent-soft);
   background: var(--accent-bg-strong);
@@ -1277,15 +1284,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .discovery-chip:focus-visible {
-  outline: 2px solid rgba(124, 58, 237, 0.75);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
-.discovery-chip[data-accent="teal"] { --accent: #0d9488; --accent-soft: rgba(13, 148, 136, 0.20); --accent-bg: rgba(13, 148, 136, 0.10); --accent-bg-strong: rgba(13, 148, 136, 0.16); --accent-text: #115e59; --accent-text-dark: #99f6e4; }
-.discovery-chip[data-accent="pink"] { --accent: #db2777; --accent-soft: rgba(219, 39, 119, 0.20); --accent-bg: rgba(219, 39, 119, 0.10); --accent-bg-strong: rgba(219, 39, 119, 0.16); --accent-text: #9d174d; --accent-text-dark: #fbcfe8; }
-.discovery-chip[data-accent="amber"] { --accent: #d97706; --accent-soft: rgba(217, 119, 6, 0.22); --accent-bg: rgba(217, 119, 6, 0.10); --accent-bg-strong: rgba(217, 119, 6, 0.16); --accent-text: #92400e; --accent-text-dark: #fde68a; }
-.discovery-chip[data-accent="indigo"] { --accent: #4f46e5; --accent-soft: rgba(79, 70, 229, 0.20); --accent-bg: rgba(79, 70, 229, 0.10); --accent-bg-strong: rgba(79, 70, 229, 0.16); --accent-text: #3730a3; --accent-text-dark: #c7d2fe; }
-.discovery-chip[data-accent="emerald"] { --accent: #059669; --accent-soft: rgba(5, 150, 105, 0.20); --accent-bg: rgba(5, 150, 105, 0.10); --accent-bg-strong: rgba(5, 150, 105, 0.16); --accent-text: #065f46; --accent-text-dark: #bbf7d0; }
+.discovery-chip[data-accent="teal"] { --accent: #0f766e; --accent-soft: rgba(15, 118, 110, 0.26); --accent-bg: rgba(15, 118, 110, 0.12); --accent-bg-strong: rgba(15, 118, 110, 0.20); --accent-text: #134e4a; --accent-text-dark: #99f6e4; }
+.discovery-chip[data-accent="cyan"] { --accent: #0e7490; --accent-soft: rgba(14, 116, 144, 0.26); --accent-bg: rgba(14, 116, 144, 0.12); --accent-bg-strong: rgba(14, 116, 144, 0.20); --accent-text: #164e63; --accent-text-dark: #a5f3fc; }
+.discovery-chip[data-accent="blue"] { --accent: #1d4ed8; --accent-soft: rgba(29, 78, 216, 0.26); --accent-bg: rgba(29, 78, 216, 0.12); --accent-bg-strong: rgba(29, 78, 216, 0.20); --accent-text: #1e3a8a; --accent-text-dark: #bfdbfe; }
+.discovery-chip[data-accent="pink"] { --accent: #be185d; --accent-soft: rgba(190, 24, 93, 0.26); --accent-bg: rgba(190, 24, 93, 0.12); --accent-bg-strong: rgba(190, 24, 93, 0.20); --accent-text: #831843; --accent-text-dark: #fbcfe8; }
+.discovery-chip[data-accent="rose"] { --accent: #be123c; --accent-soft: rgba(190, 18, 60, 0.26); --accent-bg: rgba(190, 18, 60, 0.12); --accent-bg-strong: rgba(190, 18, 60, 0.20); --accent-text: #881337; --accent-text-dark: #fecdd3; }
+.discovery-chip[data-accent="red"] { --accent: #ef4444; --accent-soft: rgba(239, 68, 68, 0.30); --accent-bg: rgba(239, 68, 68, 0.12); --accent-bg-strong: rgba(239, 68, 68, 0.20); --accent-text: #7f1d1d; --accent-text-dark: #fecaca; }
+.discovery-chip[data-accent="crimson"] { --accent: #991b1b; --accent-soft: rgba(153, 27, 27, 0.28); --accent-bg: rgba(153, 27, 27, 0.12); --accent-bg-strong: rgba(153, 27, 27, 0.20); --accent-text: #7f1d1d; --accent-text-dark: #fecaca; }
+.discovery-chip[data-accent="amber"] { --accent: #b45309; --accent-soft: rgba(180, 83, 9, 0.28); --accent-bg: rgba(180, 83, 9, 0.12); --accent-bg-strong: rgba(180, 83, 9, 0.20); --accent-text: #78350f; --accent-text-dark: #fde68a; }
+.discovery-chip[data-accent="orange"] { --accent: #c2410c; --accent-soft: rgba(194, 65, 12, 0.28); --accent-bg: rgba(194, 65, 12, 0.12); --accent-bg-strong: rgba(194, 65, 12, 0.20); --accent-text: #7c2d12; --accent-text-dark: #fed7aa; }
+.discovery-chip[data-accent="indigo"] { --accent: #4338ca; --accent-soft: rgba(67, 56, 202, 0.26); --accent-bg: rgba(67, 56, 202, 0.12); --accent-bg-strong: rgba(67, 56, 202, 0.20); --accent-text: #312e81; --accent-text-dark: #c7d2fe; }
+.discovery-chip[data-accent="emerald"] { --accent: #047857; --accent-soft: rgba(4, 120, 87, 0.26); --accent-bg: rgba(4, 120, 87, 0.12); --accent-bg-strong: rgba(4, 120, 87, 0.20); --accent-text: #064e3b; --accent-text-dark: #bbf7d0; }
+.discovery-chip[data-accent="lime"] { --accent: #4d7c0f; --accent-soft: rgba(77, 124, 15, 0.26); --accent-bg: rgba(77, 124, 15, 0.12); --accent-bg-strong: rgba(77, 124, 15, 0.20); --accent-text: #365314; --accent-text-dark: #d9f99d; }
 
 /* Pagination */
 .pagination {

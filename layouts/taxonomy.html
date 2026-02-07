@@ -3,6 +3,7 @@
   {{- $catCount := len site.Taxonomies.categories -}}
   {{- $tagCount := len site.Taxonomies.tags -}}
   {{- $accents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" -}}
+  {{- $tagAccents := slice "violet" "teal" "cyan" "blue" "indigo" "emerald" "lime" "amber" "orange" "pink" "rose" "red" "crimson" -}}
 
   <div class="container discovery-container">
     <div class="content discovery-page">
@@ -98,7 +99,7 @@
           <div class="discovery-chips">
             {{ range $i, $tag := site.Taxonomies.tags.ByCount }}
               {{- $title := $tag.Page.Title -}}
-              {{- $accent := index $accents (mod $i (len $accents)) -}}
+              {{- $accent := index $tagAccents (mod $i (len $tagAccents)) -}}
               <a
                 class="discovery-chip"
                 href="{{ $tag.Page.RelPermalink }}"
