@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">OpenClaw 个人执行层连接网</title>
+  <desc id="desc">以 OpenClaw 为中心，连接终端、文件、消息、浏览器和任务，表现个人执行层的视觉图。</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="75%">
+      <stop offset="0%" stop-color="#10243b"/>
+      <stop offset="55%" stop-color="#0b1727"/>
+      <stop offset="100%" stop-color="#07111d"/>
+    </radialGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#67e8f9" flood-opacity="0.45"/>
+    </filter>
+    <style>
+      .hero { font: 700 44px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #f8fafc; }
+      .sub { font: 500 18px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #cbd5e1; }
+      .node { font: 700 20px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #e2e8f0; }
+      .tiny { font: 600 14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #94a3b8; letter-spacing: 1.2px; }
+      .label { font: 600 15px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #dbeafe; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <g opacity="0.24">
+    <circle cx="160" cy="120" r="130" fill="#1d4ed8"/>
+    <circle cx="1050" cy="180" r="150" fill="#0f766e"/>
+    <circle cx="960" cy="640" r="170" fill="#0f766e"/>
+  </g>
+
+  <text x="90" y="96" class="hero">OpenClaw 更像个人执行层，而不只是聊天界面</text>
+  <text x="90" y="130" class="sub">连接你的文件、终端、消息和任务，并在执行前后维持状态、权限和确认边界。</text>
+
+  <g stroke="#38bdf8" stroke-opacity="0.45" stroke-width="3">
+    <line x1="600" y1="398" x2="246" y2="280"/>
+    <line x1="600" y1="398" x2="358" y2="566"/>
+    <line x1="600" y1="398" x2="932" y2="280"/>
+    <line x1="600" y1="398" x2="936" y2="564"/>
+    <line x1="600" y1="398" x2="600" y2="188"/>
+    <line x1="600" y1="398" x2="600" y2="616"/>
+  </g>
+
+  <g filter="url(#glow)">
+    <circle cx="600" cy="398" r="114" fill="#0f172a" stroke="url(#core)" stroke-width="4"/>
+    <circle cx="600" cy="398" r="88" fill="none" stroke="#67e8f9" stroke-opacity="0.45"/>
+  </g>
+  <text x="538" y="390" class="tiny">PERSONAL</text>
+  <text x="515" y="424" class="node">OpenClaw</text>
+  <text x="520" y="452" class="label">状态 · 工具 · 权限</text>
+
+  <g>
+    <rect x="160" y="226" width="172" height="108" rx="24" fill="#0f172a" fill-opacity="0.78" stroke="#334155"/>
+    <text x="203" y="274" class="node">文件</text>
+    <text x="191" y="304" class="label">知识、草稿、记录</text>
+
+    <rect x="258" y="514" width="200" height="108" rx="24" fill="#0f172a" fill-opacity="0.78" stroke="#334155"/>
+    <text x="322" y="562" class="node">终端</text>
+    <text x="297" y="592" class="label">命令、脚本、自动化</text>
+
+    <rect x="498" y="134" width="204" height="108" rx="24" fill="#0f172a" fill-opacity="0.78" stroke="#334155"/>
+    <text x="555" y="182" class="node">消息</text>
+    <text x="525" y="212" class="label">通知、配对、确认</text>
+
+    <rect x="842" y="226" width="194" height="108" rx="24" fill="#0f172a" fill-opacity="0.78" stroke="#334155"/>
+    <text x="890" y="274" class="node">浏览器</text>
+    <text x="872" y="304" class="label">检索、访问、操作</text>
+
+    <rect x="846" y="514" width="188" height="108" rx="24" fill="#0f172a" fill-opacity="0.78" stroke="#334155"/>
+    <text x="903" y="562" class="node">任务</text>
+    <text x="878" y="592" class="label">提醒、推进、代办</text>
+
+    <rect x="496" y="594" width="208" height="90" rx="24" fill="#0f172a" fill-opacity="0.78" stroke="#334155"/>
+    <text x="543" y="645" class="node">边界控制</text>
+    <text x="517" y="670" class="label">allowlist · approvals</text>
+  </g>
+
+  <text x="90" y="712" class="sub">价值不在于一个更花哨的聊天框，而在于它能否在你的个人环境中长期驻留、稳定连接、有限度地做事。</text>
+</svg>

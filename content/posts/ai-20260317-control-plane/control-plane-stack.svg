@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">AI Agent 的控制平面与数据平面</title>
+  <desc id="desc">展示控制平面位于上层，负责路由、权限、状态、观测和回滚；数据平面位于下层，负责模型、工具和执行。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#0f4c81"/>
+    </linearGradient>
+    <linearGradient id="bottom" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .title { font: 700 40px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #0f172a; }
+      .sub { font: 500 18px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #475569; }
+      .layer { font: 700 28px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #ffffff; }
+      .layer-dark { font: 700 28px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #0f172a; }
+      .box-title { font: 700 20px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #0f172a; }
+      .box-value { font: 500 16px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #334155; }
+      .footer { font: 600 15px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #64748b; letter-spacing: 1px; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <text x="80" y="90" class="title">一个成熟的 AI Agent，不只是模型堆得更强，而是多了一层控制平面</text>
+  <text x="80" y="124" class="sub">上层负责路由、权限、状态与止损；下层负责模型推理、工具调用和任务执行。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="80" y="176" width="1040" height="220" rx="30" fill="url(#top)"/>
+    <rect x="80" y="420" width="1040" height="240" rx="30" fill="url(#bottom)"/>
+  </g>
+
+  <text x="114" y="230" class="layer">控制平面 Control Plane</text>
+  <text x="114" y="264" class="sub" fill="#dbeafe">决定谁来做、怎么做、什么时候停、出了问题怎么办。</text>
+
+  <g>
+    <rect x="112" y="294" width="172" height="74" rx="20" fill="#ffffff" fill-opacity="0.95"/>
+    <text x="170" y="339" class="box-title">任务路由</text>
+
+    <rect x="310" y="294" width="172" height="74" rx="20" fill="#ffffff" fill-opacity="0.95"/>
+    <text x="368" y="339" class="box-title">权限模型</text>
+
+    <rect x="508" y="294" width="172" height="74" rx="20" fill="#ffffff" fill-opacity="0.95"/>
+    <text x="566" y="339" class="box-title">状态管理</text>
+
+    <rect x="706" y="294" width="188" height="74" rx="20" fill="#ffffff" fill-opacity="0.95"/>
+    <text x="758" y="339" class="box-title">可观测性</text>
+
+    <rect x="920" y="294" width="168" height="74" rx="20" fill="#ffffff" fill-opacity="0.95"/>
+    <text x="966" y="339" class="box-title">回滚止损</text>
+  </g>
+
+  <text x="114" y="472" class="layer-dark">数据平面 Data Plane</text>
+  <text x="114" y="506" class="sub">负责真正干活，但必须被上层调度、约束和观察。</text>
+
+  <g>
+    <rect x="114" y="546" width="228" height="82" rx="22" fill="#ffffff" stroke="#dbe3ee"/>
+    <text x="182" y="580" class="box-title">模型</text>
+    <text x="153" y="607" class="box-value">生成、推理、理解上下文</text>
+
+    <rect x="382" y="546" width="228" height="82" rx="22" fill="#ffffff" stroke="#dbe3ee"/>
+    <text x="449" y="580" class="box-title">工具</text>
+    <text x="423" y="607" class="box-value">检索、读写、命令、API</text>
+
+    <rect x="650" y="546" width="228" height="82" rx="22" fill="#ffffff" stroke="#dbe3ee"/>
+    <text x="714" y="580" class="box-title">执行</text>
+    <text x="693" y="607" class="box-value">多步流程、异步任务推进</text>
+
+    <rect x="918" y="546" width="172" height="82" rx="22" fill="#ffffff" stroke="#dbe3ee"/>
+    <text x="960" y="580" class="box-title">结果</text>
+    <text x="950" y="607" class="box-value">输出与动作</text>
+  </g>
+
+  <g stroke="#8fb3c9" stroke-width="3" stroke-linecap="round">
+    <line x1="226" y1="396" x2="226" y2="546"/>
+    <line x1="496" y1="396" x2="496" y2="546"/>
+    <line x1="764" y1="396" x2="764" y2="546"/>
+    <line x1="1004" y1="396" x2="1004" y2="546"/>
+  </g>
+
+  <text x="80" y="708" class="footer">竞争焦点正在从“回答像不像人”迁移到“执行像不像一个可治理的系统”。</text>
+</svg>

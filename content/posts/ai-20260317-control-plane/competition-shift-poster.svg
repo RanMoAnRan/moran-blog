@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">AI Agent 竞争重心迁移海报</title>
+  <desc id="desc">从更聪明迁移到更可控，强调控制平面的五项能力。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="55%" stop-color="#fffbf5"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="arrow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fb7185"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .title { font: 700 42px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #0f172a; }
+      .sub { font: 500 18px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #475569; }
+      .big { font: 700 52px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+      .caps { font: 700 16px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; letter-spacing: 2px; }
+      .item { font: 700 20px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; fill: #0f172a; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="760" fill="url(#bg)"/>
+  <text x="88" y="92" class="title">AI Agent 的下一场竞争，正在从“更聪明”迁移到“更可控”</text>
+  <text x="88" y="126" class="sub">模型能力会逐渐成为底座，真正决定系统质量的，会是调度、治理和运行边界。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="92" y="188" width="340" height="420" rx="34" fill="#ffffff"/>
+    <rect x="768" y="188" width="340" height="420" rx="34" fill="#ffffff"/>
+  </g>
+
+  <text x="140" y="242" class="caps" fill="#e11d48">OLD FOCUS</text>
+  <text x="140" y="304" class="big" fill="#be123c">更聪明</text>
+  <text x="140" y="354" class="sub">更大的模型</text>
+  <text x="140" y="394" class="sub">更自然的回答</text>
+  <text x="140" y="434" class="sub">更长的上下文</text>
+  <text x="140" y="474" class="sub">更炫的自动化演示</text>
+  <text x="140" y="544" class="sub">这些仍然重要，但会越来越像基础能力。</text>
+
+  <g>
+    <line x1="450" y1="398" x2="748" y2="398" stroke="url(#arrow)" stroke-width="16" stroke-linecap="round"/>
+    <polygon points="748,398 706,370 706,426" fill="#0ea5e9"/>
+    <text x="514" y="364" class="caps" fill="#0369a1">SHIFT</text>
+  </g>
+
+  <text x="814" y="242" class="caps" fill="#0369a1">NEW FOCUS</text>
+  <text x="814" y="304" class="big" fill="#0f4c81">更可控</text>
+
+  <g>
+    <rect x="814" y="340" width="246" height="44" rx="14" fill="#eff6ff"/>
+    <text x="846" y="368" class="item">任务路由</text>
+
+    <rect x="814" y="396" width="246" height="44" rx="14" fill="#eff6ff"/>
+    <text x="846" y="424" class="item">权限模型</text>
+
+    <rect x="814" y="452" width="246" height="44" rx="14" fill="#eff6ff"/>
+    <text x="846" y="480" class="item">状态管理</text>
+
+    <rect x="814" y="508" width="246" height="44" rx="14" fill="#eff6ff"/>
+    <text x="846" y="536" class="item">可观测性</text>
+
+    <rect x="814" y="564" width="246" height="44" rx="14" fill="#eff6ff"/>
+    <text x="846" y="592" class="item">回滚与止损</text>
+  </g>
+
+  <text x="88" y="688" class="sub">未来 Agent 的护城河，不只来自模型本身，更来自它是否像一个可治理的系统那样运行。</text>
+</svg>
