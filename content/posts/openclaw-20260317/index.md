@@ -1,7 +1,7 @@
 +++
 title = 'OpenClaw 不只是聊天机器人，它更像一个人的执行层'
 slug = 'openclaw-personal-execution-layer'
-date = 2026-03-17T10:30:00+08:00
+date = 2026-03-05T10:30:00+08:00
 draft = false
 tags = ['OpenClaw', 'AI Agent', 'Personal AI', '趋势观察']
 categories = ['AI Tools', 'AI']
