@@ -8,7 +8,6 @@ categories = ['AI Tools', '开源']
 summary = 'Everything Claude Code 最值得关注的，不是功能堆叠，而是它正把 AI Coding 从临时 Prompt 技巧推进成可复用、可迁移、可验证的工作流系统。'
 toc = true
 math = false
-cover = 'cover.svg'
 +++
 
 最近看到 `Everything Claude Code` 这个仓库时，我第一反应其实不是“东西真多”，而是“它的野心真大”。
