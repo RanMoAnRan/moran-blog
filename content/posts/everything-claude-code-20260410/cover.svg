@@ -1,0 +1,59 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="160" y1="80" x2="1440" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF6E8"/>
+      <stop offset="0.45" stop-color="#F8E8D8"/>
+      <stop offset="1" stop-color="#E8D7C5"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="320" y1="180" x2="1280" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F2937"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="420" y1="260" x2="1190" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#EA580C"/>
+    </linearGradient>
+    <filter id="shadow" x="260" y="130" width="1080" height="640" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="22"/>
+      <feGaussianBlur stdDeviation="28"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.24 0 0 0 0 0.16 0 0 0 0 0.08 0 0 0 0.18 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1335" cy="156" r="132" fill="#F59E0B" fill-opacity="0.12"/>
+  <circle cx="247" cy="741" r="164" fill="#C2410C" fill-opacity="0.1"/>
+  <path d="M130 702C270 634 377 624 547 665C717 706 815 771 965 772C1115 773 1245 670 1459 564" stroke="#7C2D12" stroke-opacity="0.14" stroke-width="4"/>
+
+  <g filter="url(#shadow)">
+    <rect x="310" y="170" width="980" height="560" rx="32" fill="url(#panel)"/>
+    <rect x="356" y="228" width="308" height="332" rx="24" fill="#111827"/>
+    <rect x="700" y="228" width="550" height="72" rx="20" fill="#F8FAFC" fill-opacity="0.08"/>
+    <rect x="700" y="330" width="550" height="72" rx="20" fill="#F8FAFC" fill-opacity="0.08"/>
+    <rect x="700" y="432" width="550" height="72" rx="20" fill="#F8FAFC" fill-opacity="0.08"/>
+    <rect x="700" y="534" width="550" height="104" rx="24" fill="url(#accent)"/>
+  </g>
+
+  <rect x="392" y="264" width="236" height="52" rx="14" fill="#F59E0B" fill-opacity="0.16" stroke="#FBBF24" stroke-opacity="0.5"/>
+  <text x="422" y="297" fill="#FCD34D" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="24" font-weight="700">WORKFLOW OS</text>
+
+  <text x="392" y="370" fill="#F8FAFC" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="56" font-weight="700">Everything</text>
+  <text x="392" y="434" fill="#F8FAFC" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="56" font-weight="700">Claude Code</text>
+  <text x="392" y="492" fill="#CBD5E1" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="24" font-weight="500">Rules. Skills. Hooks. Agents.</text>
+
+  <text x="734" y="274" fill="#E2E8F0" font-family="IBM Plex Mono, Menlo, monospace" font-size="22">rules/</text>
+  <text x="734" y="376" fill="#E2E8F0" font-family="IBM Plex Mono, Menlo, monospace" font-size="22">skills/</text>
+  <text x="734" y="478" fill="#E2E8F0" font-family="IBM Plex Mono, Menlo, monospace" font-size="22">hooks/</text>
+  <text x="734" y="584" fill="#FFF7ED" font-family="IBM Plex Mono, Menlo, monospace" font-size="22">agents + commands + verification</text>
+
+  <circle cx="1206" cy="264" r="14" fill="#F59E0B"/>
+  <circle cx="1206" cy="366" r="14" fill="#FB923C"/>
+  <circle cx="1206" cy="468" r="14" fill="#FDBA74"/>
+  <circle cx="1206" cy="570" r="14" fill="#FFF7ED"/>
+
+  <text x="310" y="110" fill="#7C2D12" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="26" font-weight="700">AI Coding Notes</text>
+</svg>
