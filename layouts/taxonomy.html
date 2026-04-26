@@ -3,7 +3,6 @@
   {{- $catCount := len site.Taxonomies.categories -}}
   {{- $tagCount := len site.Taxonomies.tags -}}
   {{- $accents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" -}}
-  {{- $tagAccents := slice "violet" "teal" "cyan" "blue" "indigo" "emerald" "lime" "amber" "orange" "pink" "rose" "red" "crimson" -}}
 
   <div class="container discovery-container">
     <div class="content discovery-page">
@@ -96,22 +95,17 @@
             <span class="discovery-panel__meta">{{ $tagCount }}</span>
           </header>
 
-          <div class="discovery-chips">
+          <div class="discovery-chips tag-list">
             {{ range $i, $tag := site.Taxonomies.tags.ByCount }}
               {{- $title := $tag.Page.Title -}}
-              {{- $accent := index $tagAccents (mod $i (len $tagAccents)) -}}
               <a
-                class="discovery-chip"
+                class="tag-chip"
                 href="{{ $tag.Page.RelPermalink }}"
-                data-accent="{{ $accent }}"
                 data-discovery-item
                 data-label="{{ $title }}"
+                title="{{ $title }}（{{ $tag.Count }} 篇）"
               >
-                <span class="discovery-chip__icon" aria-hidden="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>
-                </span>
-                <span class="discovery-chip__name">{{ $title }}</span>
-                <span class="discovery-chip__count">{{ $tag.Count }}</span>
+                {{ $title }}
               </a>
             {{ end }}
           </div>
