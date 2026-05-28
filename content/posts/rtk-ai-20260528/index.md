@@ -54,22 +54,6 @@ AI Agent -> RTK -> git/test/docker/... -> 压缩后的输出 -> 上下文
 
 这个位置很小，但挺关键。
 
-## 我实际试了一下
-
-我这台机器上原本没有装 `rtk`，直接跑会报：
-
-```bash
-zsh: command not found: rtk
-```
-
-为了不污染全局环境，我没有一上来就 `rtk init -g`，而是从 GitHub release 下了 `v0.40.0` 的 macOS 二进制，放在 `/tmp/rtk-bin/rtk` 里临时跑。
-
-先看版本：
-
-```bash
-/tmp/rtk-bin/rtk --version
-# rtk 0.40.0
-```
 
 第一次跑 `rtk gain`，它很诚实：
 
@@ -80,7 +64,7 @@ Run some rtk commands to start tracking savings.
 
 也就是说它不是凭空给你画饼。你得真的用它跑过命令，它才会开始统计节省情况。
 
-我拿当前这个 Hugo 博客仓库试了几条最普通的命令。
+我拿项目试了几条最普通的命令。
 
 `rtk git status` 的输出非常短：
 
@@ -119,13 +103,9 @@ vercel.json  106B
 
 最明显的是 `rtk read`。
 
-我让它读当前打开的这篇 `oh-my-claudecode` 文章，并限制前 30 行：
+我让它读文章，并限制前 30 行：
 
-```bash
-/tmp/rtk-bin/rtk read content/posts/oh-my-claudecode-20260426/index.md --max-lines 30
-```
-
-输出会保留 front matter 和开头正文，然后在后面补一句：
+它输出会保留 front matter 和开头正文，然后在后面补一句：
 
 ```text
 [613 more lines]
