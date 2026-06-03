@@ -1,8 +1,25 @@
 (() => {
   const storageKey = "ink-theme";
   const root = document.documentElement;
+  const themeColors = {
+    light: "#f1f5f9",
+    dark: "#0b1020",
+  };
 
-  const normalizeTheme = (value) => (value === "dark" ? "dark" : "light");
+  const systemTheme = () =>
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+  const normalizeTheme = (value) => (value === "dark" || value === "light" ? value : systemTheme());
+
+  const syncThemeColor = (theme) => {
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "theme-color");
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute("content", themeColors[normalizeTheme(theme)]);
+  };
 
   // 背景动效只在“首次进入当前标签页会话”播放一次，后续页面跳转保持静止以降低资源占用。
   try {
@@ -17,7 +34,10 @@
   }
 
   const applyTheme = (theme) => {
-    root.setAttribute("data-theme", normalizeTheme(theme));
+    const next = normalizeTheme(theme);
+    root.setAttribute("data-theme", next);
+    root.style.colorScheme = next;
+    syncThemeColor(next);
   };
 
   const giscusThemeFor = (theme) => (normalizeTheme(theme) === "dark" ? "dark_dimmed" : "light");
@@ -49,7 +69,7 @@
     try {
       return normalizeTheme(localStorage.getItem(storageKey));
     } catch {
-      return "light";
+      return systemTheme();
     }
   };
 

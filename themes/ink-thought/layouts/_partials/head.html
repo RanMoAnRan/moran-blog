@@ -1,5 +1,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f1f5f9" data-theme-color>
+{{ partial "head/theme-init.html" . }}
 
 {{- $pageTitle := site.Title -}}
 {{- if not .IsHome -}}
@@ -107,7 +109,6 @@
 {{- $schema | jsonify -}}
 </script>
 
-{{ partial "head/theme-init.html" . }}
 {{ partialCached "head/css.html" . }}
 {{ partialCached "head/js.html" . }}
 
