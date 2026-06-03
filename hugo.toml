@@ -131,6 +131,11 @@ enableRobotsTXT = true
     weight = 40
 
   [[menu.main]]
+    name = '统计'
+    pageRef = '/stats/'
+    weight = 60
+
+  [[menu.main]]
     name = '订阅'
     pageRef = '/subscribe/'
     weight = 45

@@ -498,6 +498,121 @@
     }
   };
 
+  const readIndex = () => {
+    try {
+      const list = JSON.parse(window.localStorage.getItem(`${storagePrefix}index`) || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const readAllStates = () =>
+    readIndex()
+      .map((url) => readState(url))
+      .filter(Boolean)
+      .sort((a, b) => (Number(b.updatedAt) || 0) - (Number(a.updatedAt) || 0));
+
+  const formatTimeAgo = (timestamp) => {
+    const diff = Date.now() - (Number(timestamp) || 0);
+    if (!timestamp || diff < 0) return "刚刚";
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    if (diff < minute) return "刚刚";
+    if (diff < hour) return `${Math.floor(diff / minute)} 分钟前`;
+    if (diff < day) return `${Math.floor(diff / hour)} 小时前`;
+    if (diff < 7 * day) return `${Math.floor(diff / day)} 天前`;
+    return new Date(timestamp).toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" });
+  };
+
+  const renderPulse = () => {
+    const root = document.querySelector("[data-reading-pulse]");
+    if (!root) return;
+
+    const states = readAllStates();
+    const readCount = states.filter((item) => item.read || item.percent >= 90).length;
+    const progressItems = states.filter((item) => !(item.read || item.percent >= 90) && item.percent >= 5);
+    const totalPosts = Number(root.getAttribute("data-total-posts")) || 0;
+    const completionRate = totalPosts ? Math.round((readCount / totalPosts) * 100) : 0;
+
+    const setText = (selector, value) => {
+      const el = root.querySelector(selector);
+      if (el) el.textContent = value;
+    };
+
+    setText("[data-read-count]", String(readCount));
+    setText("[data-progress-count]", String(progressItems.length));
+    setText("[data-completion-rate]", states.length ? `${completionRate}%` : "--");
+
+    const list = root.querySelector("[data-reading-recent]");
+    const empty = root.querySelector("[data-reading-empty]");
+    const clear = root.querySelector("[data-reading-clear]");
+    const recent = states.slice(0, 4);
+
+    if (!list || !empty) return;
+
+    if (!recent.length) {
+      list.hidden = true;
+      list.innerHTML = "";
+      empty.hidden = false;
+      if (clear) clear.hidden = true;
+      return;
+    }
+
+    empty.hidden = true;
+    list.hidden = false;
+    if (clear) clear.hidden = false;
+    list.innerHTML = recent
+      .map((item) => {
+        const isRead = item.read || item.percent >= 90;
+        const label = isRead ? "读过" : `继续 ${item.percent || 0}%`;
+        const href = isRead ? item.url : continueHref(item.url);
+        return `
+          <a class="reading-pulse__item" href="${href}">
+            <span class="reading-pulse__item-main">
+              <strong>${escapeHtml(item.title || "未命名文章")}</strong>
+              <small>${formatTimeAgo(item.updatedAt)}</small>
+            </span>
+            <span class="reading-pulse__item-state${isRead ? " is-read" : ""}">${label}</span>
+          </a>
+        `;
+      })
+      .join("");
+
+    if (clear && clear.dataset.bound !== "1") {
+      clear.dataset.bound = "1";
+      clear.addEventListener("click", () => {
+        try {
+          readIndex().forEach((url) => window.localStorage.removeItem(stateKey(url)));
+          window.localStorage.removeItem(`${storagePrefix}index`);
+        } catch {
+          // ignore
+        }
+        renderCards();
+        renderPulse();
+      });
+    }
+  };
+
+  const escapeHtml = (value) =>
+    (value || "").toString().replace(/[&<>"']/g, (ch) => {
+      switch (ch) {
+        case "&":
+          return "&amp;";
+        case "<":
+          return "&lt;";
+        case ">":
+          return "&gt;";
+        case '"':
+          return "&quot;";
+        case "'":
+          return "&#39;";
+        default:
+          return ch;
+      }
+    });
+
   const renderCards = () => {
     const cards = document.querySelectorAll("[data-post-card]");
     if (!cards.length) return;
@@ -545,8 +660,13 @@
     });
   };
 
+  const refreshReadState = () => {
+    renderCards();
+    renderPulse();
+  };
+
   window.inkReadState = {
-    refresh: renderCards,
+    refresh: refreshReadState,
     read: readState,
     continueHref,
   };
@@ -577,6 +697,7 @@
       lastPercent = percent;
       writeState({ url, title: title.trim(), percent, scrollY: window.scrollY, read: percent >= 90, updatedAt: now });
       renderCards();
+      renderPulse();
     };
 
     const restoreIfRequested = () => {
@@ -603,7 +724,7 @@
 
   const init = () => {
     setupArticleTracking();
-    renderCards();
+    refreshReadState();
   };
 
   if (document.readyState === "loading") {

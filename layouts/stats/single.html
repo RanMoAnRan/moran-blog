@@ -1,0 +1,216 @@
+{{ define "main" }}
+  {{- $postPages := where site.RegularPages "Section" "posts" -}}
+  {{- $postsByDate := $postPages.ByDate.Reverse -}}
+  {{- $tagCount := len site.Taxonomies.tags -}}
+  {{- $categoryCount := len site.Taxonomies.categories -}}
+  {{- $latestPost := index $postsByDate 0 -}}
+  {{- $currentYear := now.Format "2006" -}}
+  {{- $recentCutoff := now.AddDate 0 0 -30 -}}
+  {{- $recentPostCount := 0 -}}
+  {{- range $postPages -}}
+    {{- if ge .Date.Unix $recentCutoff.Unix -}}
+      {{- $recentPostCount = add $recentPostCount 1 -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $maxCategoryCount := 1 -}}
+  {{- range site.Taxonomies.categories -}}
+    {{- if gt (len .Pages) $maxCategoryCount -}}{{- $maxCategoryCount = len .Pages -}}{{- end -}}
+  {{- end -}}
+  {{- $maxTagCount := 1 -}}
+  {{- range site.Taxonomies.tags -}}
+    {{- if gt (len .Pages) $maxTagCount -}}{{- $maxTagCount = len .Pages -}}{{- end -}}
+  {{- end -}}
+  {{- $yearScratch := newScratch -}}
+  {{- range $postPages -}}
+    {{- $year := .Date.Format "2006" -}}
+    {{- $yearScratch.Add $year 1 -}}
+  {{- end -}}
+  {{- $yearPostCount := default 0 ($yearScratch.Get $currentYear) -}}
+  {{- $years := slice -}}
+  {{- range $postPages -}}
+    {{- $year := .Date.Format "2006" -}}
+    {{- if not (in $years $year) -}}
+      {{- $years = $years | append $year -}}
+    {{- end -}}
+  {{- end -}}
+
+  <div class="container detail-container stats-page-container">
+    <div class="content post-detail-container stats-page">
+      {{ with .Content }}<div class="prose stats-intro">{{ . }}</div>{{ end }}
+
+      <section class="stats-section" aria-labelledby="site-overview-title">
+        <div class="stats-section__head">
+          <div>
+            <p class="stats-kicker">Site Overview</p>
+            <h2 id="site-overview-title">站点概览</h2>
+          </div>
+          {{ with $latestPost }}<span class="stats-section__note">最近更新 {{ .Date.Format "01.02" }}</span>{{ end }}
+        </div>
+        <div class="stats-metric-grid">
+          <div class="stats-metric-card is-featured">
+            <span>文章总数</span>
+            <strong>{{ len $postPages }}</strong>
+            <small>已发布长文</small>
+          </div>
+          <div class="stats-metric-card">
+            <span>最近 30 天</span>
+            <strong>{{ $recentPostCount }}</strong>
+            <small>新发布文章</small>
+          </div>
+          <div class="stats-metric-card">
+            <span>内容重心</span>
+            {{ range first 1 site.Taxonomies.categories.ByCount }}
+              <strong>{{ .Page.Title }}</strong>
+              <small>最多分类 · {{ len .Pages }} 篇</small>
+            {{ else }}
+              <strong>--</strong>
+              <small>暂无分类</small>
+            {{ end }}
+          </div>
+          <div class="stats-metric-card">
+            <span>今年发布</span>
+            <strong>{{ $yearPostCount }}</strong>
+            <small>{{ $currentYear }} 年</small>
+          </div>
+          <div class="stats-metric-card">
+            <span>标签</span>
+            <strong>{{ $tagCount }}</strong>
+            <small>主题线索</small>
+          </div>
+          <div class="stats-metric-card">
+            <span>分类</span>
+            <strong>{{ $categoryCount }}</strong>
+            <small>内容分区</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section stats-reading-section" data-reading-pulse data-total-posts="{{ len $postPages }}" aria-labelledby="reading-overview-title">
+        <div class="stats-section__head">
+          <div>
+            <p class="stats-kicker">Reading Pulse</p>
+            <h2 id="reading-overview-title">阅读概览</h2>
+            <p class="stats-section__desc">本地阅读记录只保存在当前浏览器，用来帮你继续看长文。</p>
+          </div>
+          <span class="stats-section__note">本地统计</span>
+        </div>
+
+        <div class="stats-reading-grid">
+          <div class="stats-reading-summary" aria-label="阅读数字">
+            <div class="reading-pulse__tile">
+              <strong>{{ len $postPages }}</strong>
+              <span>文章</span>
+            </div>
+            <div class="reading-pulse__tile">
+              <strong>{{ $tagCount }}</strong>
+              <span>标签</span>
+            </div>
+            <div class="reading-pulse__tile">
+              <strong>{{ $categoryCount }}</strong>
+              <span>分类</span>
+            </div>
+            <div class="reading-pulse__tile is-local">
+              <strong data-read-count>0</strong>
+              <span>已读</span>
+            </div>
+            <div class="reading-pulse__tile is-local">
+              <strong data-progress-count>0</strong>
+              <span>继续阅读</span>
+            </div>
+            <div class="reading-pulse__tile is-local">
+              <strong data-completion-rate>--</strong>
+              <span>完成率</span>
+            </div>
+          </div>
+
+          <div class="reading-pulse__recent stats-reading-recent">
+            <div class="reading-pulse__recent-head">
+              <h3>最近阅读</h3>
+              <button class="reading-pulse__clear" type="button" data-reading-clear hidden>清除记录</button>
+            </div>
+            <div class="reading-pulse__empty" data-reading-empty>
+              还没有阅读记录。读几篇长文后，这里会显示你的继续阅读入口。
+            </div>
+            <div class="reading-pulse__list" data-reading-recent hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" aria-labelledby="content-distribution-title">
+        <div class="stats-section__head">
+          <div>
+            <p class="stats-kicker">Content Map</p>
+            <h2 id="content-distribution-title">内容分布</h2>
+          </div>
+          <span class="stats-section__note">分类 / 标签 / 年份</span>
+        </div>
+        <div class="stats-panels">
+          <div class="stats-panel">
+            <h3>分类排行</h3>
+            <div class="stats-bars">
+              {{ range first 6 site.Taxonomies.categories.ByCount }}
+                {{- $percent := div (mul (len .Pages) 100.0) $maxCategoryCount -}}
+                <a class="stats-bar" href="{{ .Page.RelPermalink }}">
+                  <span class="stats-bar__label">{{ .Page.Title }}</span>
+                  <span class="stats-bar__track"><span style="width: {{ printf "%.2f" $percent }}%"></span></span>
+                  <strong>{{ len .Pages }}</strong>
+                </a>
+              {{ else }}
+                <p class="stats-empty">暂无分类。</p>
+              {{ end }}
+            </div>
+          </div>
+
+          <div class="stats-panel">
+            <h3>热门标签</h3>
+            <div class="stats-tag-cloud">
+              {{ range first 14 site.Taxonomies.tags.ByCount }}
+                <a href="{{ .Page.RelPermalink }}">
+                  <span>{{ .Page.Title }}</span>
+                  <strong>{{ len .Pages }}</strong>
+                </a>
+              {{ else }}
+                <p class="stats-empty">暂无标签。</p>
+              {{ end }}
+            </div>
+          </div>
+
+          <div class="stats-panel stats-panel--wide">
+            <h3>年份节奏</h3>
+            <div class="stats-year-grid">
+              {{ range sort $years "value" "desc" }}
+                {{- $count := $yearScratch.Get . -}}
+                <div class="stats-year-card">
+                  <span>{{ . }}</span>
+                  <strong>{{ $count }}</strong>
+                  <small>篇文章</small>
+                </div>
+              {{ else }}
+                <p class="stats-empty">暂无年份数据。</p>
+              {{ end }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-section" aria-labelledby="latest-updates-title">
+        <div class="stats-section__head">
+          <div>
+            <p class="stats-kicker">Recently Published</p>
+            <h2 id="latest-updates-title">最近更新</h2>
+          </div>
+          <a class="stats-section__link" href="{{ "posts" | relURL }}">查看全部</a>
+        </div>
+        <div class="stats-latest-list">
+          {{ range first 6 $postsByDate }}
+            <a class="stats-latest-item" href="{{ .RelPermalink }}">
+              <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+              <strong>{{ .Title }}</strong>
+              <span>{{ .ReadingTime }} 分钟</span>
+            </a>
+          {{ end }}
+        </div>
+      </section>
+    </div>
+  </div>
+{{ end }}
