@@ -1,33 +1,20 @@
 {{- $g := site.Params.giscus -}}
 {{- if and $g $g.enabled -}}
   <section class="comments" aria-label="评论">
-    <script>
-      (function () {
-        var currentScript = document.currentScript;
-        var script = document.createElement("script");
-        var attrs = {
-          "src": "https://giscus.app/client.js",
-          "data-repo": {{ $g.repo | jsonify }},
-          "data-repo-id": {{ $g.repoId | jsonify }},
-          "data-category": {{ $g.category | jsonify }},
-          "data-category-id": {{ $g.categoryId | jsonify }},
-          "data-mapping": {{ $g.mapping | jsonify }},
-          "data-reactions-enabled": {{ $g.reactionsEnabled | jsonify }},
-          "data-emit-metadata": {{ $g.emitMetadata | jsonify }},
-          "data-input-position": {{ $g.inputPosition | jsonify }},
-          "data-lang": {{ $g.lang | jsonify }},
-          "crossorigin": {{ ($g.crossorigin | default "anonymous") | jsonify }}
-        };
-        Object.keys(attrs).forEach(function (name) {
-          script.setAttribute(name, attrs[name]);
-        });
-        script.setAttribute(
-          "data-theme",
-          document.documentElement.getAttribute("data-theme") === "dark" ? "dark_dimmed" : "light"
-        );
-        script.async = true;
-        currentScript.parentNode.appendChild(script);
-      })();
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="{{ $g.repo }}"
+      data-repo-id="{{ $g.repoId }}"
+      data-category="{{ $g.category }}"
+      data-category-id="{{ $g.categoryId }}"
+      data-mapping="{{ $g.mapping }}"
+      data-reactions-enabled="{{ $g.reactionsEnabled }}"
+      data-emit-metadata="{{ $g.emitMetadata }}"
+      data-input-position="{{ $g.inputPosition }}"
+      data-theme="{{ $g.theme | default `light` }}"
+      data-lang="{{ $g.lang | default `zh-CN` }}"
+      crossorigin="{{ $g.crossorigin | default `anonymous` }}"
+      async>
     </script>
   </section>
 {{- end -}}

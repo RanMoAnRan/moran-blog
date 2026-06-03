@@ -1,4 +1,4 @@
-<article class="post-card group">
+<article class="post-card group" data-post-card data-post-url="{{ .RelPermalink }}" data-post-title="{{ .Title }}">
   {{- $coverUrl := partial "cover-url.html" . -}}
   {{- if $coverUrl -}}
     <a class="post-card__cover" href="{{ .RelPermalink }}" aria-label="打开：{{ .Title }}">
@@ -33,6 +33,8 @@
     </a>
   </h3>
 
+  <div class="post-card__read-state" data-read-state hidden></div>
+
   <!-- 3. Summary -->
   <div class="post-card__summary">
     {{ .Summary | plainify | truncate 120 }}
@@ -46,8 +48,8 @@
       {{ end }}
     </div>
     
-    <a href="{{ .RelPermalink }}" class="read-more-link">
-      阅读全文 
+    <a href="{{ .RelPermalink }}" class="read-more-link" data-read-more-link>
+      <span data-read-more-text>阅读全文</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     </a>
   </footer>

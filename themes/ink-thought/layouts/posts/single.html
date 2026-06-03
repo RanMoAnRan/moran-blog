@@ -1,5 +1,11 @@
 {{ define "main" }}
-  <div class="container detail-container">
+  {{- $tocEnabled := .Params.toc | default false -}}
+  {{- $showToc := and $tocEnabled (in .TableOfContents "<li>") -}}
+  <div class="post-reading-progress" data-reading-progress aria-hidden="true">
+    <span class="post-reading-progress__bar" data-reading-progress-bar></span>
+  </div>
+
+  <div class="container detail-container{{ if $showToc }} has-post-toc{{ end }}">
     <div class="post-detail-container">
       <!-- Article Card -->
       <article class="post-detail-card">
@@ -188,6 +194,28 @@
 
       </article>
     </div>
+
+    <button class="post-back-to-top" type="button" data-back-to-top aria-label="回到顶部" aria-hidden="true">
+      <span class="post-back-to-top__percent" data-reading-percent>0%</span>
+      <svg class="post-back-to-top__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
+
+    {{- if $showToc -}}
+      <button class="post-toc-toggle" type="button" data-toc-toggle aria-label="打开文章目录" aria-controls="post-toc-panel" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+        <span>目录</span>
+      </button>
+
+      <aside class="post-toc" data-post-toc aria-label="文章目录">
+        <div class="post-toc__inner" id="post-toc-panel">
+          <div class="post-toc__eyebrow">On this page</div>
+          <div class="post-toc__title">目录</div>
+          <div class="post-toc__body">
+            {{ .TableOfContents }}
+          </div>
+        </div>
+      </aside>
+    {{- end -}}
   </div>
 
   <style>
@@ -260,6 +288,315 @@
       border: 1px solid var(--border);
       position: relative;
       overflow: hidden;
+    }
+
+    .post-reading-progress {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 49;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .post-reading-progress__bar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(0);
+      transform-origin: left center;
+      background: linear-gradient(90deg, var(--violet-500), #d946ef, var(--indigo-500));
+      box-shadow: 0 0 14px rgba(139, 92, 246, 0.35);
+      transition: transform 0.08s linear;
+    }
+
+    .post-toc-toggle {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 46;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(139, 92, 246, 0.24);
+      background: color-mix(in srgb, var(--panel) 86%, transparent);
+      color: var(--text-heading);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(16px);
+      font-size: 0.875rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .post-toc-toggle:hover,
+    .post-toc-toggle[aria-expanded='true'] {
+      transform: translateY(-1px);
+      border-color: rgba(139, 92, 246, 0.42);
+      color: var(--violet-700);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+    }
+
+    [data-theme='dark'] .post-toc-toggle:hover,
+    [data-theme='dark'] .post-toc-toggle[aria-expanded='true'] {
+      color: var(--violet-300);
+      background: rgba(30, 41, 59, 0.86);
+    }
+
+    .post-back-to-top {
+      position: fixed;
+      right: 18px;
+      bottom: 72px;
+      z-index: 46;
+      display: inline-grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 1px solid rgba(139, 92, 246, 0.24);
+      background: color-mix(in srgb, var(--panel) 86%, transparent);
+      color: var(--text-heading);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px) scale(0.92);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease, border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .post-back-to-top.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .post-back-to-top:hover,
+    .post-back-to-top:focus-visible {
+      border-color: rgba(139, 92, 246, 0.42);
+      color: var(--violet-700);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    [data-theme='dark'] .post-back-to-top:hover,
+    [data-theme='dark'] .post-back-to-top:focus-visible {
+      color: var(--violet-300);
+      background: rgba(30, 41, 59, 0.86);
+    }
+
+    .post-back-to-top__percent {
+      font-size: 0.7rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .post-back-to-top__icon {
+      width: 14px;
+      height: 14px;
+      margin-top: -2px;
+    }
+
+    .post-toc {
+      position: fixed;
+      right: 16px;
+      bottom: 72px;
+      z-index: 45;
+      width: min(360px, calc(100vw - 32px));
+      max-height: min(520px, calc(100vh - var(--header-height) - 112px));
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .post-toc.is-open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .post-toc__inner {
+      max-height: inherit;
+      overflow: auto;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(139, 92, 246, 0.18);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(18px);
+    }
+
+    [data-theme='dark'] .post-toc__inner {
+      background: rgba(15, 23, 42, 0.88);
+      border-color: rgba(139, 92, 246, 0.24);
+    }
+
+    .post-toc__eyebrow {
+      font-size: 0.68rem;
+      line-height: 1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .post-toc__title {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      margin-bottom: 12px;
+    }
+
+    .post-toc__body nav,
+    .post-toc__body ul {
+      margin: 0;
+      padding: 0;
+    }
+
+    .post-toc__body ul {
+      list-style: none;
+      display: grid;
+      gap: 4px;
+    }
+
+    .post-toc__body ul ul {
+      margin-top: 4px;
+      padding-left: 12px;
+      border-left: 1px solid var(--border);
+    }
+
+    .post-toc__body a {
+      display: block;
+      padding: 6px 9px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      text-decoration: none;
+      transition: background 0.18s, color 0.18s, transform 0.18s;
+    }
+
+    .post-toc__body a:hover {
+      color: var(--text-heading);
+      background: var(--hover-bg);
+      transform: translateX(2px);
+    }
+
+    .post-toc__body a.is-active {
+      color: var(--violet-700);
+      background: rgba(124, 58, 237, 0.1);
+      font-weight: 800;
+    }
+
+    [data-theme='dark'] .post-toc__body a.is-active {
+      color: var(--violet-300);
+      background: rgba(124, 58, 237, 0.18);
+    }
+
+    .detail-prose :is(h2, h3, h4) {
+      scroll-margin-top: calc(var(--header-height) + 28px);
+    }
+
+    .detail-prose :is(h2, h3, h4).has-heading-anchor {
+      position: relative;
+    }
+
+    .heading-anchor-copy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.45em;
+      height: 1.45em;
+      margin-left: 0.35em;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-muted);
+      opacity: 0;
+      vertical-align: 0.08em;
+      cursor: pointer;
+      transition: opacity 0.18s, color 0.18s, background 0.18s, transform 0.18s;
+    }
+
+    .detail-prose :is(h2, h3, h4):hover .heading-anchor-copy,
+    .heading-anchor-copy:focus-visible,
+    .heading-anchor-copy.is-copied {
+      opacity: 1;
+    }
+
+    .heading-anchor-copy:hover,
+    .heading-anchor-copy.is-copied {
+      color: var(--violet-700);
+      background: rgba(124, 58, 237, 0.1);
+      transform: translateY(-1px);
+    }
+
+    [data-theme='dark'] .heading-anchor-copy:hover,
+    [data-theme='dark'] .heading-anchor-copy.is-copied {
+      color: var(--violet-300);
+      background: rgba(124, 58, 237, 0.18);
+    }
+
+    @media (min-width: 1240px) {
+      .detail-container.has-post-toc {
+        --container: 1360px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 240px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .post-toc-toggle {
+        display: none;
+      }
+
+      .post-back-to-top {
+        right: max(24px, calc((100vw - 1360px) / 2 + 24px));
+        bottom: 24px;
+      }
+
+      .post-toc {
+        position: fixed;
+        top: calc(var(--header-height) + 24px);
+        right: max(24px, calc((100vw - 1360px) / 2 + 24px));
+        bottom: auto;
+        width: 240px;
+        max-height: calc(100vh - var(--header-height) - 48px);
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        z-index: 45;
+      }
+
+      .post-toc__inner {
+        box-shadow: var(--shadow-sm);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .heading-anchor-copy {
+        opacity: 0.55;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .post-reading-progress__bar,
+      .post-toc,
+      .post-toc-toggle,
+      .post-back-to-top,
+      .post-toc__body a,
+      .heading-anchor-copy {
+        transition: none;
+      }
     }
     
     @media (max-width: 768px) {

@@ -76,7 +76,59 @@
       }
     });
 
-  const renderResults = (items, query) => {
+  const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const decodeHtmlEntities = (value) => {
+    const text = (value || "").toString();
+    if (!text.includes("&")) return text;
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = text;
+    return textarea.value;
+  };
+
+  const uniqueTokens = (tokens) => Array.from(new Set(tokens.filter(Boolean))).sort((a, b) => b.length - a.length);
+
+  const highlightText = (value, tokens) => {
+    const text = decodeHtmlEntities(value);
+    const terms = uniqueTokens(tokens);
+    if (!text || !terms.length) return escapeHtml(text);
+
+    const pattern = new RegExp(`(${terms.map(escapeRegExp).join("|")})`, "gi");
+    let cursor = 0;
+    let html = "";
+
+    text.replace(pattern, (match, _term, index) => {
+      html += escapeHtml(text.slice(cursor, index));
+      html += `<mark class="search-hit">${escapeHtml(match)}</mark>`;
+      cursor = index + match.length;
+      return match;
+    });
+
+    html += escapeHtml(text.slice(cursor));
+    return html;
+  };
+
+  const excerptAroundHit = (value, tokens, size = 120) => {
+    const text = decodeHtmlEntities(value).replace(/\s+/g, " ").trim();
+    const terms = uniqueTokens(tokens);
+    if (!text || !terms.length) return "";
+
+    const lower = text.toLowerCase();
+    let hitIndex = -1;
+    for (const token of terms) {
+      const index = lower.indexOf(token);
+      if (index !== -1 && (hitIndex === -1 || index < hitIndex)) hitIndex = index;
+    }
+    if (hitIndex === -1) return "";
+
+    const start = Math.max(0, hitIndex - Math.floor(size / 2));
+    const end = Math.min(text.length, start + size);
+    const prefix = start > 0 ? "…" : "";
+    const suffix = end < text.length ? "…" : "";
+    return `${prefix}${text.slice(start, end)}${suffix}`;
+  };
+
+  const renderResults = (items, query, tokens = tokenize(query)) => {
     results.innerHTML = "";
 
     if (!query) {
@@ -94,11 +146,18 @@
     for (const item of items) {
       const article = document.createElement("article");
       article.className = "post-card search-result";
+      article.dataset.postCard = "";
+      article.dataset.postUrl = item.url || "#";
+      article.dataset.postTitle = item.title || "";
 
-      const title = escapeHtml(item.title);
-      const summary = escapeHtml(item.summary || "");
+      const titleHitCount = includesAny(item.title, tokens);
+      const summaryHitCount = includesAny(item.summary || "", tokens);
+      const title = highlightText(item.title, tokens);
+      const summary = highlightText(item.summary || "", tokens);
+      const contentExcerpt = titleHitCount || summaryHitCount ? "" : excerptAroundHit(item.content || "", tokens);
+      const excerpt = contentExcerpt ? highlightText(contentExcerpt, tokens) : "";
       const date = escapeHtml(item.date || "");
-      const url = item.url || "#";
+      const url = escapeHtml(item.url || "#");
 
       article.innerHTML = `
         <header class="post-card__header">
@@ -107,10 +166,20 @@
           </h3>
           <div class="post-card__meta"><span class="meta">${date}</span></div>
         </header>
+        <div class="post-card__read-state" data-read-state hidden></div>
         ${summary ? `<p class="post-card__summary">${summary}</p>` : ""}
+        ${excerpt ? `<p class="search-result__excerpt"><span class="search-result__excerpt-label">正文命中</span>${excerpt}</p>` : ""}
+        <footer class="post-card__footer search-result__footer">
+          <span></span>
+          <a href="${url}" class="read-more-link" data-read-more-link><span data-read-more-text>阅读全文</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        </footer>
       `;
 
       results.appendChild(article);
+    }
+
+    if (window.inkReadState && typeof window.inkReadState.refresh === "function") {
+      window.inkReadState.refresh();
     }
   };
 
@@ -135,6 +204,7 @@
     renderResults(
       matches.slice(0, 30).map((m) => m.page),
       query,
+      tokens,
     );
   };
 

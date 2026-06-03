@@ -693,6 +693,58 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0;
 }
 
+.search-hit {
+  display: inline;
+  padding: 0.05em 0.22em;
+  border-radius: 0.35em;
+  background: linear-gradient(180deg, rgba(253, 224, 71, 0.55), rgba(251, 191, 36, 0.35));
+  color: var(--slate-900);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  font-weight: 800;
+}
+
+.search-result__excerpt {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px dashed rgba(139, 92, 246, 0.24);
+  background: rgba(124, 58, 237, 0.045);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.search-result__excerpt-label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--violet-700);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  vertical-align: 0.08em;
+}
+
+[data-theme='dark'] .search-hit {
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.32), rgba(217, 119, 6, 0.26));
+  color: #fef3c7;
+}
+
+[data-theme='dark'] .search-result__excerpt {
+  border-color: rgba(139, 92, 246, 0.22);
+  background: rgba(124, 58, 237, 0.09);
+}
+
+[data-theme='dark'] .search-result__excerpt-label {
+  background: rgba(124, 58, 237, 0.18);
+  color: var(--violet-300);
+}
+
+
 .post-card__meta {
   font-size: 0.75rem;
   color: var(--slate-400);
@@ -1086,6 +1138,68 @@ h1, h2, h3, h4, h5, h6 {
 
 [data-theme='dark'] .post-card:hover .post-card__title {
   color: var(--violet-500);
+}
+
+
+.post-card__read-state {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: -4px 0 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  background: rgba(124, 58, 237, 0.07);
+  color: var(--violet-700);
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.post-card__read-state[hidden] {
+  display: none;
+}
+
+.post-card__read-state.is-read {
+  border-color: rgba(16, 185, 129, 0.24);
+  background: rgba(16, 185, 129, 0.08);
+  color: #047857;
+}
+
+.post-card__read-state.is-recent-read {
+  border-color: rgba(59, 130, 246, 0.22);
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+}
+
+.post-card.is-in-progress .read-more-link,
+.post-card.is-read .read-more-link,
+.post-card.is-recent-read .read-more-link {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.search-result__footer {
+  margin-top: 16px;
+}
+
+[data-theme='dark'] .post-card__read-state {
+  border-color: rgba(139, 92, 246, 0.28);
+  background: rgba(124, 58, 237, 0.16);
+  color: var(--violet-300);
+}
+
+[data-theme='dark'] .post-card__read-state.is-read {
+  border-color: rgba(52, 211, 153, 0.22);
+  background: rgba(16, 185, 129, 0.14);
+  color: #6ee7b7;
+}
+
+[data-theme='dark'] .post-card__read-state.is-recent-read {
+  border-color: rgba(96, 165, 250, 0.24);
+  background: rgba(59, 130, 246, 0.14);
+  color: #93c5fd;
 }
 
 .post-card__summary {
