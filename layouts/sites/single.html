@@ -23,7 +23,11 @@
                   <a class="site-card" data-accent="{{ $accent }}" href="{{ $url }}" target="_blank" rel="noopener noreferrer">
                     <div class="site-card__top">
                       <span class="site-card__mark" aria-hidden="true">{{ $initial }}</span>
-                      <span class="site-card__arrow" aria-hidden="true">↗</span>
+                      <span class="site-card__arrow" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="m9 18 6-6-6-6"></path>
+                        </svg>
+                      </span>
                     </div>
                     <div class="site-card__body">
                       <h3>{{ $name }}</h3>
@@ -77,34 +81,43 @@
       gap: 18px;
       padding: 20px;
       overflow: hidden;
-      border: 1px solid rgba(203, 213, 225, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.72);
       border-radius: 24px;
       background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.74)),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(248, 250, 252, 0.54)),
         radial-gradient(220px 120px at 100% 0%, var(--site-glow, rgba(59, 130, 246, 0.12)), transparent 62%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       color: inherit;
       text-decoration: none;
-      box-shadow: 0 18px 38px -34px rgba(15, 23, 42, 0.38);
-      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      box-shadow:
+        0 2px 16px -4px rgba(15, 23, 42, 0.08),
+        0 18px 38px -34px rgba(15, 23, 42, 0.38);
+      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease, background 200ms ease;
     }
 
     .site-card::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, var(--site-tint, rgba(37, 99, 235, 0.13)), transparent 36%);
-      opacity: 0;
-      transition: opacity 180ms ease;
+      background: radial-gradient(260px 160px at 88% -18%, var(--site-tint, rgba(37, 99, 235, 0.13)), transparent 68%);
+      opacity: 0.55;
+      transition: opacity 200ms ease;
       pointer-events: none;
     }
 
     .site-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--site-border, rgba(37, 99, 235, 0.38));
-      box-shadow: 0 24px 50px -34px rgba(15, 23, 42, 0.48);
+      transform: scale(1.02);
+      border-color: rgba(255, 255, 255, 0.92);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(248, 250, 252, 0.72)),
+        radial-gradient(220px 120px at 100% 0%, var(--site-glow, rgba(59, 130, 246, 0.12)), transparent 62%);
+      box-shadow:
+        0 22px 48px -26px rgba(15, 23, 42, 0.26),
+        0 10px 22px -18px var(--site-border, rgba(37, 99, 235, 0.38));
     }
 
-    .site-card:hover::before { opacity: 1; }
+    .site-card:hover::before { opacity: 0.82; }
 
     [data-theme='dark'] .site-card {
       border-color: rgba(148, 163, 184, 0.18);
@@ -112,6 +125,16 @@
         linear-gradient(145deg, rgba(15, 23, 42, 0.74), rgba(30, 41, 59, 0.58)),
         radial-gradient(220px 120px at 100% 0%, var(--site-glow, rgba(59, 130, 246, 0.15)), transparent 62%);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    [data-theme='dark'] .site-card:hover {
+      border-color: rgba(148, 163, 184, 0.28);
+      background:
+        linear-gradient(145deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.66)),
+        radial-gradient(220px 120px at 100% 0%, var(--site-glow, rgba(59, 130, 246, 0.15)), transparent 62%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 22px 48px -30px rgba(0, 0, 0, 0.62);
     }
 
     .site-card[data-accent='blue'] {
@@ -166,15 +189,6 @@
       box-shadow: 0 14px 28px -20px var(--site-mark, #475569);
     }
 
-    .site-card__arrow {
-      color: var(--site-mark, #475569);
-      font-size: 1.05rem;
-      font-weight: 900;
-      transition: transform 180ms ease;
-    }
-
-    .site-card:hover .site-card__arrow { transform: translate(3px, -3px); }
-
     .site-card__body {
       position: relative;
       z-index: 1;
@@ -186,6 +200,43 @@
       font-size: 1.22rem;
       line-height: 1.2;
       letter-spacing: -0.035em;
+      transition: color 200ms ease;
+    }
+
+    .site-card:hover .site-card__body h3 {
+      color: var(--site-mark, #475569);
+    }
+
+    .site-card__arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      color: rgba(100, 116, 139, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      transition: transform 200ms ease, background 200ms ease, color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .site-card__arrow svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .site-card:hover .site-card__arrow {
+      transform: translateX(2px);
+      background: var(--site-mark, #475569);
+      color: white;
+      box-shadow: 0 12px 24px -16px var(--site-mark, #475569);
+    }
+
+    [data-theme='dark'] .site-card__arrow {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(203, 213, 225, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
     .site-card__body p {
