@@ -1,12 +1,11 @@
 {{ define "main" }}
   <div class="container archives-container">
     <div class="content post-detail-container page-narrow">
-      <!-- Archive Header Card -->
-      <div class="archive-header-card">
-        <div class="archive-sparkle-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></svg>
-        </div>
-        <div class="archive-actions" aria-label="归档操作">
+      {{ $pages := where site.RegularPages "Section" "posts" }}
+      <!-- 给首屏一个默认左右布局（JS 仍可切换），避免首次渲染闪烁成单列 -->
+      <div class="archives-timeline" data-layout="split">
+        <div class="archives-timeline-head" aria-label="归档时间轴操作">
+          <div class="timeline-now-marker" aria-hidden="true"><span>NOW</span></div>
           <button
             class="archive-layout-toggle"
             type="button"
@@ -21,13 +20,6 @@
             <span class="archive-layout-toggle__label" data-archive-layout-label>布局：左右</span>
           </button>
         </div>
-        <h1 class="archive-title">时光归档</h1>
-        <p class="archive-subtitle">共 {{ len (where site.RegularPages "Section" "posts") }} 篇文章，持续更新中...</p>
-      </div>
-
-      {{ $pages := where site.RegularPages "Section" "posts" }}
-      <!-- 给首屏一个默认左右布局（JS 仍可切换），避免首次渲染闪烁成单列 -->
-      <div class="archives-timeline" data-layout="split">
         {{ $groups := sort ($pages.GroupByDate "2006") "Key" "desc" }}
         {{ $accents := slice "violet" "teal" "pink" "amber" }}
         {{ $itemAccents := slice "violet" "teal" "pink" "amber" "indigo" "emerald" }}
@@ -80,137 +72,38 @@
   </div>
 
   <style>
-	    .archive-header-card {
-      background:
-        linear-gradient(115deg, rgba(255, 255, 255, 0.88) 0 42%, transparent 42% 100%),
-        repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.045) 0 1px, transparent 1px 46px),
-        radial-gradient(560px 240px at 10% 0%, rgba(125, 211, 252, 0.24), transparent 58%),
-        radial-gradient(620px 280px at 92% 16%, rgba(196, 181, 253, 0.34), transparent 62%),
-        radial-gradient(520px 240px at 58% 110%, rgba(251, 191, 36, 0.18), transparent 66%),
-        linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(239, 246, 255, 0.90) 48%, rgba(250, 245, 255, 0.92));
-	      border-radius: var(--radius-lg);
-	      padding: 24px 30px;
-	      color: var(--text-heading);
-	      position: relative;
-	      margin-bottom: 28px;
-	      border: 1px solid rgba(219, 234, 254, 0.95);
-	      box-shadow: 0 20px 46px -36px rgba(30, 64, 175, 0.38), var(--shadow-sm);
-	      overflow: hidden;
-	    }
-
-    .archive-header-card::before {
-      content: "";
-      position: absolute;
-      right: 28px;
-      top: 16px;
-      width: 170px;
-      height: 58px;
-      border-top: 1px solid rgba(99, 102, 241, 0.22);
-      border-bottom: 1px solid rgba(99, 102, 241, 0.14);
-      background:
-        repeating-linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0 2px, transparent 2px 18px);
-      opacity: 0.62;
-      transform: rotate(-8deg);
-      pointer-events: none;
-    }
-
-    .archive-header-card::after {
-      content: "";
-      position: absolute;
-      right: -52px;
-      bottom: -74px;
-      width: 210px;
-      height: 210px;
-      border-radius: 9999px;
-      border: 1px solid rgba(14, 165, 233, 0.18);
-      background: radial-gradient(circle, rgba(14, 165, 233, 0.10), transparent 62%);
-      pointer-events: none;
-    }
-
-    [data-theme='dark'] .archive-header-card {
-      background:
-        linear-gradient(115deg, rgba(15, 23, 42, 0.72) 0 42%, transparent 42% 100%),
-        repeating-linear-gradient(90deg, rgba(226, 232, 240, 0.05) 0 1px, transparent 1px 46px),
-        radial-gradient(560px 240px at 10% 0%, rgba(14, 165, 233, 0.14), transparent 58%),
-        radial-gradient(620px 280px at 92% 16%, rgba(124, 58, 237, 0.20), transparent 62%),
-        radial-gradient(520px 240px at 58% 110%, rgba(217, 119, 6, 0.10), transparent 66%),
-        linear-gradient(135deg, rgba(15, 23, 42, 0.90), rgba(15, 23, 42, 0.78) 48%, rgba(30, 41, 59, 0.82));
-      border-color: rgba(148, 163, 184, 0.18);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-
-	    @media (max-width: 640px) {
-	      .archive-header-card {
-	        padding: 18px 16px;
-	      }
-	    }
-
-	    .archive-sparkle-icon {
-	      position: absolute;
-	      top: 16px;
-	      right: 168px;
-	      color: rgba(99, 102, 241, 0.18);
-	      transform: scale(2.05) rotate(12deg);
-	      pointer-events: none;
-	    }
-
-    [data-theme='dark'] .archive-sparkle-icon {
-      color: rgba(251, 191, 36, 0.14);
-    }
-
-	    .archive-title {
-	      font-family: var(--font-serif);
-	      font-size: 1.85rem;
-	      font-weight: 700;
-	      margin: 0 0 6px;
-	      color: var(--text-heading);
-	      position: relative;
-	      z-index: 10;
-	    }
-
-    .archive-subtitle {
-      color: var(--text-muted);
-      font-size: 1rem;
-      opacity: 0.9;
+    .archives-timeline-head {
       position: relative;
-      z-index: 10;
+      display: grid;
+      align-items: center;
+      margin: 2px 0 0;
+      min-height: 34px;
     }
 
-    [data-theme='dark'] .archive-subtitle {
-      color: rgba(226, 232, 240, 0.85);
-      opacity: 1;
-    }
-
-	    .archive-actions {
-	      position: absolute;
-	      top: 12px;
-	      right: 12px;
-	      z-index: 20;
-	      display: flex;
-	      align-items: center;
-	      gap: 10px;
-	    }
-
-	    .archive-layout-toggle {
+    .archive-layout-toggle {
+      position: absolute;
+      right: 0;
+      top: 50%;
       display: inline-flex;
       align-items: center;
       gap: 10px;
-	      height: 34px;
-	      padding: 0 12px;
+      height: 34px;
+      padding: 0 12px;
       border-radius: 9999px;
       background: rgba(255, 255, 255, 0.65);
       border: 1px solid rgba(226, 232, 240, 0.9);
       color: rgba(15, 23, 42, 0.78);
       cursor: pointer;
-	      font-size: 0.8125rem;
-	      font-weight: 700;
-	      letter-spacing: 0.01em;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+      transform: translateY(-50%);
       transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
     }
 
     .archive-layout-toggle:hover {
-      transform: translateY(-1px);
+      transform: translateY(calc(-50% - 1px));
       background: rgba(255, 255, 255, 0.78);
       border-color: rgba(124, 58, 237, 0.25);
       box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
@@ -218,7 +111,7 @@
     }
 
     .archive-layout-toggle:active {
-      transform: translateY(0);
+      transform: translateY(-50%);
     }
 
     .archive-layout-toggle:focus-visible {
@@ -255,16 +148,91 @@
       padding: 0 16px;
     }
 
-	    /* Split 布局：页面整体宽度稍微收窄一点（原来 1200px 会显得过宽） */
-	    @media (min-width: 1024px) {
-	      html[data-archives-layout="split"] .archives-container {
-	        max-width: 1080px;
-	      }
+    .archives-timeline-head .timeline-now-marker {
+      min-width: 0;
+      margin: 0;
+    }
 
-	      html[data-archives-layout="split"] .page-narrow.post-detail-container {
-	        max-width: 1080px;
-	      }
-	    }
+    @media (max-width: 640px) {
+      .archive-layout-toggle {
+        width: 34px;
+        padding: 0;
+        justify-content: center;
+      }
+
+      .archive-layout-toggle__label {
+        display: none;
+      }
+    }
+
+    /* Split 布局：页面整体宽度稍微收窄一点（原来 1200px 会显得过宽） */
+    @media (min-width: 1024px) {
+      html[data-archives-layout="split"] .archives-container {
+        max-width: 1080px;
+      }
+
+      html[data-archives-layout="split"] .page-narrow.post-detail-container {
+        max-width: 1080px;
+      }
+
+      .archives-timeline[data-layout="split"] .archives-timeline-head::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: calc(50% + 11px);
+        bottom: 0;
+        width: 2px;
+        transform: translateX(-1px);
+        background: rgba(124, 58, 237, 0.40);
+        border-radius: 9999px;
+        pointer-events: none;
+      }
+    }
+
+
+    .timeline-now-marker {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 0 18px;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .timeline-now-marker::before,
+    .timeline-now-marker::after {
+      content: "";
+      flex: 1 1 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.34));
+    }
+
+    .timeline-now-marker::after {
+      background: linear-gradient(90deg, rgba(124, 58, 237, 0.34), transparent);
+    }
+
+    .timeline-now-marker span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 22px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(124, 58, 237, 0.22);
+      background: rgba(255, 255, 255, 0.72);
+      color: rgba(124, 58, 237, 0.82);
+      box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.34);
+    }
+
+    [data-theme='dark'] .timeline-now-marker span {
+      border-color: rgba(167, 139, 250, 0.24);
+      background: rgba(15, 23, 42, 0.62);
+      color: rgba(221, 214, 254, 0.88);
+    }
 
     .timeline-year-group {
       --year-accent: #7c3aed;          /* violet-600 */

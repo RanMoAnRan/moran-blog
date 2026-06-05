@@ -131,6 +131,11 @@ enableRobotsTXT = true
     weight = 40
 
   [[menu.main]]
+    name = '导航'
+    pageRef = '/sites/'
+    weight = 55
+
+  [[menu.main]]
     name = '统计'
     pageRef = '/stats/'
     weight = 60

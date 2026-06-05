@@ -1,0 +1,80 @@
+[[groups]]
+name = "常用网站"
+desc = "工具、资料与灵感入口。"
+
+  [[groups.sites]]
+  name = "App Store Price"
+  url = "https://appstoreprice.org/zh/apps"
+  desc = "浏览热门 App 的全球价格对比，辅助查看订阅套餐和低价区信息。"
+  tags = ["App Store", "价格对比", "订阅"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "真测 Ztest"
+  url = "https://ztest.ai/"
+  desc = "独立第三方 AI 中转站验证平台，用于查看模型真实性、响应质量与服务可用性。"
+  tags = ["AI", "模型验证", "中转站"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "Hero SMS"
+  url = "https://hero-sms.com/cn"
+  desc = "在线接收短信验证码与临时号码服务入口，覆盖多国家号码和常见平台注册验证场景。"
+  tags = ["SMS", "验证码", "临时号码"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "Agent Skills Directory"
+  url = "https://www.skills.sh/"
+  desc = "发现和安装 AI Agent 技能的目录站，适合查找可复用的 Agent 能力扩展。"
+  tags = ["AI Agent", "Skills", "工具目录"]
+  accent = "violet"
+
+  [[groups.sites]]
+  name = "DeepWiki"
+  url = "https://deepwiki.com/"
+  desc = "为 GitHub 仓库生成可对话的 AI 文档，适合快速理解项目结构、源码和使用方式。"
+  tags = ["AI 文档", "GitHub", "代码理解"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "Nof1"
+  url = "https://nof1.ai/"
+  desc = "AI 模型真实市场交易表现基准与实验平台，用于观察不同模型在实盘环境中的交易行为。"
+  tags = ["AI", "交易实验", "Benchmark"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "SkillsMP"
+  url = "https://skillsmp.com/zh"
+  desc = "Agent Skills 市场，浏览兼容 Claude Code、Codex CLI 和 ChatGPT 的 SKILL.md 技能。"
+  tags = ["AI Agent", "Skills", "市场"]
+  accent = "violet"
+
+  [[groups.sites]]
+  name = "tools.video"
+  url = "https://tools.video/zh-CN"
+  desc = "免费在线音视频工具集合，支持压缩、转换、裁剪、合并等操作，本地处理更保护隐私。"
+  tags = ["视频工具", "音频工具", "本地处理"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "站联"
+  url = "https://www.zhanlian.net/"
+  desc = "跨境电商和独立站服务平台，关注行业动态、优秀品牌、建站与运营推广。"
+  tags = ["跨境电商", "独立站", "外贸"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "AI导航 AIDH"
+  url = "https://www.ai-dh.com/"
+  desc = "AI 工具导航站，收录 AI 绘画、聊天、提示词、办公、AIGC、文生图等生产力工具。"
+  tags = ["AI 导航", "AIGC", "工具集合"]
+  accent = "violet"
+
+  [[groups.sites]]
+  name = "MCP Servers"
+  url = "https://mcp.so/"
+  desc = "MCP Server 聚合目录，用于搜索和发现可增强 AI 能力的 Model Context Protocol 服务。"
+  tags = ["MCP", "AI Agent", "工具目录"]
+  accent = "blue"

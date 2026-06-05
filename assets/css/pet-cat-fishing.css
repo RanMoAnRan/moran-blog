@@ -234,15 +234,7 @@ html[data-pet-cat='on'] .pet-cat-fishing__label-on {
 
 @media (max-width: 640px) {
   .pet-cat-fishing {
-    width: 112px;
-    height: 112px;
-    left: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    opacity: 0.92;
-  }
-
-  .pet-cat-fishing__toggle {
-    top: 2px;
+    display: none;
   }
 }
 

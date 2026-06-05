@@ -27,6 +27,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
           订阅
         </a>
+        <a href="{{ "sites" | relURL }}" class="nav-link {{ if or (eq .Section "sites") (hasPrefix .RelPermalink ("sites" | relURL)) }}is-active{{ end }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>
+          导航
+        </a>
         <a href="{{ "about" | relURL }}" class="nav-link {{ if or (eq .Section "about") (hasPrefix .RelPermalink ("about" | relURL)) }}is-active{{ end }}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           关于
@@ -114,6 +118,10 @@
         <a href="{{ "subscribe" | relURL }}" class="nav-mobile-link {{ if or (eq .Section "subscribe") (hasPrefix .RelPermalink ("subscribe" | relURL)) }}is-active{{ end }}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
           订阅
+        </a>
+        <a href="{{ "sites" | relURL }}" class="nav-mobile-link {{ if or (eq .Section "sites") (hasPrefix .RelPermalink ("sites" | relURL)) }}is-active{{ end }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>
+          导航
         </a>
         <a href="{{ "about" | relURL }}" class="nav-mobile-link {{ if or (eq .Section "about") (hasPrefix .RelPermalink ("about" | relURL)) }}is-active{{ end }}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

@@ -1,9 +1,15 @@
 {{ define "main" }}
   <div class="container search-container">
     <div class="content search-page">
-      <header class="page-header">
-        <h1 class="page-title">{{ .Title }}</h1>
-        {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+      <header class="page-header search-compact-header">
+        <div>
+          <h1 class="page-title">{{ .Title }}</h1>
+          {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+        </div>
+        <div class="search-compact-header__badge" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <span>Search</span>
+        </div>
       </header>
 
       <div class="search" data-search-index="{{ with site.Home.OutputFormats.Get `JSON` }}{{ .RelPermalink }}{{ else }}{{ relLangURL `index.json` }}{{ end }}">
