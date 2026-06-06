@@ -563,8 +563,12 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 9999px;
 }
 
-.nav-toggle {
-  display: inline-flex;
+.icon-button.nav-toggle {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .icon-button.nav-toggle { display: inline-flex; }
 }
 
 .nav-toggle-close {
@@ -628,7 +632,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (min-width: 768px) {
-  .nav-toggle { display: none; }
   .nav-mobile { display: none !important; }
 }
 
