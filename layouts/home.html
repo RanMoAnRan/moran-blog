@@ -71,9 +71,88 @@
       <h1 class="hero-title" style="font-size: clamp(3rem, 5vw, 4.5rem); font-family: var(--font-serif); font-weight: 900; margin-bottom: 24px; letter-spacing: -0.025em; line-height: 1;">
         Ink & Thought
       </h1>
-      <p class="hero-desc" style="font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.625; font-weight: 500; margin-bottom: 32px;">
+      <button id="home-random-quote" class="hero-desc hero-quote" type="button" aria-label="点击换一句" title="点击换一句" style="font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.625; font-weight: 500; margin-bottom: 32px;">
         记录代码与生活的间隙
-      </p>
+      </button>
+
+      <script>
+        (() => {
+          const quoteButton = document.getElementById('home-random-quote');
+          if (!quoteButton) return;
+
+          const localQuotes = [
+            '记录代码与生活的间隙',
+            '知不足而奋进，望远山而前行。',
+            '凡是过往，皆为序章。',
+            '保持热爱，奔赴山海。',
+            '行到水穷处，坐看云起时。',
+            '纸上得来终觉浅，绝知此事要躬行。',
+            '路虽远，行则将至；事虽难，做则必成。',
+            '不驰于空想，不骛于虚声。',
+            '看似寻常最奇崛，成如容易却艰辛。',
+            'Simplicity is the ultimate sophistication.',
+            'Stay hungry, stay foolish.'
+          ];
+
+          let currentText = quoteButton.textContent.trim();
+
+          const normalizeText = (text) => (text || '').replace(/^“|”$/g, '').replace(/\s+/g, ' ').trim();
+
+          const randomLocalQuote = () => {
+            const candidates = localQuotes.filter((quote) => normalizeText(quote) !== normalizeText(currentText));
+            const pool = candidates.length > 0 ? candidates : localQuotes;
+            return pool[Math.floor(Math.random() * pool.length)];
+          };
+
+          const fetchHitokoto = async () => {
+            const controller = new AbortController();
+            const timeout = window.setTimeout(() => controller.abort(), 3000);
+            try {
+              const response = await fetch('https://v1.hitokoto.cn/?encode=json', {
+                signal: controller.signal,
+                cache: 'no-store',
+                referrerPolicy: 'no-referrer'
+              });
+              if (!response.ok) throw new Error(`hitokoto status ${response.status}`);
+              const data = await response.json();
+              const text = typeof data?.hitokoto === 'string' ? data.hitokoto.trim() : '';
+              if (!text) throw new Error('empty hitokoto');
+              return text;
+            } finally {
+              window.clearTimeout(timeout);
+            }
+          };
+
+          const fetchDistinctQuote = async () => {
+            for (let attempt = 0; attempt < 3; attempt += 1) {
+              const text = await fetchHitokoto();
+              if (normalizeText(text) !== normalizeText(currentText)) return text;
+            }
+            throw new Error('duplicate hitokoto');
+          };
+
+          const renderQuote = (text) => {
+            currentText = text;
+            quoteButton.textContent = text;
+          };
+
+          const loadQuote = async () => {
+            quoteButton.classList.add('is-loading');
+            quoteButton.disabled = true;
+            try {
+              renderQuote(await fetchDistinctQuote());
+            } catch (_) {
+              renderQuote(randomLocalQuote());
+            } finally {
+              quoteButton.classList.remove('is-loading');
+              quoteButton.disabled = false;
+            }
+          };
+
+          quoteButton.addEventListener('click', loadQuote);
+          loadQuote();
+        })();
+      </script>
       <div style="display: flex; justify-content: center; gap: 16px;">
         <a href="#latest-posts" class="btn btn-primary" style="padding: 12px 32px; border-radius: 9999px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">
           开始阅读
@@ -138,6 +217,58 @@
       color: var(--slate-700);
       text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
+
+    .hero-quote {
+      position: relative;
+      display: block;
+      width: fit-content;
+      max-width: min(100%, 820px);
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 10px 6px;
+      border: 0;
+      background: transparent;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.18s ease, transform 0.18s ease, text-shadow 0.18s ease;
+    }
+
+    .hero-quote::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      width: min(72%, 360px);
+      height: 1px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, transparent, currentColor, transparent);
+      opacity: 0;
+      transform: translateX(-50%) scaleX(0.32);
+      transform-origin: center;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .hero-quote:hover {
+      transform: translateY(-2px);
+      text-shadow: 0 10px 26px rgba(15, 23, 42, 0.24);
+    }
+
+    .hero-quote:hover::after {
+      opacity: 0.42;
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    .hero-quote:focus-visible {
+      outline: 2px solid rgba(15, 23, 42, 0.28);
+      outline-offset: 6px;
+      border-radius: 9999px;
+    }
+
+    .hero-quote.is-loading {
+      opacity: 0.62;
+      cursor: wait;
+    }
+
     .hero-btn-sub {
       background: rgba(255,255,255,0.8) !important;
       border-color: rgba(255,255,255,0.9);
@@ -163,6 +294,12 @@
     [data-theme='dark'] .hero-desc {
       color: #cbd5e1; /* slate-300 */
       text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+    [data-theme='dark'] .hero-quote:hover {
+      text-shadow: 0 12px 30px rgba(226, 232, 240, 0.18);
+    }
+    [data-theme='dark'] .hero-quote:focus-visible {
+      outline-color: rgba(226, 232, 240, 0.32);
     }
     [data-theme='dark'] .hero-btn-sub {
       background: rgba(30, 41, 59, 0.7) !important; /* slate-800 semi-transparent */
