@@ -18,6 +18,9 @@ math = false
 
 它最出圈的截图通常是那张 Graph View：一堆点，一堆线，像一个人的大脑星图。这个东西很好看，但也很容易误导人。很多人第一次接触 Obsidian，会以为它的核心价值就是把笔记画成一张很酷的关系图。
 
+![Obsidian Graph View 官方截图](obsidian-graph-view.png)
+*Obsidian Graph View 官方截图。它把笔记显示成节点，把笔记之间的内部链接显示成连线。图源：[Obsidian Help - Graph view](https://obsidian.md/help/Plugins/Graph%2Bview)。*
+
 但我现在更愿意反过来说：**Obsidian 最值得关注的地方，不是图谱，而是它把笔记重新还给了文件系统。**
 
 它不像很多云笔记工具那样，把你的内容关在一个在线工作区里。Obsidian 的知识库叫 `Vault`，本质上就是你电脑里的一个文件夹。里面的笔记主要是 Markdown 文件。你可以用 Obsidian 打开它，也可以用 VS Code、Typora、甚至系统自带文本编辑器打开它。
