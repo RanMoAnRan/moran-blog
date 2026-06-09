@@ -4,7 +4,7 @@
     这里不需要用 100vw + 负 margin 的“全出血”写法。
     该写法在有滚动条的浏览器里会把滚动条宽度也算进 vw，容易导致页面出现横向滚动条。
   -->
-  <div style="position: relative; width: 100%; overflow: hidden; margin-bottom: 0;">
+  <div data-home-hero style="position: relative; width: 100%; overflow: hidden; margin-bottom: 0;">
     <!-- Background Image -->
     <div style="position: absolute; inset: 0; z-index: -2;" id="hero-bg-container">
       <img id="hero-bg-img" src="{{ "img/bg/bg-01.jpg" | relURL }}" alt="bg" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transition: opacity 0.5s ease-in-out;">
@@ -165,14 +165,16 @@
   </div>
 
   {{- $postPages := where site.RegularPages "Section" "posts" -}}
-  <div class="container posts-container home-layout-container">
+  <div class="container posts-container home-layout-container" data-home-layout>
     <div class="home-three-column-layout">
       <aside class="home-sidebar home-sidebar--left" aria-label="左侧组件">
-        <div class="home-sidebar__top">
-          {{ partial "home-profile-widget.html" . }}
-        </div>
-        <div class="home-sidebar__sticky">
-          {{ partial "home-music-widget.html" . }}
+        <div class="home-sidebar__pin">
+          <div class="home-sidebar__top">
+            {{ partial "home-profile-widget.html" . }}
+          </div>
+          <div class="home-sidebar__sticky">
+            {{ partial "home-music-widget.html" . }}
+          </div>
         </div>
       </aside>
 
@@ -200,11 +202,13 @@
       </div>
 
       <aside class="home-sidebar home-sidebar--right" aria-label="右侧组件">
-        <div class="home-sidebar__top">
-          {{ partial "home-site-stats-widget.html" . }}
-        </div>
-        <div class="home-sidebar__sticky">
-          {{ partial "home-calendar-widget.html" . }}
+        <div class="home-sidebar__pin">
+          <div class="home-sidebar__top">
+            {{ partial "home-site-stats-widget.html" . }}
+          </div>
+          <div class="home-sidebar__sticky">
+            {{ partial "home-calendar-widget.html" . }}
+          </div>
         </div>
       </aside>
     </div>

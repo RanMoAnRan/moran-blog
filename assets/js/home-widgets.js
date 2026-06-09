@@ -348,6 +348,61 @@
     });
   };
 
+
+  const initHomeSidebars = () => {
+    const hero = document.querySelector("[data-home-hero]");
+    const layout = document.querySelector("[data-home-layout]");
+    const sidebars = Array.from(document.querySelectorAll(".home-sidebar"));
+    if (!hero || !layout || !sidebars.length) return;
+
+    const desktopQuery = window.matchMedia("(min-width: 861px)");
+    let ticking = false;
+
+    const clearFixed = () => {
+      sidebars.forEach((sidebar) => {
+        sidebar.classList.remove("is-fixed");
+        sidebar.style.removeProperty("--home-sidebar-fixed-left");
+        sidebar.style.removeProperty("--home-sidebar-fixed-width");
+      });
+    };
+
+    const sync = () => {
+      ticking = false;
+      if (!desktopQuery.matches) {
+        clearFixed();
+        return;
+      }
+
+      const headerHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 0;
+      const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
+      const layoutRect = layout.getBoundingClientRect();
+      const layoutBottom = layoutRect.bottom + window.scrollY;
+      const viewportCenter = window.scrollY + (window.innerHeight / 2);
+      const shouldFix = window.scrollY >= heroBottom - headerHeight && viewportCenter < layoutBottom;
+
+      sidebars.forEach((sidebar) => sidebar.classList.remove("is-fixed"));
+      sidebars.forEach((sidebar) => {
+        const rect = sidebar.getBoundingClientRect();
+        sidebar.style.setProperty("--home-sidebar-fixed-left", `${rect.left}px`);
+        sidebar.style.setProperty("--home-sidebar-fixed-width", `${rect.width}px`);
+        sidebar.classList.toggle("is-fixed", shouldFix);
+      });
+    };
+
+    const requestSync = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(sync);
+    };
+
+    sync();
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", requestSync);
+    if (typeof desktopQuery.addEventListener === "function") {
+      desktopQuery.addEventListener("change", requestSync);
+    }
+  };
+
   const initHueAndPanels = () => {
     const root = document.documentElement;
     const defaultHue = Number.parseInt(getComputedStyle(root).getPropertyValue("--hue"), 10) || 262;
@@ -428,6 +483,7 @@
     initStats();
     initMusic();
     initCalendar();
+    initHomeSidebars();
     initHueAndPanels();
   };
 
