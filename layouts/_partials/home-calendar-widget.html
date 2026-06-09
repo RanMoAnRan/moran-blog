@@ -1,0 +1,20 @@
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $items := slice -}}
+{{- range $posts.ByDate.Reverse -}}
+  {{- $items = $items | append (dict "title" .Title "url" .RelPermalink "date" (.Date.Format "2006-01-02")) -}}
+{{- end -}}
+<section class="home-widget home-calendar-widget" data-home-calendar aria-label="文章日历">
+  <div class="home-calendar__head">
+    <button type="button" data-calendar-prev aria-label="上个月">‹</button>
+    <button class="home-calendar__current" type="button" data-calendar-current aria-label="切换年月视图"></button>
+    <div class="home-calendar__actions">
+      <button type="button" data-calendar-reset aria-label="回到今天">↺</button>
+      <button type="button" data-calendar-next aria-label="下个月">›</button>
+    </div>
+  </div>
+  <div class="home-calendar__weekdays" aria-hidden="true"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+  <div class="home-calendar__grid" data-calendar-grid></div>
+  <div class="home-calendar__heatmap" data-calendar-heatmap aria-label="年度文章热力图"></div>
+  <div class="home-calendar__posts" data-calendar-posts hidden></div>
+  <script type="application/json" data-calendar-posts-json>{{ $items | jsonify }}</script>
+</section>

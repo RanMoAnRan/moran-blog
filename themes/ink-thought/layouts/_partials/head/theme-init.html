@@ -26,15 +26,24 @@
 	      meta.setAttribute("content", theme === "dark" ? darkThemeColor : lightThemeColor);
 	    }
 
+	    function applyHue(value) {
+	      var n = Number.parseInt(value, 10);
+	      if (!Number.isFinite(n)) n = {{ site.Params.themeHue | default 262 }};
+	      n = ((n % 360) + 360) % 360;
+	      root.style.setProperty("--hue", String(n));
+	    }
+
 	    try {
 	      var stored = localStorage.getItem(storageKey);
 	      var theme = normalizeTheme(stored);
 	      root.setAttribute("data-theme", theme);
 	      root.style.colorScheme = theme;
+	      applyHue(localStorage.getItem("ink-hue"));
 	      syncThemeColor(theme);
 	    } catch (e) {
 	      root.setAttribute("data-theme", "light");
 	      root.style.colorScheme = "light";
+	      applyHue(null);
 	      syncThemeColor("light");
 	    }
 	  })();

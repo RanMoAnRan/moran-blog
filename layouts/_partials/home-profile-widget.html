@@ -1,0 +1,17 @@
+{{- $avatar := site.Params.profile.avatar | default "img/bg/bg-01.jpg" -}}
+{{- if not (hasPrefix $avatar "http") -}}{{- $avatar = ($avatar | relURL) -}}{{- end -}}
+<section class="home-widget home-profile-widget" aria-label="个人资料">
+  <a class="home-profile-widget__avatar" href="{{ "about" | relURL }}" aria-label="打开关于页面">
+    <img src="{{ $avatar }}" alt="{{ site.Params.profile.name | default site.Title }} 的头像" loading="lazy" decoding="async">
+  </a>
+  <div class="home-profile-widget__body">
+    <strong>{{ site.Params.profile.name | default site.Title }}</strong>
+    <span class="home-profile-widget__mark" aria-hidden="true"></span>
+    <p>{{ site.Params.profile.bio | default site.Params.description }}</p>
+    <div class="home-profile-widget__links" aria-label="社交链接">
+      {{ range site.Params.social }}
+        <a href="{{ .url }}" target="{{ if hasPrefix .url "http" }}_blank{{ else }}_self{{ end }}" rel="{{ if hasPrefix .url "http" }}noopener noreferrer{{ end }}" aria-label="{{ .name }}">{{ .name }}</a>
+      {{ end }}
+    </div>
+  </div>
+</section>

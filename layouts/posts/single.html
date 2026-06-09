@@ -1,0 +1,1230 @@
+{{ define "main" }}
+  {{- $tocEnabled := .Params.toc | default false -}}
+  {{- $showToc := and $tocEnabled (in .TableOfContents "<li>") -}}
+  <div class="post-reading-progress" data-reading-progress aria-hidden="true">
+    <span class="post-reading-progress__bar" data-reading-progress-bar></span>
+  </div>
+
+  <div class="container detail-container has-post-left{{ if $showToc }} has-post-toc{{ end }}">
+    <aside class="post-left-sidebar" aria-label="文章侧边栏">
+      {{ partial "home-profile-widget.html" . }}
+      {{ partial "home-music-widget.html" . }}
+    </aside>
+
+    <div class="post-detail-container">
+      <!-- Article Card -->
+      <article class="post-detail-card">
+        <!-- Top Decoration -->
+        <div class="card-decoration"></div>
+
+        <div class="detail-toolbar">
+          <a href="{{ site.Home.RelPermalink }}" class="back-btn" data-back-link>
+            <span class="back-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </span>
+            <span class="back-text" data-back-label>返回首页</span>
+          </a>
+        </div>
+
+        <header class="detail-header">
+          <!-- Category -->
+          {{ with .GetTerms "categories" }}
+            <div class="detail-categories">
+              {{ range . }}
+                <a href="{{ .RelPermalink }}" class="category-badge-pill" data-term="{{ .Title }}">{{ .Title }}</a>
+              {{ end }}
+            </div>
+          {{ end }}
+
+          <!-- Title -->
+          <h1 class="detail-title">{{ .Title }}</h1>
+
+	          <!-- Meta -->
+	          <div class="detail-meta-row">
+	            {{- $authorName := .Params.author | default site.Params.author | default site.Params.profile.name | default "Author" -}}
+	             <span class="meta-flex">
+	               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+	               {{ .Date.Format "2006-01-02" }}
+	             </span>
+	             <span class="meta-dot"></span>
+             <span class="meta-flex">
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+               {{ .ReadingTime }} min read
+             </span>
+	             <span class="meta-dot"></span>
+	             <span class="meta-flex">
+	                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+	                {{ $authorName }}
+	             </span>
+	          </div>
+	        </header>
+
+        {{- $coverUrl := partial "cover-url.html" . -}}
+        {{- if $coverUrl -}}
+          <figure class="detail-cover">
+            <img src="{{ $coverUrl }}" alt="{{ .Title }} 封面" decoding="async" loading="eager">
+          </figure>
+        {{- end -}}
+
+        <div class="prose detail-prose">
+          {{ .Content }}
+        </div>
+
+        {{ with .GetTerms "tags" }}
+          <div class="post-tags" aria-label="标签">
+            <span class="post-tags-label">标签</span>
+            <div class="tag-list">
+              {{ range . }}
+                <a class="tag-chip" href="{{ .RelPermalink }}" data-term="{{ .Title }}">{{ .Title }}</a>
+              {{ end }}
+            </div>
+          </div>
+        {{ end }}
+
+        {{- $related := where (.Site.RegularPages.Related .) "Section" "posts" -}}
+        {{- $related = first 4 $related -}}
+        {{- if gt (len $related) 0 -}}
+          <section class="related-posts" aria-label="相关文章">
+            <h2 class="related-title">相关文章</h2>
+            <div class="related-grid">
+              {{ range $related }}
+                <article class="related-card">
+                  <a class="related-card__link" href="{{ .RelPermalink }}">
+                    <div class="related-card__meta">
+                      <span>{{ .Date.Format "2006-01-02" }}</span>
+                      <span class="meta-dot" aria-hidden="true"></span>
+                      <span>{{ .ReadingTime }} min read</span>
+                    </div>
+                    <h3 class="related-card__title">{{ .Title }}</h3>
+                    {{ with .Summary }}
+                      <p class="related-card__summary">{{ . | plainify | truncate 100 }}</p>
+                    {{ end }}
+                  </a>
+                </article>
+              {{ end }}
+            </div>
+          </section>
+        {{- end -}}
+
+	        <!-- Post Navigation -->
+	        {{- $p1 := .PrevInSection -}}
+	        {{- $p2 := .NextInSection -}}
+		        {{- $older := "" -}}
+		        {{- $newer := "" -}}
+	        {{- if and $p1 $p2 -}}
+	          {{- if gt $p1.Date $p2.Date -}}
+	            {{- $newer = $p1 -}}
+	            {{- $older = $p2 -}}
+	          {{- else -}}
+	            {{- $newer = $p2 -}}
+	            {{- $older = $p1 -}}
+	          {{- end -}}
+	        {{- else if $p1 -}}
+	          {{- if lt $p1.Date .Date -}}
+	            {{- $older = $p1 -}}
+	          {{- else -}}
+	            {{- $newer = $p1 -}}
+	          {{- end -}}
+	        {{- else if $p2 -}}
+	          {{- if lt $p2.Date .Date -}}
+	            {{- $older = $p2 -}}
+	          {{- else -}}
+	            {{- $newer = $p2 -}}
+	          {{- end -}}
+	        {{- end -}}
+
+	        {{- if or $older $newer -}}
+	          <nav class="post-nav{{ if $older }} has-prev{{ end }}{{ if $newer }} has-next{{ end }}" aria-label="文章导航">
+	            {{ with $older }}
+	              <a class="post-nav-card is-prev" href="{{ .RelPermalink }}" rel="prev">
+	                <div class="post-nav-kicker">
+	                  <span class="post-nav-arrow" aria-hidden="true">←</span>
+	                  上一篇
+	                </div>
+	                <div class="post-nav-title">{{ .Title }}</div>
+	                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
+	              </a>
+	            {{ end }}
+	            {{ with $newer }}
+	              <a class="post-nav-card is-next" href="{{ .RelPermalink }}" rel="next">
+	                <div class="post-nav-kicker">
+	                  下一篇
+	                  <span class="post-nav-arrow" aria-hidden="true">→</span>
+	                </div>
+	                <div class="post-nav-title">{{ .Title }}</div>
+	                <div class="post-nav-meta">{{ .Date.Format "2006-01-02" }}</div>
+	              </a>
+	            {{ end }}
+	          </nav>
+	        {{- end -}}
+
+        <!-- Share Section -->
+        <div class="share-section">
+          <div class="share-box">
+             <p class="share-text">"感谢阅读。如果你喜欢这篇文章，欢迎分享给更多人。"</p>
+             <div class="share-buttons">
+               <div class="share-actions" data-share>
+                 <button class="btn btn-primary share-btn" type="button" data-share-trigger>
+                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+                   分享
+                 </button>
+
+	                 <div class="share-popover" data-share-popover id="share-popover" role="menu" aria-label="分享选项" hidden>
+	                   <button type="button" class="share-option" data-share-native role="menuitem" hidden>
+	                     系统分享
+	                     <span class="share-option-desc">打开系统分享</span>
+	                   </button>
+	                   <button type="button" class="share-option" data-share-wechat role="menuitem">
+	                     微信
+	                     <span class="share-option-desc">复制链接</span>
+	                   </button>
+	                   <a class="share-option" data-share-qq role="menuitem" target="_blank" rel="noopener noreferrer">
+	                     QQ
+	                     <span class="share-option-desc">打开分享</span>
+	                   </a>
+                 </div>
+               </div>
+
+               <button class="btn btn-outline like-btn" type="button" data-like-button>
+                 <svg class="like-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                 <span data-like-label>点赞</span>
+               </button>
+             </div>
+
+             <div class="share-toast" data-share-toast hidden>链接已复制</div>
+          </div>
+        </div>
+
+        {{ partial "giscus.html" . }}
+
+      </article>
+    </div>
+
+    <button class="post-back-to-top" type="button" data-back-to-top aria-label="回到顶部" aria-hidden="true">
+      <span class="post-back-to-top__percent" data-reading-percent>0%</span>
+      <svg class="post-back-to-top__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
+
+    {{- if $showToc -}}
+      <button class="post-toc-toggle" type="button" data-toc-toggle aria-label="打开文章目录" aria-controls="post-toc-panel" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+        <span>目录</span>
+      </button>
+
+      <aside class="post-toc" data-post-toc aria-label="文章目录">
+        <div class="post-toc__inner" id="post-toc-panel">
+          <div class="post-toc__eyebrow">On this page</div>
+          <div class="post-toc__title">目录</div>
+          <div class="post-toc__body">
+            {{ .TableOfContents }}
+          </div>
+        </div>
+      </aside>
+    {{- end -}}
+  </div>
+
+  <style>
+
+
+    .post-left-sidebar {
+      display: none;
+    }
+
+    @media (min-width: 1240px) {
+      .detail-container.has-post-left {
+        --detail-content-width: 972px;
+        --detail-layout-width: calc(260px + 10px + var(--detail-content-width));
+        --container: calc(var(--detail-layout-width) + 48px);
+        display: grid;
+        grid-template-columns: 260px minmax(0, var(--detail-content-width));
+        gap: 10px;
+        align-items: start;
+      }
+
+      .detail-container.has-post-left.has-post-toc {
+        --detail-content-width: 988px;
+        --detail-layout-width: calc(260px + 10px + var(--detail-content-width) + 10px + 240px);
+        --container: calc(var(--detail-layout-width) + 48px);
+        grid-template-columns: 260px minmax(0, var(--detail-content-width)) 240px;
+        column-gap: 10px;
+      }
+
+      .post-left-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: fixed;
+        top: calc(var(--header-height) + 24px);
+        left: max(24px, calc((100vw - var(--detail-layout-width, 1265px)) / 2));
+        width: 260px;
+        max-height: calc(100vh - var(--header-height) - 48px);
+        overflow: auto;
+        scrollbar-width: thin;
+        z-index: 45;
+      }
+
+      .post-left-sidebar .home-profile-widget__avatar {
+        aspect-ratio: 1 / 0.78;
+      }
+
+      .detail-container.has-post-left .post-detail-container {
+        grid-column: 2;
+        max-width: var(--detail-content-width);
+        width: 100%;
+        justify-self: start;
+      }
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      transition: transform 0.2s, border-color 0.2s, color 0.2s, background 0.2s;
+      margin: 0;
+    }
+
+    .back-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--violet-50);
+      color: var(--violet-600);
+    }
+
+    .back-text {
+      line-height: 1;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(139, 92, 246, 0.35);
+      color: var(--violet-700);
+      background: var(--panel-muted);
+    }
+
+    [data-theme='dark'] .back-btn:hover {
+      border-color: rgba(139, 92, 246, 0.28);
+      color: var(--violet-400);
+      background: rgba(124, 58, 237, 0.12);
+    }
+
+    [data-theme='dark'] .back-icon {
+      background: rgba(124, 58, 237, 0.14);
+      color: var(--violet-400);
+    }
+
+    .detail-toolbar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      margin: 0;
+      display: flex;
+      justify-content: flex-start;
+      max-width: none;
+      z-index: 2;
+    }
+
+    .post-detail-card {
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      padding: 56px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .post-reading-progress {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 49;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .post-reading-progress__bar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(0);
+      transform-origin: left center;
+      background: linear-gradient(90deg, var(--violet-500), #d946ef, var(--indigo-500));
+      box-shadow: 0 0 14px rgba(139, 92, 246, 0.35);
+      transition: transform 0.08s linear;
+    }
+
+    .post-toc-toggle {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 46;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(139, 92, 246, 0.24);
+      background: color-mix(in srgb, var(--panel) 86%, transparent);
+      color: var(--text-heading);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(16px);
+      font-size: 0.875rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .post-toc-toggle:hover,
+    .post-toc-toggle[aria-expanded='true'] {
+      transform: translateY(-1px);
+      border-color: rgba(139, 92, 246, 0.42);
+      color: var(--violet-700);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+    }
+
+    [data-theme='dark'] .post-toc-toggle:hover,
+    [data-theme='dark'] .post-toc-toggle[aria-expanded='true'] {
+      color: var(--violet-300);
+      background: rgba(30, 41, 59, 0.86);
+    }
+
+    .post-back-to-top {
+      position: fixed;
+      right: 18px;
+      bottom: 72px;
+      z-index: 46;
+      display: inline-grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 1px solid rgba(139, 92, 246, 0.24);
+      background: color-mix(in srgb, var(--panel) 86%, transparent);
+      color: var(--text-heading);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px) scale(0.92);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease, border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .post-back-to-top.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .post-back-to-top:hover,
+    .post-back-to-top:focus-visible {
+      border-color: rgba(139, 92, 246, 0.42);
+      color: var(--violet-700);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    [data-theme='dark'] .post-back-to-top:hover,
+    [data-theme='dark'] .post-back-to-top:focus-visible {
+      color: var(--violet-300);
+      background: rgba(30, 41, 59, 0.86);
+    }
+
+    .post-back-to-top__percent {
+      font-size: 0.7rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .post-back-to-top__icon {
+      width: 14px;
+      height: 14px;
+      margin-top: -2px;
+    }
+
+    .post-toc {
+      position: fixed;
+      right: 16px;
+      bottom: 72px;
+      z-index: 45;
+      width: min(360px, calc(100vw - 32px));
+      max-height: min(520px, calc(100vh - var(--header-height) - 112px));
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .post-toc.is-open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .post-toc__inner {
+      max-height: inherit;
+      overflow: auto;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(139, 92, 246, 0.18);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(18px);
+    }
+
+    [data-theme='dark'] .post-toc__inner {
+      background: rgba(15, 23, 42, 0.88);
+      border-color: rgba(139, 92, 246, 0.24);
+    }
+
+    .post-toc__eyebrow {
+      font-size: 0.68rem;
+      line-height: 1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .post-toc__title {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      margin-bottom: 12px;
+    }
+
+    .post-toc__body nav,
+    .post-toc__body ul {
+      margin: 0;
+      padding: 0;
+    }
+
+    .post-toc__body ul {
+      list-style: none;
+      display: grid;
+      gap: 4px;
+    }
+
+    .post-toc__body ul ul {
+      margin-top: 4px;
+      padding-left: 12px;
+      border-left: 1px solid var(--border);
+    }
+
+    .post-toc__body a {
+      display: block;
+      padding: 6px 9px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      text-decoration: none;
+      transition: background 0.18s, color 0.18s, transform 0.18s;
+    }
+
+    .post-toc__body a:hover {
+      color: var(--text-heading);
+      background: var(--hover-bg);
+      transform: translateX(2px);
+    }
+
+    .post-toc__body a.is-active {
+      color: var(--violet-700);
+      background: rgba(124, 58, 237, 0.1);
+      font-weight: 800;
+    }
+
+    [data-theme='dark'] .post-toc__body a.is-active {
+      color: var(--violet-300);
+      background: rgba(124, 58, 237, 0.18);
+    }
+
+    .detail-prose :is(h2, h3, h4) {
+      scroll-margin-top: calc(var(--header-height) + 28px);
+    }
+
+    .detail-prose :is(h2, h3, h4).has-heading-anchor {
+      position: relative;
+    }
+
+    .heading-anchor-copy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.45em;
+      height: 1.45em;
+      margin-left: 0.35em;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-muted);
+      opacity: 0;
+      vertical-align: 0.08em;
+      cursor: pointer;
+      transition: opacity 0.18s, color 0.18s, background 0.18s, transform 0.18s;
+    }
+
+    .detail-prose :is(h2, h3, h4):hover .heading-anchor-copy,
+    .heading-anchor-copy:focus-visible,
+    .heading-anchor-copy.is-copied {
+      opacity: 1;
+    }
+
+    .heading-anchor-copy:hover,
+    .heading-anchor-copy.is-copied {
+      color: var(--violet-700);
+      background: rgba(124, 58, 237, 0.1);
+      transform: translateY(-1px);
+    }
+
+    [data-theme='dark'] .heading-anchor-copy:hover,
+    [data-theme='dark'] .heading-anchor-copy.is-copied {
+      color: var(--violet-300);
+      background: rgba(124, 58, 237, 0.18);
+    }
+
+    @media (min-width: 1240px) {
+      .detail-container.has-post-toc:not(.has-post-left) {
+        --container: 1360px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 240px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .post-toc-toggle {
+        display: none;
+      }
+
+      .post-back-to-top {
+        right: max(24px, calc((100vw - var(--detail-layout-width, 1312px)) / 2));
+        bottom: 24px;
+      }
+
+      .post-toc {
+        position: fixed;
+        top: calc(var(--header-height) + 24px);
+        right: max(24px, calc((100vw - var(--detail-layout-width, 1312px)) / 2));
+        bottom: auto;
+        width: 240px;
+        max-height: calc(100vh - var(--header-height) - 48px);
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        z-index: 45;
+      }
+
+      .post-toc__inner {
+        box-shadow: var(--shadow-sm);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .heading-anchor-copy {
+        opacity: 0.55;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .post-reading-progress__bar,
+      .post-toc,
+      .post-toc-toggle,
+      .post-back-to-top,
+      .post-toc__body a,
+      .heading-anchor-copy {
+        transition: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .post-detail-card { padding: 32px; }
+    }
+
+    .card-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(to right, var(--violet-500), #d946ef, var(--indigo-500));
+    }
+
+    .detail-header {
+      text-align: center;
+      max-width: 920px;
+      margin: 0 auto 48px;
+    }
+
+    .detail-categories {
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .category-badge-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid;
+      text-decoration: none;
+    }
+    /* Re-use colors from main.css via data-term logic if possible, else hardcode for safety */
+    .category-badge-pill { color: var(--slate-600); background: var(--slate-50); border-color: var(--slate-200); }
+    .category-badge-pill[data-term="技术"] { color: #2563eb; background: #eff6ff; border-color: #dbeafe; } 
+    .category-badge-pill[data-term="生活"] { color: #059669; background: #ecfdf5; border-color: #d1fae5; }
+
+    .detail-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      font-family: var(--font-serif);
+      color: var(--text-heading);
+      line-height: 1.25;
+      margin-bottom: 24px;
+      letter-spacing: -0.025em;
+    }
+
+    .detail-meta-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.875rem;
+      color: var(--slate-400);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .meta-flex { display: flex; align-items: center; gap: 4px; }
+    .meta-dot { width: 4px; height: 4px; background: var(--slate-300); border-radius: 50%; }
+
+    .detail-prose {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .post-tags {
+      max-width: 920px;
+      margin: 32px auto 0;
+      padding-top: 24px;
+      border-top: 1px dashed var(--border);
+      display: grid;
+      gap: 12px;
+    }
+
+    .post-tags-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .comments {
+      max-width: 920px;
+      margin: 48px auto 0;
+      padding: 16px 20px 6px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+    }
+
+    .related-posts {
+      max-width: 920px;
+      margin: 40px auto 0;
+      display: grid;
+      gap: 16px;
+    }
+
+    .related-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-heading);
+    }
+
+    .related-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .related-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .related-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--panel-muted);
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .related-card__link {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px;
+      text-decoration: none;
+      color: inherit;
+      height: 100%;
+    }
+
+    .related-card__meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .related-card__title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-heading);
+      line-height: 1.4;
+    }
+
+    .related-card__summary {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .related-card:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+      background: var(--panel);
+    }
+
+    [data-theme='dark'] .related-card:hover {
+      border-color: rgba(139, 92, 246, 0.28);
+      background: rgba(30, 41, 59, 0.6);
+    }
+
+	    .post-nav {
+	      width: 100%;
+	      max-width: none;
+	      margin: 56px 0 0;
+	      display: grid;
+	      gap: 16px;
+	      grid-template-columns: 1fr;
+	    }
+
+	    @media (min-width: 768px) {
+	      .post-nav {
+	        grid-template-columns: 1fr 1fr;
+	        column-gap: 28px;
+	      }
+	    }
+
+    @media (min-width: 768px) {
+      .post-nav.has-next:not(.has-prev) .post-nav-card.is-next {
+        grid-column: 2;
+      }
+    }
+
+    .post-nav-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px 22px;
+      border-radius: calc(var(--radius) + 2px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      min-height: 120px;
+      overflow: hidden;
+    }
+
+    .post-nav-card::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 14px;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.6), rgba(217, 70, 239, 0.35));
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .post-nav-card.is-next::before {
+      left: auto;
+      right: 14px;
+    }
+
+    .post-nav-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(139, 92, 246, 0.35);
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.06), rgba(124, 58, 237, 0.02));
+      box-shadow: var(--shadow-xl);
+    }
+
+    [data-theme='dark'] .post-nav-card:hover {
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.18), rgba(124, 58, 237, 0.08));
+    }
+
+    .post-nav-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-nav-title {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: var(--text-heading);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-nav-meta {
+      margin-top: auto;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .post-nav-card.is-next {
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    .post-nav-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      background: var(--violet-50);
+      color: var(--violet-600);
+      font-weight: 900;
+    }
+
+    [data-theme='dark'] .post-nav-arrow {
+      background: rgba(124, 58, 237, 0.18);
+      border-color: rgba(139, 92, 246, 0.45);
+      color: var(--violet-300);
+    }
+
+    .share-section {
+      margin-top: 64px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .share-box {
+      background: linear-gradient(to bottom right, var(--violet-50), var(--indigo-50));
+      padding: 32px;
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    [data-theme='dark'] .share-box {
+      background: linear-gradient(to bottom right, rgba(124, 58, 237, 0.14), rgba(79, 70, 229, 0.12));
+      border: 1px solid rgba(139, 92, 246, 0.18);
+    }
+
+    .share-text {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--text-main);
+      margin-bottom: 24px;
+      font-size: 1rem;
+    }
+
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+    
+    .share-btn {
+      padding: 10px 24px;
+      border-radius: 12px;
+    }
+
+    .share-actions {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+	    .share-popover {
+	      position: absolute;
+	      bottom: calc(100% + 12px);
+	      left: 50%;
+	      transform: translateX(-50%);
+	      min-width: 220px;
+	      padding: 8px;
+	      border-radius: 14px;
+	      background: var(--panel);
+	      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xl);
+      display: grid;
+      gap: 6px;
+      z-index: 30;
+    }
+
+    .share-popover[hidden] {
+      display: none;
+    }
+
+	    .share-option {
+	      display: flex;
+	      align-items: center;
+	      justify-content: space-between;
+	      gap: 12px;
+	      width: 100%;
+	      padding: 10px 12px;
+      border-radius: 12px;
+      border: 0;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .share-option:hover {
+      background: var(--hover-bg);
+      color: var(--text-heading);
+    }
+
+	    .share-option-desc {
+	      font-size: 0.75rem;
+	      font-weight: 500;
+	      color: var(--text-muted);
+	      white-space: nowrap;
+	      flex-shrink: 0;
+	    }
+
+    .like-btn.is-liked {
+      border-color: rgba(139, 92, 246, 0.35);
+      background: rgba(124, 58, 237, 0.08);
+      color: var(--violet-600);
+    }
+
+    [data-theme='dark'] .like-btn.is-liked {
+      background: rgba(124, 58, 237, 0.14);
+      border-color: rgba(139, 92, 246, 0.28);
+      color: var(--violet-500);
+    }
+
+    .share-toast {
+      margin-top: 14px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+  </style>
+
+	  <script>
+	    (() => {
+	      const backLink = document.querySelector("[data-back-link]");
+	      const backLabel = backLink && backLink.querySelector("[data-back-label]");
+	      const homePath = "{{ site.Home.RelPermalink }}";
+	      const normalizePath = (value) => (value || "/").replace(/\/+$/, "") || "/";
+	      const labelFromPath = (pathname) => {
+	        const normalized = normalizePath(pathname);
+	        const normalizedHome = normalizePath(homePath);
+	        if (normalized === normalizedHome) return "返回首页";
+	        if (normalized.includes("/archives")) return "返回归档";
+	        if (normalized.includes("/tags")) return "返回标签";
+	        if (normalized.includes("/categories")) return "返回分类";
+	        if (normalized.includes("/search")) return "返回搜索";
+	        return "返回上一页";
+	      };
+
+	      if (backLink) {
+	        try {
+	          const referrer = document.referrer;
+	          if (referrer) {
+	            const refUrl = new URL(referrer);
+	            if (refUrl.origin === window.location.origin) {
+	              backLink.setAttribute("href", refUrl.href);
+	              if (backLabel) backLabel.textContent = labelFromPath(refUrl.pathname);
+	            } else if (backLabel) {
+	              backLabel.textContent = "返回首页";
+	            }
+	          } else if (backLabel) {
+	            backLabel.textContent = "返回首页";
+	          }
+	        } catch {
+	          if (backLabel) backLabel.textContent = "返回首页";
+	        }
+	      }
+
+	      const shareRoot = document.querySelector("[data-share]");
+	      const shareTrigger = shareRoot && shareRoot.querySelector("[data-share-trigger]");
+	      const sharePopover = shareRoot && shareRoot.querySelector("[data-share-popover]");
+	      const nativeShareBtn = shareRoot && shareRoot.querySelector("[data-share-native]");
+	      const wechatBtn = shareRoot && shareRoot.querySelector("[data-share-wechat]");
+	      const qqLink = shareRoot && shareRoot.querySelector("[data-share-qq]");
+	      const toast = document.querySelector("[data-share-toast]");
+
+      const likeBtn = document.querySelector("[data-like-button]");
+      const likeLabel = likeBtn && likeBtn.querySelector("[data-like-label]");
+
+      const pageUrl = window.location.href;
+      const pageTitle = document.title || "分享";
+
+      const setToast = (text) => {
+        if (!toast) return;
+        toast.textContent = text;
+        toast.hidden = false;
+        window.clearTimeout(setToast._t);
+        setToast._t = window.setTimeout(() => {
+          toast.hidden = true;
+        }, 1600);
+      };
+
+	      const setPopoverOpen = (open) => {
+	        if (!sharePopover) return;
+	        sharePopover.hidden = !open;
+	        if (shareTrigger) shareTrigger.setAttribute("aria-expanded", open ? "true" : "false");
+	      };
+
+      const buildQqHref = () => {
+        if (!qqLink) return;
+        const url = encodeURIComponent(pageUrl);
+        const title = encodeURIComponent(pageTitle);
+        qqLink.href = `https://connect.qq.com/widget/shareqq/index.html?url=${url}&title=${title}`;
+      };
+
+      const copyLink = async () => {
+        try {
+          await navigator.clipboard.writeText(pageUrl);
+          setToast("链接已复制");
+        } catch {
+          window.prompt("复制链接后分享：", pageUrl);
+        }
+      };
+
+      if (qqLink) buildQqHref();
+
+	      const canNativeShare = window.isSecureContext && !!navigator.share;
+	      if (nativeShareBtn) nativeShareBtn.hidden = !canNativeShare;
+
+	      if (shareTrigger) {
+	        shareTrigger.setAttribute("aria-haspopup", "menu");
+	        shareTrigger.setAttribute("aria-controls", "share-popover");
+	        shareTrigger.setAttribute("aria-expanded", "false");
+	        shareTrigger.addEventListener("click", () => {
+	          setPopoverOpen(sharePopover && sharePopover.hidden);
+	        });
+	      }
+
+	      if (nativeShareBtn) {
+	        nativeShareBtn.addEventListener("click", async () => {
+	          if (!canNativeShare) return;
+	          try {
+	            await navigator.share({ title: pageTitle, url: pageUrl });
+	          } catch {
+	            // ignore
+	          } finally {
+	            setPopoverOpen(false);
+	          }
+	        });
+	      }
+
+      if (wechatBtn) {
+        wechatBtn.addEventListener("click", async () => {
+          await copyLink();
+          setPopoverOpen(false);
+        });
+      }
+
+      if (qqLink) {
+        qqLink.addEventListener("click", () => setPopoverOpen(false));
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!shareRoot || !sharePopover || sharePopover.hidden) return;
+        if (shareRoot.contains(event.target)) return;
+        setPopoverOpen(false);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (!sharePopover || sharePopover.hidden) return;
+        setPopoverOpen(false);
+      });
+
+      const likeKey = `ink-like:${window.location.pathname}`;
+      const readLike = () => {
+        try {
+          return window.localStorage.getItem(likeKey) === "1";
+        } catch {
+          return false;
+        }
+      };
+      const writeLike = (value) => {
+        try {
+          window.localStorage.setItem(likeKey, value ? "1" : "0");
+        } catch {
+          // ignore
+        }
+      };
+
+      const renderLike = (liked) => {
+        if (!likeBtn) return;
+        likeBtn.classList.toggle("is-liked", liked);
+        if (likeLabel) likeLabel.textContent = liked ? "已点赞" : "点赞";
+        likeBtn.setAttribute("aria-pressed", liked ? "true" : "false");
+      };
+
+      if (likeBtn) {
+        renderLike(readLike());
+        likeBtn.addEventListener("click", () => {
+          const next = !readLike();
+          writeLike(next);
+          renderLike(next);
+        });
+      }
+    })();
+  </script>
+{{ end }}

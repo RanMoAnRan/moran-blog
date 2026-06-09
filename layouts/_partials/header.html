@@ -77,6 +77,15 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
         </button>
 
+
+        <button class="icon-button header-music-toggle" type="button" data-header-music-toggle aria-label="音乐" aria-expanded="false" aria-controls="header-music-panel" title="音乐">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </button>
+
+        <button class="icon-button header-hue-toggle" type="button" data-hue-toggle aria-label="主题色相" aria-expanded="false" aria-controls="header-hue-panel" title="主题色相">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 5.58 2 10c0 3.31 2.69 6 6 6h1.5a2.5 2.5 0 0 1 2.5 2.5A3.5 3.5 0 0 0 15.5 22H16c3.31 0 6-4.03 6-9 0-6.08-4.48-11-10-11Z"/></svg>
+        </button>
+
         <a
           class="icon-button header-social"
           href="https://github.com/RanMoAnRan"
@@ -98,6 +107,25 @@
         </a>
       </div>
     </div>
+  </div>
+
+  <div class="header-floating-panel header-music-panel" id="header-music-panel" data-header-music-panel hidden>
+    {{ partial "home-music-widget.html" (dict "Page" . "id" "header-music-widget" "class" "home-music-widget--floating") }}
+  </div>
+
+  <div class="header-floating-panel header-hue-panel" id="header-hue-panel" data-hue-panel hidden>
+    <div class="hue-panel__title">主题色相</div>
+    <input class="hue-panel__range" type="range" min="0" max="359" step="1" data-hue-range aria-label="主题色相">
+    <div class="hue-panel__swatches" aria-label="快速颜色">
+      <button type="button" data-hue-preset="0" style="--swatch-hue:0" aria-label="红色"></button>
+      <button type="button" data-hue-preset="35" style="--swatch-hue:35" aria-label="橙色"></button>
+      <button type="button" data-hue-preset="95" style="--swatch-hue:95" aria-label="绿色"></button>
+      <button type="button" data-hue-preset="180" style="--swatch-hue:180" aria-label="青色"></button>
+      <button type="button" data-hue-preset="220" style="--swatch-hue:220" aria-label="蓝色"></button>
+      <button type="button" data-hue-preset="262" style="--swatch-hue:262" aria-label="紫色"></button>
+      <button type="button" data-hue-preset="320" style="--swatch-hue:320" aria-label="粉色"></button>
+    </div>
+    <button class="hue-panel__reset" type="button" data-hue-reset>恢复默认</button>
   </div>
 
   <div class="nav-mobile" id="nav-mobile" data-nav-mobile hidden>

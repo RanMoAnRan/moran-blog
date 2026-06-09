@@ -1,0 +1,25 @@
+# 本地音乐配置。
+# 音频文件放到 static/music/ 下，访问路径就是 /music/文件名.mp3。
+# 封面建议放到 static/music/cover/ 下，歌词建议放到 static/music/lrc/ 下。
+#
+# 两种用法：
+# 1. 自动扫描 static/music/ 下的 .mp3/.m4a/.ogg/.wav/.flac 文件：保持 playlist 为空即可。
+# 2. 精确配置歌名/歌手/封面/歌词：取消下面 [[playlist]] 示例注释并改成你的文件名。
+
+mode = 'local'
+volume = 0.7
+playMode = 'list'
+autoplay = true
+randomOnLoad = true
+
+[local]
+dir = 'music'
+coverDir = 'music/cover'
+lrcDir = 'music/lrc'
+
+# [[playlist]]
+# name = '歌曲名'
+# artist = '歌手名'
+# url = '/music/example.mp3'
+# cover = '/music/cover/example.webp'
+# lrc = '/music/lrc/example.lrc'

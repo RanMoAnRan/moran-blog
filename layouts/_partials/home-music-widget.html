@@ -1,0 +1,88 @@
+{{- $ctx := . -}}
+{{- $musicId := "" -}}
+{{- $musicClass := "" -}}
+{{- if reflect.IsMap . -}}
+  {{- $ctx = .Page -}}
+  {{- $musicId = .id | default "" -}}
+  {{- $musicClass = .class | default "" -}}
+{{- end -}}
+{{- $music := site.Data.music | default site.Params.homeWidgets.music | default dict -}}
+{{- $local := $music.local | default dict -}}
+{{- $mode := $music.mode | default "meting" -}}
+{{- $meting := $music.meting | default dict -}}
+{{- $api := $meting.api | default "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r" -}}
+{{- $server := $meting.server | default "netease" -}}
+{{- $type := $meting.type | default "playlist" -}}
+{{- $id := $meting.id | default "17462462467" -}}
+{{- $fallbackApis := $meting.fallbackApis | default (slice "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id" "https://api.moeyao.cn/meting/?server=:server&type=:type&id=:id") -}}
+{{- $volume := $music.volume | default 0.7 -}}
+{{- $playMode := $music.playMode | default "list" -}}
+{{- $autoplay := $music.autoplay | default true -}}
+{{- $randomOnLoad := $music.randomOnLoad | default true -}}
+{{- $localPlaylist := slice -}}
+{{- with $music.playlist -}}
+  {{- range . -}}
+    {{- $localPlaylist = $localPlaylist | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- with $local.playlist -}}
+  {{- range . -}}
+    {{- $localPlaylist = $localPlaylist | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (eq $mode "local") (eq (len $localPlaylist) 0) -}}
+  {{- $musicDir := $local.dir | default "music" -}}
+  {{- $musicStaticDir := path.Join "static" $musicDir -}}
+  {{- if fileExists $musicStaticDir -}}
+    {{- range readDir $musicStaticDir -}}
+      {{- if not .IsDir -}}
+        {{- $ext := lower (path.Ext .Name) -}}
+        {{- if in (slice ".mp3" ".m4a" ".ogg" ".wav" ".flac") $ext -}}
+          {{- $base := strings.TrimSuffix $ext .Name -}}
+          {{- $url := printf "/%s/%s" $musicDir .Name -}}
+          {{- $cover := "" -}}
+          {{- $lrc := "" -}}
+          {{- $coverDir := $local.coverDir | default (printf "%s/cover" $musicDir) -}}
+          {{- range (slice ".webp" ".jpg" ".jpeg" ".png" ".avif") -}}
+            {{- $candidate := printf "static/%s/%s%s" $coverDir $base . -}}
+            {{- if and (not $cover) (fileExists $candidate) -}}{{- $cover = printf "/%s/%s%s" $coverDir $base . -}}{{- end -}}
+          {{- end -}}
+          {{- $lrcDir := $local.lrcDir | default (printf "%s/lrc" $musicDir) -}}
+          {{- $lrcCandidate := printf "static/%s/%s.lrc" $lrcDir $base -}}
+          {{- if fileExists $lrcCandidate -}}{{- $lrc = printf "/%s/%s.lrc" $lrcDir $base -}}{{- end -}}
+          {{- $localPlaylist = $localPlaylist | append (dict "name" $base "artist" "本地音乐" "url" $url "cover" $cover "lrc" $lrc) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+<section class="home-widget home-music-widget {{ $musicClass }}" {{ with $musicId }}id="{{ . }}"{{ end }} data-home-music aria-label="音乐播放器">
+  <div class="home-widget__title"><span>音乐</span></div>
+  <div class="home-music" data-music-player>
+    <div class="home-music__top">
+      <div class="home-music__cover-wrap">
+        <div class="home-music__cover-fallback" aria-hidden="true">♪</div>
+        <img class="home-music__cover" data-music-cover alt="音乐封面" loading="lazy" decoding="async">
+      </div>
+      <div class="home-music__info">
+        <div class="home-music__line">
+          <strong class="home-music__title" data-music-title>音乐</strong>
+          <button class="home-music__mini-btn" type="button" data-music-playlist-toggle aria-label="列表" title="列表">☰</button>
+        </div>
+        <p class="home-music__artist" data-music-artist>正在加载歌单…</p>
+        <div class="home-music__time"><span data-music-current>0:00</span><span>/</span><span data-music-duration>0:00</span></div>
+      </div>
+    </div>
+    <div class="home-music__progress" data-music-progress role="slider" aria-label="播放进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-music-progress-bar></span></div>
+    <div class="home-music__controls">
+      <button type="button" data-music-mode aria-label="切换播放模式" title="切换播放模式">↻</button>
+      <button type="button" data-music-prev aria-label="上一首" title="上一首">⏮</button>
+      <button class="home-music__play" type="button" data-music-play aria-label="播放" title="播放">▶</button>
+      <button type="button" data-music-next aria-label="下一首" title="下一首">⏭</button>
+      <label class="home-music__volume" aria-label="音量"><span>🔊</span><input type="range" min="0" max="1" step="0.01" value="{{ $volume }}" data-music-volume></label>
+    </div>
+    <div class="home-music__playlist" data-music-playlist hidden></div>
+    <p class="home-music__error" data-music-error hidden></p>
+  </div>
+  <script type="application/json" data-home-music-config>{{ dict "mode" $mode "volume" $volume "playMode" $playMode "autoplay" $autoplay "randomOnLoad" $randomOnLoad "meting" (dict "api" $api "server" $server "type" $type "id" $id "fallbackApis" $fallbackApis) "localPlaylist" $localPlaylist | jsonify }}</script>
+</section>
