@@ -1,17 +1,17 @@
 {{- $posts := where site.RegularPages "Section" "posts" -}}
 {{- $categories := site.Taxonomies.categories -}}
 {{- $tags := site.Taxonomies.tags -}}
-{{- $totalWords := 0 -}}
-{{- range $posts -}}{{- $totalWords = add $totalWords .WordCount -}}{{- end -}}
 {{- $latest := index ($posts.ByDate.Reverse) 0 -}}
 {{- $startDate := site.Params.siteStartDate | default "2026-01-01" -}}
+{{- range first 1 $posts.ByDate -}}
+  {{- $startDate = .Date.Format "2006-01-02T15:04:05Z07:00" -}}
+{{- end -}}
 <section class="home-widget home-stats-widget" aria-label="站点统计" data-home-stats data-start-date="{{ $startDate }}" data-last-post-date="{{ with $latest }}{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}{{ end }}">
   <div class="home-widget__title"><span>站点统计</span></div>
   <div class="home-stats-list">
     <div class="home-stat-row"><span class="home-stat-row__label"><span aria-hidden="true">▤</span>文章</span><strong>{{ len $posts }}</strong></div>
     <div class="home-stat-row"><span class="home-stat-row__label"><span aria-hidden="true">▣</span>分类</span><strong>{{ len $categories }}</strong></div>
     <div class="home-stat-row"><span class="home-stat-row__label"><span aria-hidden="true">#</span>标签</span><strong>{{ len $tags }}</strong></div>
-    <div class="home-stat-row"><span class="home-stat-row__label"><span aria-hidden="true">文</span>总字数</span><strong data-format-number>{{ $totalWords }}</strong></div>
     <div class="home-stat-row"><span class="home-stat-row__label"><span aria-hidden="true">◷</span>运行时长</span><strong><span data-running-days>0</span><small> 天</small></strong></div>
     <div class="home-stat-row"><span class="home-stat-row__label"><span aria-hidden="true">♥</span>最后活动</span><strong><span data-last-update>0</span><small data-last-update-suffix> 天前</small></strong></div>
   </div>

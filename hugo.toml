@@ -67,7 +67,7 @@ enableRobotsTXT = true
 [params]
   description = '记录代码与生活的间隙'
   slogan = '记录代码与生活的间隙'
-  accent = '#0B3D91'
+  accent = '#c026d3'
   homeLatestCount = 6
   siteStartDate = '2026-01-10'
   socialImage = ''

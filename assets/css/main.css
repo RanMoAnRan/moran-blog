@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  --hue: 262;
+  --hue: 292;
 
   /* Tailwind Palette - Exact Replication */
   --slate-50: #f8fafc;
@@ -21,9 +21,9 @@
   --violet-600: oklch(0.64 0.16 var(--hue));
   --violet-700: oklch(0.55 0.17 var(--hue));
 
-  --indigo-50: oklch(0.95 0.025 calc(var(--hue) + 22));
-  --indigo-500: oklch(0.68 0.13 calc(var(--hue) + 22));
-  --indigo-600: oklch(0.58 0.15 calc(var(--hue) + 22));
+  --indigo-50: oklch(0.95 0.025 calc(var(--hue) - 42));
+  --indigo-500: oklch(0.68 0.13 calc(var(--hue) - 42));
+  --indigo-600: oklch(0.58 0.15 calc(var(--hue) - 42));
   
   --emerald-50: #ecfdf5;
   --emerald-100: #d1fae5;
@@ -50,18 +50,18 @@
   --footer-border: rgba(226, 232, 240, 0.6);
   --hover-bg: rgba(226, 232, 240, 0.5);
 
-  --page-gradient: linear-gradient(to bottom, rgba(238, 242, 255, 0.5), transparent);
-  --hero-glow: linear-gradient(to right, rgba(167, 139, 250, 0.62), rgba(129, 140, 248, 0.62));
+  --page-gradient: linear-gradient(to bottom, rgba(250, 232, 255, 0.52), transparent);
+  --hero-glow: linear-gradient(to right, rgba(217, 70, 239, 0.58), rgba(96, 165, 250, 0.54));
 
   /* Ambient background (fills wide whitespace subtly) */
   --bg-ambient:
-    radial-gradient(900px circle at 12% 12%, rgba(124, 58, 237, 0.20), transparent 60%),
-    radial-gradient(820px circle at 88% 18%, rgba(59, 130, 246, 0.16), transparent 58%),
-    radial-gradient(980px circle at 55% 92%, rgba(217, 70, 239, 0.10), transparent 60%),
+    radial-gradient(900px circle at 12% 12%, rgba(192, 38, 211, 0.20), transparent 60%),
+    radial-gradient(820px circle at 88% 18%, rgba(96, 165, 250, 0.15), transparent 58%),
+    radial-gradient(980px circle at 55% 92%, rgba(236, 72, 153, 0.12), transparent 60%),
     var(--page-gradient);
   --side-ambient:
-    radial-gradient(420px 700px at 0% 40%, rgba(124, 58, 237, 0.12), transparent 72%),
-    radial-gradient(420px 700px at 100% 40%, rgba(59, 130, 246, 0.12), transparent 72%);
+    radial-gradient(420px 700px at 0% 40%, rgba(192, 38, 211, 0.12), transparent 72%),
+    radial-gradient(420px 700px at 100% 40%, rgba(96, 165, 250, 0.12), transparent 72%);
   --sand-streaks:
     repeating-linear-gradient(-18deg, rgba(245, 214, 159, 0.14) 0 1px, rgba(255, 255, 255, 0) 1px 26px),
     repeating-linear-gradient(-18deg, rgba(245, 214, 159, 0.08) 0 1px, rgba(255, 255, 255, 0) 1px 16px);
@@ -119,17 +119,17 @@
   --footer-border: rgba(51, 65, 85, 0.55);
   --hover-bg: rgba(255, 255, 255, 0.06);
 
-  --page-gradient: linear-gradient(to bottom, rgba(124, 58, 237, 0.16), transparent);
-  --hero-glow: linear-gradient(to right, rgba(221, 214, 254, 0.5), rgba(199, 210, 254, 0.5));
+  --page-gradient: linear-gradient(to bottom, rgba(192, 38, 211, 0.17), transparent);
+  --hero-glow: linear-gradient(to right, rgba(245, 208, 254, 0.46), rgba(191, 219, 254, 0.44));
 
   --bg-ambient:
-    radial-gradient(900px circle at 12% 12%, rgba(124, 58, 237, 0.18), transparent 62%),
-    radial-gradient(820px circle at 88% 18%, rgba(59, 130, 246, 0.12), transparent 60%),
-    radial-gradient(980px circle at 55% 92%, rgba(217, 70, 239, 0.08), transparent 62%),
+    radial-gradient(900px circle at 12% 12%, rgba(192, 38, 211, 0.17), transparent 62%),
+    radial-gradient(820px circle at 88% 18%, rgba(96, 165, 250, 0.11), transparent 60%),
+    radial-gradient(980px circle at 55% 92%, rgba(236, 72, 153, 0.09), transparent 62%),
     var(--page-gradient);
   --side-ambient:
-    radial-gradient(420px 700px at 0% 40%, rgba(124, 58, 237, 0.18), transparent 74%),
-    radial-gradient(420px 700px at 100% 40%, rgba(59, 130, 246, 0.16), transparent 74%);
+    radial-gradient(420px 700px at 0% 40%, rgba(192, 38, 211, 0.17), transparent 74%),
+    radial-gradient(420px 700px at 100% 40%, rgba(96, 165, 250, 0.15), transparent 74%);
   --sand-streaks:
     repeating-linear-gradient(-18deg, rgba(245, 214, 159, 0.08) 0 1px, rgba(0, 0, 0, 0) 1px 26px),
     repeating-linear-gradient(-18deg, rgba(245, 214, 159, 0.05) 0 1px, rgba(0, 0, 0, 0) 1px 16px);
