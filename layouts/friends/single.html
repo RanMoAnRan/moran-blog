@@ -48,7 +48,10 @@
       {{- $siteURL := "https://moran.cc.cd" -}}
       {{- $avatarRaw := site.Params.profile.avatar | default "img/avatar/moran.jpeg" -}}
       {{- $avatarURL := $avatarRaw -}}
-      {{- if not (hasPrefix $avatarURL "http") -}}{{- $avatarURL = ($avatarURL | absURL) -}}{{- end -}}
+      {{- if not (hasPrefix $avatarURL "http") -}}
+        {{- $avatarPath := $avatarURL | replaceRE "^/+" "" -}}
+        {{- $avatarURL = printf "%s/%s" ($siteURL | replaceRE "/$" "") $avatarPath -}}
+      {{- end -}}
       {{- $applyEmail := site.Params.profile.email | default "ranmoanran@gmail.com" -}}
 
       <section class="friends-exchange" aria-labelledby="friends-exchange-title">
