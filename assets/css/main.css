@@ -1913,6 +1913,17 @@ body.is-home {
   transform: translateX(-50%) translateY(0) scale(1);
 }
 
+.nav-dropdown.is-suppressed .nav-dropdown__menu {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(8px) scale(0.98);
+}
+
+.nav-dropdown.is-suppressed .nav-dropdown__chevron {
+  transform: none;
+  opacity: 0.72;
+}
+
 .nav-dropdown__item {
   display: grid;
   gap: 2px;

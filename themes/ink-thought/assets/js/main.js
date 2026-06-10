@@ -233,6 +233,7 @@
   } else {
     enhanceCodeBlocks();
   }
+  document.addEventListener("moran:page-load", enhanceCodeBlocks);
 })();
 
 
@@ -732,6 +733,7 @@
   } else {
     init();
   }
+  document.addEventListener("moran:page-load", init);
 })();
 
 (() => {
@@ -809,4 +811,5 @@
   } else {
     enhanceImages();
   }
+  document.addEventListener("moran:page-load", enhanceImages);
 })();
