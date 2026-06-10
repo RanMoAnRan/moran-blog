@@ -232,21 +232,22 @@
 
     @media (min-width: 1240px) {
       .detail-container.has-post-left {
-        --detail-content-width: 972px;
-        --detail-layout-width: calc(260px + 10px + var(--detail-content-width));
+        --detail-content-width: 860px;
+        --detail-column-gap: 28px;
+        --detail-layout-width: calc(260px + var(--detail-column-gap) + var(--detail-content-width));
         --container: calc(var(--detail-layout-width) + 48px);
         display: grid;
         grid-template-columns: 260px minmax(0, var(--detail-content-width));
-        gap: 10px;
+        gap: var(--detail-column-gap);
         align-items: start;
       }
 
       .detail-container.has-post-left.has-post-toc {
-        --detail-content-width: 988px;
-        --detail-layout-width: calc(260px + 10px + var(--detail-content-width) + 10px + 240px);
+        --detail-content-width: 860px;
+        --detail-layout-width: calc(260px + var(--detail-column-gap) + var(--detail-content-width) + var(--detail-column-gap) + 240px);
         --container: calc(var(--detail-layout-width) + 48px);
         grid-template-columns: 260px minmax(0, var(--detail-content-width)) 240px;
-        column-gap: 10px;
+        column-gap: var(--detail-column-gap);
       }
 
       .post-left-sidebar {
@@ -414,16 +415,20 @@
       width: 46px;
       height: 46px;
       border-radius: 999px;
-      border: 1px solid rgba(139, 92, 246, 0.24);
-      background: color-mix(in srgb, var(--panel) 86%, transparent);
-      color: var(--text-heading);
-      box-shadow: var(--shadow-xl);
+      border: 1px solid color-mix(in srgb, var(--theme-primary-strong) 46%, white 28%);
+      background:
+        radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.42), transparent 34%),
+        linear-gradient(135deg, var(--theme-primary), var(--indigo-600));
+      color: #fff;
+      box-shadow:
+        0 16px 34px -18px color-mix(in srgb, var(--theme-primary) 72%, black),
+        0 8px 18px -14px rgba(15, 23, 42, 0.42);
       backdrop-filter: blur(16px);
       cursor: pointer;
       opacity: 0;
       transform: translateY(10px) scale(0.92);
       pointer-events: none;
-      transition: opacity 0.18s ease, transform 0.18s ease, border-color 0.2s, background 0.2s, color 0.2s;
+      transition: opacity 0.18s ease, transform 0.18s ease, border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
     }
 
     .post-back-to-top.is-visible {
@@ -434,16 +439,30 @@
 
     .post-back-to-top:hover,
     .post-back-to-top:focus-visible {
-      border-color: rgba(139, 92, 246, 0.42);
-      color: var(--violet-700);
-      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      border-color: color-mix(in srgb, var(--theme-primary-strong) 62%, white 22%);
+      color: #fff;
+      background:
+        radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.52), transparent 36%),
+        linear-gradient(135deg, var(--theme-primary-strong), var(--indigo-500));
+      box-shadow:
+        0 18px 38px -16px color-mix(in srgb, var(--theme-primary) 82%, black),
+        0 0 0 4px color-mix(in srgb, var(--theme-primary) 20%, transparent);
       transform: translateY(-1px) scale(1.02);
+    }
+
+    [data-theme='dark'] .post-back-to-top {
+      border-color: color-mix(in srgb, var(--theme-primary) 52%, white 14%);
+      box-shadow:
+        0 16px 34px -18px color-mix(in srgb, var(--theme-primary) 76%, black),
+        0 0 28px -16px color-mix(in srgb, var(--theme-primary) 72%, transparent);
     }
 
     [data-theme='dark'] .post-back-to-top:hover,
     [data-theme='dark'] .post-back-to-top:focus-visible {
-      color: var(--violet-300);
-      background: rgba(30, 41, 59, 0.86);
+      color: #fff;
+      background:
+        radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.34), transparent 36%),
+        linear-gradient(135deg, var(--theme-primary-strong), var(--indigo-500));
     }
 
     .post-back-to-top__percent {
@@ -616,8 +635,8 @@
       }
 
       .post-back-to-top {
-        right: max(24px, calc((100vw - var(--detail-layout-width, 1312px)) / 2));
-        bottom: 24px;
+        right: max(24px, calc((100vw - var(--detail-layout-width, 1312px)) / 2 + 252px));
+        bottom: 96px;
       }
 
       .post-toc {
@@ -670,7 +689,7 @@
 
     .detail-header {
       text-align: center;
-      max-width: 920px;
+      max-width: 780px;
       margin: 0 auto 48px;
     }
 
@@ -724,12 +743,12 @@
     .meta-dot { width: 4px; height: 4px; background: var(--slate-300); border-radius: 50%; }
 
     .detail-prose {
-      max-width: 920px;
+      max-width: 780px;
       margin: 0 auto;
     }
 
     .post-tags {
-      max-width: 920px;
+      max-width: 780px;
       margin: 32px auto 0;
       padding-top: 24px;
       border-top: 1px dashed var(--border);
@@ -746,7 +765,7 @@
     }
 
     .comments {
-      max-width: 920px;
+      max-width: 780px;
       margin: 48px auto 0;
       padding: 16px 20px 6px;
       border-radius: var(--radius);
@@ -755,7 +774,7 @@
     }
 
     .related-posts {
-      max-width: 920px;
+      max-width: 780px;
       margin: 40px auto 0;
       display: grid;
       gap: 16px;
