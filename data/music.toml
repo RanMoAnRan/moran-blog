@@ -1,25 +1,24 @@
-# 本地音乐配置。
-# 音频文件放到 static/music/ 下，访问路径就是 /music/文件名.mp3。
-# 封面建议放到 static/music/cover/ 下，歌词建议放到 static/music/lrc/ 下。
-#
-# 两种用法：
-# 1. 自动扫描 static/music/ 下的 .mp3/.m4a/.ogg/.wav/.flac 文件：保持 playlist 为空即可。
-# 2. 精确配置歌名/歌手/封面/歌词：取消下面 [[playlist]] 示例注释并改成你的文件名。
+# 音乐播放器配置。
+# 当前使用 Meting API 拉取网易云抖音排行榜，自动更新热门音乐。
+# 如需改回本地音乐：把 mode 改为 'local'，并把音频文件放到 static/music/ 下。
 
-mode = 'local'
+mode = 'meting'
 volume = 0.7
 playMode = 'list'
 autoplay = true
 randomOnLoad = true
 
+[meting]
+api = 'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r'
+server = 'netease'
+type = 'playlist'
+id = '10520166' # 网易云音乐抖音排行榜
+fallbackApis = [
+  'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id',
+  'https://api.moeyao.cn/meting/?server=:server&type=:type&id=:id'
+]
+
 [local]
 dir = 'music'
 coverDir = 'music/cover'
 lrcDir = 'music/lrc'
-
-# [[playlist]]
-# name = '歌曲名'
-# artist = '歌手名'
-# url = '/music/example.mp3'
-# cover = '/music/cover/example.webp'
-# lrc = '/music/lrc/example.lrc'
