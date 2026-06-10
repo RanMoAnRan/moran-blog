@@ -55,6 +55,26 @@
     .replaceAll(":id", encodeURIComponent(meting.id || ""))
     .replaceAll(":r", String(Math.random()));
 
+  const MUSIC_STATE_KEY = "moran-home-music-state";
+
+  const getTrackKey = (track) => [track?.url || "", track?.title || "", track?.artist || ""].join("|");
+
+  const readMusicState = () => {
+    try {
+      return JSON.parse(window.localStorage.getItem(MUSIC_STATE_KEY) || "null") || {};
+    } catch {
+      return {};
+    }
+  };
+
+  const writeMusicState = (state) => {
+    try {
+      window.localStorage.setItem(MUSIC_STATE_KEY, JSON.stringify({ ...readMusicState(), ...state, updatedAt: Date.now() }));
+    } catch {
+      // localStorage may be unavailable in private browsing.
+    }
+  };
+
   const initMusic = () => {
     const widgets = Array.from(document.querySelectorAll("[data-home-music]"));
     if (!widgets.length) return;
@@ -68,12 +88,15 @@
     }
 
     let autoplayClaimed = false;
+    let activeSourceKey = window.__moranHomeMusicSourceKey || "";
 
     widgets.forEach((widget) => {
       if (widget.dataset.musicReady === "1") return;
       widget.dataset.musicReady = "1";
 
       const config = parseJson(widget.querySelector("[data-home-music-config]"), {});
+      const sourceKey = JSON.stringify({ mode: config.mode || "meting", meting: config.meting || {}, local: (config.localPlaylist || []).map(getTrackKey) });
+      const persisted = readMusicState();
       const state = {
         playlist: [],
         index: 0,
@@ -81,6 +104,7 @@
         autoplay: config.autoplay !== false && !autoplayClaimed,
         randomOnLoad: config.randomOnLoad !== false,
         playing: false,
+        sourceKey,
       };
       if (state.autoplay) autoplayClaimed = true;
 
@@ -136,9 +160,12 @@
         if (!state.playlist.length) return;
         state.index = (index + state.playlist.length) % state.playlist.length;
         const track = state.playlist[state.index];
+        activeSourceKey = state.sourceKey;
+        window.__moranHomeMusicSourceKey = activeSourceKey;
         setTrackInfo(track);
         renderPlaylist();
         if (sharedAudio.src !== track.url) sharedAudio.src = track.url;
+        writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(track), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode });
         if (autoplay) {
           sharedAudio.play().then(() => {
             state.playing = true;
@@ -158,8 +185,11 @@
       const playCurrent = () => {
         if (!state.playlist.length) return;
         const track = state.playlist[state.index];
+        activeSourceKey = state.sourceKey;
+        window.__moranHomeMusicSourceKey = activeSourceKey;
         if (sharedAudio.src !== track.url) sharedAudio.src = track.url;
         sharedAudio.volume = Number(els.volume?.value || config.volume || 0.7);
+        writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(track), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode });
         sharedAudio.play().then(updatePlaying).catch(() => showError("当前歌曲无法播放，可能是音源限制。"));
       };
 
@@ -183,6 +213,9 @@
           els.duration.textContent = formatTime(duration);
           els.progressBar.style.width = `${pct}%`;
           els.progress.setAttribute("aria-valuenow", String(Math.round(pct)));
+          if (activeSourceKey === state.sourceKey) {
+            writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: current, playMode: state.playMode });
+          }
         });
         sharedAudio.addEventListener("play", updatePlaying);
         sharedAudio.addEventListener("pause", updatePlaying);
@@ -213,10 +246,32 @@
             state.playlist = Array.isArray(data) ? data.map(normalizeTrack).filter((track) => track.url) : [];
           }
           if (!state.playlist.length) throw new Error("empty playlist");
-          const startIndex = state.randomOnLoad
-            ? Math.floor(Math.random() * state.playlist.length)
-            : 0;
-          loadTrack(startIndex, state.autoplay);
+          const restoredIndex = persisted.sourceKey === state.sourceKey
+            ? state.playlist.findIndex((track) => getTrackKey(track) === persisted.trackKey)
+            : -1;
+          const currentAudioIndex = sharedAudio.src
+            ? state.playlist.findIndex((track) => sharedAudio.src === new URL(track.url, window.location.href).href)
+            : -1;
+          const shouldRestore = restoredIndex >= 0;
+          const shouldReuseCurrentAudio = currentAudioIndex >= 0 && activeSourceKey === state.sourceKey;
+          const startIndex = shouldReuseCurrentAudio
+            ? currentAudioIndex
+            : shouldRestore
+              ? restoredIndex
+              : state.randomOnLoad
+                ? Math.floor(Math.random() * state.playlist.length)
+                : 0;
+          const shouldAutoplay = state.autoplay && !shouldReuseCurrentAudio;
+          loadTrack(startIndex, shouldAutoplay);
+          if (shouldRestore && !shouldReuseCurrentAudio && Number(persisted.currentTime) > 0) {
+            const restoreTime = () => {
+              if (Number.isFinite(sharedAudio.duration)) {
+                sharedAudio.currentTime = Math.min(Number(persisted.currentTime), Math.max(0, sharedAudio.duration - 1));
+              }
+              sharedAudio.removeEventListener("loadedmetadata", restoreTime);
+            };
+            sharedAudio.addEventListener("loadedmetadata", restoreTime);
+          }
           els.artist.textContent = state.playlist[startIndex].artist || "暂未播放";
         } catch {
           els.artist.textContent = "歌单加载失败";
@@ -233,6 +288,7 @@
       els.mode?.addEventListener("click", () => {
         state.playMode = state.playMode === "list" ? "one" : state.playMode === "one" ? "random" : "list";
         els.mode.textContent = state.playMode === "one" ? "🔂" : state.playMode === "random" ? "🔀" : "↻";
+        writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode });
       });
       els.volume?.addEventListener("input", () => {
         sharedAudio.volume = Number(els.volume.value);
