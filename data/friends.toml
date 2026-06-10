@@ -1,7 +1,6 @@
 [[friends]]
 name = "Qwerty Learner"
 url = "https://anran.cc.cd/"
-avatar = "https://www.google.com/s2/favicons?domain=anran.cc.cd&sz=128"
 desc = "为键盘输入、单词练习和日常学习准备的小站。"
 tags = ["学习", "工具", "键盘"]
 color = "violet"
@@ -9,7 +8,6 @@ color = "violet"
 [[friends]]
 name = "watermark-studio"
 url = "https://watermark-studio.onrender.com/"
-avatar = "https://www.google.com/s2/favicons?domain=watermark-studio.onrender.com&sz=128"
 desc = "轻量的图片水印处理工具，适合快速给作品加上标记。"
 tags = ["工具", "图片", "创作"]
 color = "blue"
@@ -17,7 +15,6 @@ color = "blue"
 [[friends]]
 name = "VSHUB"
 url = "https://video-search-hub-ranmoanrans-projects.vercel.app/"
-avatar = "https://www.google.com/s2/favicons?domain=video-search-hub-ranmoanrans-projects.vercel.app&sz=128"
 desc = "视频搜索与发现入口，把零散内容重新整理成可检索的线索。"
 tags = ["视频", "搜索", "索引"]
 color = "teal"
@@ -25,7 +22,6 @@ color = "teal"
 [[friends]]
 name = "Flicker"
 url = "https://flicker-8sul.onrender.com/music.html"
-avatar = "https://www.google.com/s2/favicons?domain=flicker-8sul.onrender.com&sz=128"
 desc = "一个带有音乐气息的小角落，适合随手打开听一会儿。"
 tags = ["音乐", "生活", "氛围"]
 color = "rose"
@@ -33,7 +29,6 @@ color = "rose"
 [[friends]]
 name = "幼博连读"
 url = "https://youboliandu.com/"
-avatar = "https://www.google.com/s2/favicons?domain=youboliandu.com&sz=128"
 desc = "持续阅读与记录的个人站点，文字之间保留慢慢翻阅的节奏。"
 tags = ["博客", "阅读", "记录"]
 color = "amber"
