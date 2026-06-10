@@ -1,0 +1,12 @@
+{{- $avatar := site.Params.profile.avatar | default "img/bg/bg-01.jpg" -}}
+{{- if not (hasPrefix $avatar "http") -}}{{- $avatar = ($avatar | relURL) -}}{{- end -}}
+<section class="rail-card rail-profile-mini" aria-label="作者">
+  <a class="rail-profile-mini__avatar" href="{{ "about" | relURL }}" aria-label="打开关于页面">
+    <img src="{{ $avatar }}" alt="{{ site.Params.profile.name | default site.Title }} 的头像" loading="lazy" decoding="async">
+  </a>
+  <div class="rail-profile-mini__body">
+    <p class="rail-eyebrow">Curated by</p>
+    <strong>{{ site.Params.profile.name | default site.Title }}</strong>
+    <span>{{ site.Params.profile.bio | default site.Params.description }}</span>
+  </div>
+</section>

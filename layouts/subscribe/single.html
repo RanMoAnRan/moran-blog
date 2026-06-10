@@ -1,6 +1,11 @@
 {{ define "main" }}
-  <div class="container detail-container">
-    <div class="content post-detail-container subscribe-page posts-page">
+  <div class="container rail-layout-container rail-layout-container--three detail-container subscribe-rail-container">
+    <div class="rail-layout rail-layout--three">
+      <aside class="rail-sidebar rail-sidebar--left" aria-label="订阅上下文">
+        {{ partial "home-profile-widget.html" . }}
+        {{ partial "rail/subscribe-guide.html" . }}
+      </aside>
+      <main class="rail-main content post-detail-container subscribe-page posts-page">
       {{- $feeds := site.Data.subscriptions.feeds | default (slice) -}}
       {{- $accents := slice "violet" "teal" "pink" "amber" -}}
       {{- if eq (len $feeds) 0 -}}
@@ -171,6 +176,10 @@
           </section>
         </div>
       {{- end -}}
+      </main>
+      <aside class="rail-sidebar rail-sidebar--right" aria-label="订阅侧栏">
+        {{ partial "rail/recent-posts.html" (dict "limit" 4) }}
+      </aside>
     </div>
   </div>
 

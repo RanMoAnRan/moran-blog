@@ -1,34 +1,46 @@
 {{ define "main" }}
-  <div class="container posts-container">
-    <div class="content posts-page">
-      <header class="page-header posts-compact-header">
-        <div class="posts-compact-header__main">
-          <a
-            class="posts-back-btn"
-            href="{{ "/" | relURL }}"
-            onclick="if (window.history.length > 1) { window.history.back(); return false; }"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-            返回
-          </a>
-          <div>
-            <h1 class="page-title">{{ .Title }}</h1>
-            {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
-            {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+  <div class="container rail-layout-container rail-layout-container--three posts-rail-container">
+    <div class="rail-layout rail-layout--three">
+      <aside class="rail-sidebar rail-sidebar--left" aria-label="阅读侧栏">
+        {{ partial "home-profile-widget.html" . }}
+        {{ partial "home-music-widget.html" (dict "Page" . "class" "rail-music-widget") }}
+      </aside>
+
+      <main class="rail-main content posts-page">
+        <header class="page-header posts-compact-header">
+          <div class="posts-compact-header__main">
+            <a
+              class="posts-back-btn"
+              href="{{ "/" | relURL }}"
+              onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              返回
+            </a>
+            <div>
+              <h1 class="page-title">{{ .Title }}</h1>
+              {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+              {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+            </div>
           </div>
+          <p class="page-meta"><strong>{{ len .Pages }}</strong><span>篇文章</span></p>
+        </header>
+
+        {{ $paginator := .Paginate .Pages }}
+        <div class="post-list">
+          {{ range $paginator.Pages }}
+            {{ partial "post-card.html" . }}
+          {{ end }}
         </div>
-        <p class="page-meta"><strong>{{ len .Pages }}</strong><span>篇文章</span></p>
-      </header>
 
-      {{ $paginator := .Paginate .Pages }}
-      <div class="post-list">
-        {{ range $paginator.Pages }}
-          {{ partial "post-card.html" . }}
-        {{ end }}
-      </div>
+        {{ partial "pagination.html" . }}
+      </main>
 
-      {{ partial "pagination.html" . }}
+      <aside class="rail-sidebar rail-sidebar--right" aria-label="探索侧栏">
+        {{ partial "rail/taxonomy-explore.html" (dict "tagLimit" 5 "catLimit" 4) }}
+        {{ partial "rail/recent-posts.html" (dict "limit" 4) }}
+        {{ partial "home-calendar-widget.html" . }}
+      </aside>
     </div>
   </div>
 {{ end }}
-

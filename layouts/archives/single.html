@@ -1,6 +1,7 @@
 {{ define "main" }}
-  <div class="container archives-container">
-    <div class="content post-detail-container page-narrow">
+  <div class="container rail-layout-container rail-layout-container--two archives-container archives-rail-container">
+    <div class="rail-layout rail-layout--right">
+      <main class="rail-main content post-detail-container page-narrow">
       {{ $pages := where site.RegularPages "Section" "posts" }}
       <!-- 给首屏一个默认左右布局（JS 仍可切换），避免首次渲染闪烁成单列 -->
       <div class="archives-timeline" data-layout="split">
@@ -26,7 +27,7 @@
         {{ $scratch := newScratch }}
         {{ range $i, $group := $groups }}
           {{ $accent := index $accents (mod $i (len $accents)) }}
-          <div class="timeline-year-group" data-accent="{{ $accent }}">
+          <div id="archive-year-{{ $group.Key }}" class="timeline-year-group" data-accent="{{ $accent }}">
             <h2 class="timeline-year">{{ $group.Key }}</h2>
 
             {{ $monthGroups := sort ($group.Pages.GroupByDate "01") "Key" "desc" }}
@@ -68,6 +69,10 @@
           </div>
         {{ end }}
       </div>
+      </main>
+      <aside class="rail-sidebar rail-sidebar--right" aria-label="归档侧栏">
+        {{ partial "rail/archive-years.html" . }}
+      </aside>
     </div>
   </div>
 
@@ -167,12 +172,12 @@
 
     /* Split 布局：页面整体宽度稍微收窄一点（原来 1200px 会显得过宽） */
     @media (min-width: 1024px) {
-      html[data-archives-layout="split"] .archives-container {
+      html[data-archives-layout="split"] .archives-container:not(.rail-layout-container) {
         max-width: 1080px;
       }
 
       html[data-archives-layout="split"] .page-narrow.post-detail-container {
-        max-width: 1080px;
+        max-width: var(--rail-main-width, 1080px);
       }
 
       .archives-timeline[data-layout="split"] .archives-timeline-head::after {
@@ -484,10 +489,10 @@
 	    /* Split timeline (Scheme 1): desktop only; mobile remains single-column. */
 		    @media (min-width: 1024px) {
 	      .archives-timeline[data-layout="split"] {
-	        --split-gap: 84px;
+	        --split-gap: 64px;
 	        --split-connector: calc(var(--split-gap) / 2);
 	        --split-arrow: 10px;
-	        --split-item-max: 560px;
+	        --split-item-max: 500px;
 	        padding: 0;
 	      }
 

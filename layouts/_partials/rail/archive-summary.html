@@ -1,0 +1,9 @@
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $groups := sort ($posts.GroupByDate "2006") "Key" "desc" -}}
+<section class="rail-card rail-page-context rail-archive-summary" aria-label="归档概览">
+  <div class="rail-page-context__orb" aria-hidden="true"></div>
+  <p class="rail-eyebrow">Archive</p>
+  <h2>时间线</h2>
+  <p>按年份保存写作痕迹，适合从时间维度回看主题变化。</p>
+  <div class="rail-context-count"><strong>{{ len $groups }}</strong><span>years</span></div>
+</section>

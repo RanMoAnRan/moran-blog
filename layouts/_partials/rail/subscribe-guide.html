@@ -1,0 +1,13 @@
+{{- $feeds := site.Data.subscriptions.feeds | default (slice) -}}
+<section class="rail-card rail-subscribe-guide" aria-label="订阅说明">
+  <div class="rail-card__head">
+    <p class="rail-eyebrow">Reading feeds</p>
+    <span>{{ len $feeds }}</span>
+  </div>
+  <p class="rail-muted">这里收纳常看的信息源。RSS 更适合慢读和长期跟踪，而不是被时间线推着走。</p>
+  <div class="rail-category-stack">
+    {{- range first 6 $feeds -}}
+      <a href="{{ .site | default .url }}" target="_blank" rel="noopener noreferrer"><span>{{ .name }}</span><em>↗</em></a>
+    {{- end -}}
+  </div>
+</section>

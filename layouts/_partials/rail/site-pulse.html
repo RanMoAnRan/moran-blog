@@ -1,0 +1,18 @@
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $latest := index $posts.ByDate.Reverse 0 -}}
+<section class="rail-card rail-site-pulse" aria-label="站点脉冲">
+  <div class="rail-card__head">
+    <p class="rail-eyebrow">Pulse</p>
+  </div>
+  <div class="rail-pulse-list">
+    <div><span>文章</span><strong>{{ len $posts }}</strong></div>
+    <div><span>分类</span><strong>{{ len site.Taxonomies.categories }}</strong></div>
+    <div><span>标签</span><strong>{{ len site.Taxonomies.tags }}</strong></div>
+  </div>
+  {{ with $latest }}
+    <a class="rail-pulse-latest" href="{{ .RelPermalink }}">
+      <small>最近更新</small>
+      <span>{{ .LinkTitle }}</span>
+    </a>
+  {{ end }}
+</section>

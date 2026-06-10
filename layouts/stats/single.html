@@ -12,30 +12,20 @@
       {{- $recentPostCount = add $recentPostCount 1 -}}
     {{- end -}}
   {{- end -}}
-  {{- $maxCategoryCount := 1 -}}
-  {{- range site.Taxonomies.categories -}}
-    {{- if gt (len .Pages) $maxCategoryCount -}}{{- $maxCategoryCount = len .Pages -}}{{- end -}}
-  {{- end -}}
-  {{- $maxTagCount := 1 -}}
-  {{- range site.Taxonomies.tags -}}
-    {{- if gt (len .Pages) $maxTagCount -}}{{- $maxTagCount = len .Pages -}}{{- end -}}
-  {{- end -}}
   {{- $yearScratch := newScratch -}}
   {{- range $postPages -}}
     {{- $year := .Date.Format "2006" -}}
     {{- $yearScratch.Add $year 1 -}}
   {{- end -}}
   {{- $yearPostCount := default 0 ($yearScratch.Get $currentYear) -}}
-  {{- $years := slice -}}
-  {{- range $postPages -}}
-    {{- $year := .Date.Format "2006" -}}
-    {{- if not (in $years $year) -}}
-      {{- $years = $years | append $year -}}
-    {{- end -}}
-  {{- end -}}
+  <div class="container rail-layout-container rail-layout-container--three stats-page-container stats-rail-container">
+    <div class="rail-layout rail-layout--three">
+      <aside class="rail-sidebar rail-sidebar--left stats-content-map-sidebar" aria-label="统计侧栏">
+        {{ partial "home-profile-widget.html" . }}
+        {{ partial "rail/stats-category-map.html" . }}
+      </aside>
 
-  <div class="container detail-container stats-page-container">
-    <div class="content post-detail-container stats-page">
+      <main class="rail-main content post-detail-container stats-page">
       {{ with .Content }}<div class="prose stats-intro">{{ . }}</div>{{ end }}
 
       <section class="stats-section" aria-labelledby="site-overview-title">
@@ -136,62 +126,11 @@
         </div>
       </section>
 
-      <section class="stats-section" aria-labelledby="content-distribution-title">
-        <div class="stats-section__head">
-          <div>
-            <p class="stats-kicker">Content Map</p>
-            <h2 id="content-distribution-title">内容分布</h2>
-          </div>
-          <span class="stats-section__note">分类 / 标签 / 年份</span>
-        </div>
-        <div class="stats-panels">
-          <div class="stats-panel">
-            <h3>分类排行</h3>
-            <div class="stats-bars">
-              {{ range first 6 site.Taxonomies.categories.ByCount }}
-                {{- $percent := div (mul (len .Pages) 100.0) $maxCategoryCount -}}
-                <a class="stats-bar" href="{{ .Page.RelPermalink }}">
-                  <span class="stats-bar__label">{{ .Page.Title }}</span>
-                  <span class="stats-bar__track"><span style="width: {{ printf "%.2f" $percent }}%"></span></span>
-                  <strong>{{ len .Pages }}</strong>
-                </a>
-              {{ else }}
-                <p class="stats-empty">暂无分类。</p>
-              {{ end }}
-            </div>
-          </div>
 
-          <div class="stats-panel">
-            <h3>热门标签</h3>
-            <div class="stats-tag-cloud">
-              {{ range first 14 site.Taxonomies.tags.ByCount }}
-                <a href="{{ .Page.RelPermalink }}">
-                  <span>{{ .Page.Title }}</span>
-                  <strong>{{ len .Pages }}</strong>
-                </a>
-              {{ else }}
-                <p class="stats-empty">暂无标签。</p>
-              {{ end }}
-            </div>
-          </div>
-
-          <div class="stats-panel stats-panel--wide">
-            <h3>年份节奏</h3>
-            <div class="stats-year-grid">
-              {{ range sort $years "value" "desc" }}
-                {{- $count := $yearScratch.Get . -}}
-                <div class="stats-year-card">
-                  <span>{{ . }}</span>
-                  <strong>{{ $count }}</strong>
-                  <small>篇文章</small>
-                </div>
-              {{ else }}
-                <p class="stats-empty">暂无年份数据。</p>
-              {{ end }}
-            </div>
-          </div>
-        </div>
-      </section>
+      <div class="stats-content-map-mobile">
+        {{ partial "rail/stats-category-map.html" . }}
+        {{ partial "rail/stats-content-map.html" . }}
+      </div>
 
       <section class="stats-section" aria-labelledby="latest-updates-title">
         <div class="stats-section__head">
@@ -211,6 +150,11 @@
           {{ end }}
         </div>
       </section>
+      </main>
+
+      <aside class="rail-sidebar rail-sidebar--right stats-content-map-sidebar" aria-label="标签和年份侧栏">
+        {{ partial "rail/stats-content-map.html" . }}
+      </aside>
     </div>
   </div>
 {{ end }}

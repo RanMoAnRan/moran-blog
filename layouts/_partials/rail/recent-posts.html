@@ -1,0 +1,17 @@
+{{- $limit := 4 -}}
+{{- if reflect.IsMap . -}}{{- $limit = .limit | default 4 -}}{{- end -}}
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+<section class="rail-card rail-recent-posts" aria-label="最近文章">
+  <div class="rail-card__head">
+    <p class="rail-eyebrow">Latest</p>
+    <a href="{{ "posts" | relURL }}">全部</a>
+  </div>
+  <div class="rail-link-list">
+    {{- range first $limit $posts.ByDate.Reverse -}}
+      <a class="rail-post-link" href="{{ .RelPermalink }}">
+        <span>{{ .LinkTitle }}</span>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01.02" }}</time>
+      </a>
+    {{- end -}}
+  </div>
+</section>

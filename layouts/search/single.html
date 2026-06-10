@@ -1,6 +1,12 @@
 {{ define "main" }}
-  <div class="container search-container">
-    <div class="content search-page">
+  <div class="container rail-layout-container rail-layout-container--three search-container">
+    <div class="rail-layout rail-layout--three">
+      <aside class="rail-sidebar rail-sidebar--left" aria-label="搜索上下文">
+        {{ partial "home-profile-widget.html" . }}
+        {{ partial "rail/page-context.html" (dict "kind" "Search" "title" .Title "desc" "用关键词把散落的文章重新串起来。结果区保持居中，左右两侧只放辅助线索。") }}
+        {{ partial "rail/search-hints.html" . }}
+      </aside>
+      <main class="rail-main content search-page">
       <header class="page-header search-compact-header">
         <div>
           <h1 class="page-title">{{ .Title }}</h1>
@@ -16,6 +22,11 @@
         <p id="search-status" class="search-status" aria-live="polite">正在加载索引…</p>
         <div id="search-results" class="search-results" aria-live="polite"></div>
       </div>
+      </main>
+      <aside class="rail-sidebar rail-sidebar--right" aria-label="搜索侧栏">
+        {{ partial "rail/taxonomy-explore.html" (dict "tagLimit" 10 "catLimit" 4) }}
+        {{ partial "rail/recent-posts.html" (dict "limit" 4) }}
+      </aside>
     </div>
   </div>
 

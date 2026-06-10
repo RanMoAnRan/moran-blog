@@ -1,0 +1,13 @@
+{{- $groups := site.Data.sites.groups | default (slice) -}}
+<section class="rail-card rail-sites-index" aria-label="站点分组">
+  <div class="rail-card__head">
+    <p class="rail-eyebrow">Collections</p>
+  </div>
+  <div class="rail-category-stack">
+    {{- range $i, $group := $groups -}}
+      {{- $name := $group.name | default $group.title | default "分组" -}}
+      {{- $count := len ($group.sites | default (slice)) -}}
+      <a href="#sites-group-{{ $i }}"><span>{{ $name }}</span><em>{{ $count }}</em></a>
+    {{- end -}}
+  </div>
+</section>

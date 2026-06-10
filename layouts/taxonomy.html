@@ -3,8 +3,13 @@
   {{- $catCount := len site.Taxonomies.categories -}}
   {{- $tagCount := len site.Taxonomies.tags -}}
 
-  <div class="container discovery-container">
-    <div class="content post-detail-container discovery-page">
+  <div class="container rail-layout-container rail-layout-container--three discovery-container">
+    <div class="rail-layout rail-layout--three">
+      <aside class="rail-sidebar rail-sidebar--left" aria-label="索引侧栏">
+        {{ partial "home-profile-widget.html" . }}
+        {{ partial "rail/site-pulse.html" . }}
+      </aside>
+      <main class="rail-main content post-detail-container discovery-page">
       <header class="discovery-header">
         <div class="discovery-header__top">
           <div class="discovery-header__main">
@@ -79,6 +84,11 @@
           </div>
         </section>
       </div>
+      </main>
+      <aside class="rail-sidebar rail-sidebar--right" aria-label="探索侧栏">
+        {{ partial "rail/section-note.html" (dict "title" "Index note" "body" "分类和标签不是目录树，更像重新进入文章的线索。先从高频主题开始，再顺着标签横向探索。" "link" "posts" "linkText" "查看文章") }}
+        {{ partial "rail/recent-posts.html" (dict "limit" 5) }}
+      </aside>
     </div>
   </div>
 

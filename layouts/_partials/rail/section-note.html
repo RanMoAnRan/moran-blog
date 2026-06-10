@@ -1,0 +1,15 @@
+{{- $title := "Note" -}}
+{{- $body := "" -}}
+{{- $link := "" -}}
+{{- $linkText := "" -}}
+{{- if reflect.IsMap . -}}
+  {{- $title = .title | default $title -}}
+  {{- $body = .body | default $body -}}
+  {{- $link = .link | default "" -}}
+  {{- $linkText = .linkText | default "查看" -}}
+{{- end -}}
+<section class="rail-card rail-note" aria-label="{{ $title }}">
+  <p class="rail-eyebrow">{{ $title }}</p>
+  {{ with $body }}<p class="rail-muted">{{ . }}</p>{{ end }}
+  {{ with $link }}<a class="rail-action" href="{{ . | relURL }}">{{ $linkText }}</a>{{ end }}
+</section>

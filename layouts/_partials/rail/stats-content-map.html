@@ -1,0 +1,34 @@
+{{- $postPages := where site.RegularPages "Section" "posts" -}}
+{{- $yearScratch := newScratch -}}
+{{- $years := slice -}}
+{{- range $postPages -}}
+  {{- $year := .Date.Format "2006" -}}
+  {{- $yearScratch.Add $year 1 -}}
+  {{- if not (in $years $year) -}}{{- $years = $years | append $year -}}{{- end -}}
+{{- end -}}
+<section class="rail-card stats-content-map-card stats-content-map-card--tags" aria-label="热门标签">
+  <div class="stats-map-group">
+    <h3>热门标签</h3>
+    <div class="stats-map-tags">
+      {{ range first 10 site.Taxonomies.tags.ByCount }}
+        <a href="{{ .Page.RelPermalink }}">#{{ .Page.Title }} <strong>{{ len .Pages }}</strong></a>
+      {{ else }}
+        <p class="stats-empty">暂无标签。</p>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="rail-card stats-content-map-card stats-content-map-card--years" aria-label="年份节奏">
+  <div class="stats-map-group">
+    <h3>年份节奏</h3>
+    <div class="stats-map-years">
+      {{ range sort $years "value" "desc" }}
+        {{- $count := $yearScratch.Get . -}}
+        <a href="{{ printf "archives/#year-%s" . | relURL }}"><span>{{ . }}</span><strong>{{ $count }}</strong></a>
+      {{ else }}
+        <p class="stats-empty">暂无年份数据。</p>
+      {{ end }}
+    </div>
+  </div>
+</section>

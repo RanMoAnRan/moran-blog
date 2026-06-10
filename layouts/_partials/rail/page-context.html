@@ -1,0 +1,24 @@
+{{- $kind := "Context" -}}
+{{- $title := .Title | default site.Title -}}
+{{- $count := 0 -}}
+{{- $desc := "" -}}
+{{- $backLink := "" -}}
+{{- $backText := "" -}}
+{{- if reflect.IsMap . -}}
+  {{- $kind = .kind | default $kind -}}
+  {{- $title = .title | default $title -}}
+  {{- $count = .count | default 0 -}}
+  {{- $desc = .desc | default "" -}}
+  {{- $backLink = .backLink | default "" -}}
+  {{- $backText = .backText | default "返回" -}}
+{{- end -}}
+<section class="rail-card rail-page-context" aria-label="页面上下文">
+  <div class="rail-page-context__orb" aria-hidden="true"></div>
+  <p class="rail-eyebrow">{{ $kind }}</p>
+  <h2>{{ $title }}</h2>
+  {{ with $desc }}<p>{{ . }}</p>{{ end }}
+  {{ if gt $count 0 }}
+    <div class="rail-context-count"><strong>{{ $count }}</strong><span>items</span></div>
+  {{ end }}
+  {{ with $backLink }}<a class="rail-action" href="{{ . | relURL }}">{{ $backText }}</a>{{ end }}
+</section>

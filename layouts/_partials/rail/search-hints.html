@@ -1,0 +1,12 @@
+{{- $terms := slice "LLM" "Hugo" "Agent" "Prompt" "AI" "效率" -}}
+<section class="rail-card rail-search-hints" aria-label="搜索灵感">
+  <div class="rail-card__head">
+    <p class="rail-eyebrow">Search ideas</p>
+  </div>
+  <p class="rail-muted">可以试试这些关键词，快速重新进入文章线索。</p>
+  <div class="rail-tag-cloud rail-tag-cloud--search">
+    {{- range $terms -}}
+      <a href="{{ printf "search/?q=%s" (. | urlquery) | relURL }}">{{ . }}</a>
+    {{- end -}}
+  </div>
+</section>

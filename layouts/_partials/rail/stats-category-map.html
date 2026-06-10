@@ -1,0 +1,27 @@
+{{- $maxCategoryCount := 1 -}}
+{{- range site.Taxonomies.categories -}}
+  {{- if gt (len .Pages) $maxCategoryCount -}}{{- $maxCategoryCount = len .Pages -}}{{- end -}}
+{{- end -}}
+<section class="rail-card stats-content-map-card stats-content-map-card--categories" aria-label="分类排行">
+  <div class="rail-card__head">
+    <div>
+      <p class="rail-eyebrow">Categories</p>
+      <h2>分类排行</h2>
+    </div>
+    <span>内容分区</span>
+  </div>
+
+  <div class="stats-map-group">
+    <div class="stats-map-bars">
+      {{ range first 7 site.Taxonomies.categories.ByCount }}
+        {{- $percent := div (mul (len .Pages) 100.0) $maxCategoryCount -}}
+        <a class="stats-map-bar" href="{{ .Page.RelPermalink }}">
+          <span class="stats-map-bar__top"><em>{{ .Page.Title }}</em><strong>{{ len .Pages }}</strong></span>
+          <span class="stats-map-bar__track"><span style="width: {{ printf "%.2f" $percent }}%"></span></span>
+        </a>
+      {{ else }}
+        <p class="stats-empty">暂无分类。</p>
+      {{ end }}
+    </div>
+  </div>
+</section>

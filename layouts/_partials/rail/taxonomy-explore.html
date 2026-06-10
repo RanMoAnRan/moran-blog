@@ -1,0 +1,22 @@
+{{- $tagLimit := 12 -}}
+{{- $catLimit := 6 -}}
+{{- if reflect.IsMap . -}}
+  {{- $tagLimit = .tagLimit | default 12 -}}
+  {{- $catLimit = .catLimit | default 6 -}}
+{{- end -}}
+<section class="rail-card rail-taxonomy-explore" aria-label="探索主题">
+  <div class="rail-card__head">
+    <p class="rail-eyebrow">Explore</p>
+    <a href="{{ "tags" | relURL }}">标签</a>
+  </div>
+  <div class="rail-category-stack">
+    {{- range first $catLimit site.Taxonomies.categories.ByCount -}}
+      <a href="{{ .Page.RelPermalink }}"><span>{{ .Page.Title }}</span><em>{{ .Count }}</em></a>
+    {{- end -}}
+  </div>
+  <div class="rail-tag-cloud">
+    {{- range first $tagLimit site.Taxonomies.tags.ByCount -}}
+      <a href="{{ .Page.RelPermalink }}">#{{ .Page.Title }}</a>
+    {{- end -}}
+  </div>
+</section>

@@ -13,7 +13,7 @@
         <div class="sites-groups">
           {{ range $groupIndex, $group := $groups }}
             {{- $sites := $group.sites | default (slice) -}}
-            <section class="sites-section">
+            <section id="sites-group-{{ $groupIndex }}" class="sites-section">
               <div class="sites-grid">
                 {{ range $siteIndex, $site := $sites }}
                   {{- $name := $site.name | default "未命名网站" -}}

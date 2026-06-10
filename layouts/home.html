@@ -528,12 +528,12 @@
 
     /* Home hero spacing: pull the background + headline closer to the sticky header. */
     .home-hero__inner {
-      padding: 84px 0 148px; /* taller hero (more background height) */
+      padding: 118px 0 148px; /* banner starts behind the full-width header; keep headline clear */
     }
 
     @media (max-width: 768px) {
       .home-hero__inner {
-        padding: 64px 0 124px; /* taller hero on mobile as well */
+        padding: 104px 0 124px; /* keep headline clear below the overlaid mobile header */
       }
     }
 
@@ -608,6 +608,11 @@
       background: rgba(255, 255, 255, 0.6);
       color: var(--slate-700);
       border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .hero-toggle-btn {
+      }
     }
 	    .hero-gradient-v {
 	      background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, var(--bg) 100%);

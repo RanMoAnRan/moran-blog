@@ -1,0 +1,12 @@
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $groups := sort ($posts.GroupByDate "2006") "Key" "desc" -}}
+<section class="rail-card rail-archive-years" aria-label="归档年份">
+  <div class="rail-card__head">
+    <p class="rail-eyebrow">Timeline</p>
+  </div>
+  <div class="rail-year-list">
+    {{- range $groups -}}
+      <a href="#archive-year-{{ .Key }}"><span>{{ .Key }}</span><em>{{ len .Pages }}</em></a>
+    {{- end -}}
+  </div>
+</section>

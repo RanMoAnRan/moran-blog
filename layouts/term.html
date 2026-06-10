@@ -1,10 +1,15 @@
 {{ define "main" }}
-  <div class="container term-container">
-    <div class="content post-detail-container term-page">
-      {{- $taxonomyPlural := .Data.Plural | default "" -}}
-      {{- $taxonomyLabel := "主题" -}}
-      {{- if eq $taxonomyPlural "categories" -}}{{- $taxonomyLabel = "分类" -}}{{- end -}}
-      {{- if eq $taxonomyPlural "tags" -}}{{- $taxonomyLabel = "标签" -}}{{- end -}}
+  {{- $taxonomyPlural := .Data.Plural | default "" -}}
+  {{- $taxonomyLabel := "主题" -}}
+  {{- if eq $taxonomyPlural "categories" -}}{{- $taxonomyLabel = "分类" -}}{{- end -}}
+  {{- if eq $taxonomyPlural "tags" -}}{{- $taxonomyLabel = "标签" -}}{{- end -}}
+  <div class="container rail-layout-container rail-layout-container--three term-container">
+    <div class="rail-layout rail-layout--three">
+      <aside class="rail-sidebar rail-sidebar--left" aria-label="当前主题上下文">
+        {{ partial "home-profile-widget.html" . }}
+        {{ partial "rail/page-context.html" (dict "kind" $taxonomyLabel "title" .Title "count" (len .Pages) "desc" "当前主题下的文章集合。左侧给出上下文，右侧继续探索其他线索。" "backLink" (printf "%s" $taxonomyPlural) "backText" (printf "全部%s" $taxonomyLabel)) }}
+      </aside>
+      <main class="rail-main content post-detail-container term-page">
 
       <header class="page-header term-compact-header" data-taxonomy="{{ $taxonomyPlural }}">
         <a class="term-back-btn" href="{{ printf "%s" $taxonomyPlural | relURL }}">
@@ -30,6 +35,11 @@
       </div>
 
       {{ partial "pagination.html" . }}
+      </main>
+      <aside class="rail-sidebar rail-sidebar--right" aria-label="主题侧栏">
+        {{ partial "rail/taxonomy-explore.html" (dict "tagLimit" 10 "catLimit" 4) }}
+        {{ partial "rail/recent-posts.html" (dict "limit" 4) }}
+      </aside>
     </div>
   </div>
 
@@ -39,7 +49,7 @@
     }
 
     .term-page .page-header {
-      max-width: 1080px;
+      max-width: var(--rail-main-width, 1080px);
       margin: 0 auto 20px;
     }
 
@@ -180,7 +190,7 @@
     .term-page .post-list {
       display: grid;
       gap: 24px;
-      max-width: 1080px;
+      max-width: var(--rail-main-width, 1080px);
       margin: 0 auto;
     }
 
@@ -189,7 +199,7 @@
     }
 
     .term-page .pagination {
-      max-width: 1080px;
+      max-width: var(--rail-main-width, 1080px);
     }
   </style>
 {{ end }}

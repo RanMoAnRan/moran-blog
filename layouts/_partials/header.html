@@ -31,10 +31,23 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
           订阅
         </a>
-        <a href="{{ "about" | relURL }}" class="nav-link {{ if or (eq .Section "about") (hasPrefix .RelPermalink ("about" | relURL)) }}is-active{{ end }}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          关于
-        </a>
+        <div class="nav-dropdown {{ if or (eq .Section "about") (eq .Section "friends") (hasPrefix .RelPermalink ("about" | relURL)) (hasPrefix .RelPermalink ("friends" | relURL)) }}is-active{{ end }}">
+          <button class="nav-link nav-dropdown__trigger {{ if or (eq .Section "about") (eq .Section "friends") (hasPrefix .RelPermalink ("about" | relURL)) (hasPrefix .RelPermalink ("friends" | relURL)) }}is-active{{ end }}" type="button" aria-haspopup="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            关于
+            <svg class="nav-dropdown__chevron" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="nav-dropdown__menu" role="menu" aria-label="关于菜单">
+            <a href="{{ "about" | relURL }}" class="nav-dropdown__item {{ if or (eq .Section "about") (hasPrefix .RelPermalink ("about" | relURL)) }}is-active{{ end }}" role="menuitem">
+              <span>关于我</span>
+              <small>Profile</small>
+            </a>
+            <a href="{{ "friends" | relURL }}" class="nav-dropdown__item {{ if or (eq .Section "friends") (hasPrefix .RelPermalink ("friends" | relURL)) }}is-active{{ end }}" role="menuitem">
+              <span>友链</span>
+              <small>Friends</small>
+            </a>
+          </div>
+        </div>
         <a href="{{ "stats" | relURL }}" class="nav-link {{ if or (eq .Section "stats") (hasPrefix .RelPermalink ("stats" | relURL)) }}is-active{{ end }}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 5-6"/></svg>
           统计
@@ -154,6 +167,10 @@
         <a href="{{ "about" | relURL }}" class="nav-mobile-link {{ if or (eq .Section "about") (hasPrefix .RelPermalink ("about" | relURL)) }}is-active{{ end }}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           关于
+        </a>
+        <a href="{{ "friends" | relURL }}" class="nav-mobile-link nav-mobile-link--sub {{ if or (eq .Section "friends") (hasPrefix .RelPermalink ("friends" | relURL)) }}is-active{{ end }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          友链
         </a>
         <a href="{{ "stats" | relURL }}" class="nav-mobile-link {{ if or (eq .Section "stats") (hasPrefix .RelPermalink ("stats" | relURL)) }}is-active{{ end }}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 5-6"/></svg>
