@@ -20,6 +20,7 @@
 {{- $autoplay := $music.autoplay | default true -}}
 {{- $randomOnLoad := $music.randomOnLoad | default true -}}
 {{- $localPlaylist := slice -}}
+{{- $musicDir := $local.dir | default "music" -}}
 {{- with $music.playlist -}}
   {{- range . -}}
     {{- $localPlaylist = $localPlaylist | append . -}}
@@ -30,31 +31,34 @@
     {{- $localPlaylist = $localPlaylist | append . -}}
   {{- end -}}
 {{- end -}}
-{{- if and (eq $mode "local") (eq (len $localPlaylist) 0) -}}
-  {{- $musicDir := $local.dir | default "music" -}}
-  {{- $musicStaticDir := path.Join "static" $musicDir -}}
-  {{- if fileExists $musicStaticDir -}}
-    {{- range readDir $musicStaticDir -}}
-      {{- if not .IsDir -}}
-        {{- $ext := lower (path.Ext .Name) -}}
-        {{- if in (slice ".mp3" ".m4a" ".ogg" ".wav" ".flac") $ext -}}
-          {{- $base := strings.TrimSuffix $ext .Name -}}
-          {{- $url := printf "/%s/%s" $musicDir .Name -}}
-          {{- $cover := "" -}}
-          {{- $lrc := "" -}}
-          {{- $coverDir := $local.coverDir | default (printf "%s/cover" $musicDir) -}}
-          {{- range (slice ".webp" ".jpg" ".jpeg" ".png" ".avif") -}}
-            {{- $candidate := printf "static/%s/%s%s" $coverDir $base . -}}
-            {{- if and (not $cover) (fileExists $candidate) -}}{{- $cover = printf "/%s/%s%s" $coverDir $base . -}}{{- end -}}
-          {{- end -}}
-          {{- $lrcDir := $local.lrcDir | default (printf "%s/lrc" $musicDir) -}}
-          {{- $lrcCandidate := printf "static/%s/%s.lrc" $lrcDir $base -}}
-          {{- if fileExists $lrcCandidate -}}{{- $lrc = printf "/%s/%s.lrc" $lrcDir $base -}}{{- end -}}
-          {{- $localPlaylist = $localPlaylist | append (dict "name" $base "artist" "本地音乐" "url" $url "cover" $cover "lrc" $lrc) -}}
+{{- $musicStaticDir := path.Join "static" $musicDir -}}
+{{- if fileExists $musicStaticDir -}}
+  {{- range readDir $musicStaticDir -}}
+    {{- if not .IsDir -}}
+      {{- $ext := lower (path.Ext .Name) -}}
+      {{- if in (slice ".mp3" ".m4a" ".ogg" ".wav" ".flac") $ext -}}
+        {{- $base := strings.TrimSuffix $ext .Name -}}
+        {{- $url := printf "%s/%s" $musicDir .Name | relURL -}}
+        {{- $cover := "" -}}
+        {{- $lrc := "" -}}
+        {{- $coverDir := $local.coverDir | default (printf "%s/cover" $musicDir) -}}
+        {{- range (slice ".webp" ".jpg" ".jpeg" ".png" ".avif") -}}
+          {{- $candidate := printf "static/%s/%s%s" $coverDir $base . -}}
+          {{- if and (not $cover) (fileExists $candidate) -}}{{- $cover = (printf "%s/%s%s" $coverDir $base . | relURL) -}}{{- end -}}
         {{- end -}}
+        {{- $lrcDir := $local.lrcDir | default (printf "%s/lrc" $musicDir) -}}
+        {{- $lrcCandidate := printf "static/%s/%s.lrc" $lrcDir $base -}}
+        {{- if fileExists $lrcCandidate -}}{{- $lrc = (printf "%s/%s.lrc" $lrcDir $base | relURL) -}}{{- end -}}
+        {{- $localPlaylist = $localPlaylist | append (dict "name" $base "artist" "本地音乐" "url" $url "cover" $cover "lrc" $lrc) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
+{{- end -}}
+{{- $effectiveMode := $mode -}}
+{{- if gt (len $localPlaylist) 0 -}}
+  {{- $effectiveMode = "local" -}}
+{{- else if eq $effectiveMode "local" -}}
+  {{- $effectiveMode = "meting" -}}
 {{- end -}}
 <section class="home-widget home-music-widget {{ $musicClass }}" {{ with $musicId }}id="{{ . }}"{{ end }} data-home-music aria-label="音乐播放器">
   <div class="home-widget__title"><span>音乐</span></div>
@@ -84,5 +88,5 @@
     <div class="home-music__playlist" data-music-playlist hidden></div>
     <p class="home-music__error" data-music-error hidden></p>
   </div>
-  <script type="application/json" data-home-music-config>{{ dict "mode" $mode "volume" $volume "playMode" $playMode "autoplay" $autoplay "randomOnLoad" $randomOnLoad "meting" (dict "api" $api "server" $server "type" $type "id" $id "fallbackApis" $fallbackApis) "localPlaylist" $localPlaylist | jsonify }}</script>
+  <script type="application/json" data-home-music-config>{{ dict "mode" $effectiveMode "volume" $volume "playMode" $playMode "autoplay" $autoplay "randomOnLoad" $randomOnLoad "meting" (dict "api" $api "server" $server "type" $type "id" $id "fallbackApis" $fallbackApis) "localPlaylist" $localPlaylist | jsonify }}</script>
 </section>
