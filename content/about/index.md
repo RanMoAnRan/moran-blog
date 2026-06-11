@@ -5,7 +5,8 @@ skills = ['React', 'Python', 'Java', 'Msql','Vue','MongoDB']
 now = ['opencode','OpenSpec','skills','Burner-X', 'tweakcn', 'dyad','motia','ui-ux-pro-max-skill','streampark','dinky','MoneyPrinterTurbo','awesome-mcp-servers']
 relatedProjects = [{ name = 'Qwerty Learner', url = 'https://anran.cc.cd/'},{ name = 'watermark-studio', url = 'https://watermark-studio.onrender.com/'}
 ,{ name = 'VSHUB', url = 'https://video-search-hub-ranmoanrans-projects.vercel.app/'}
-,{ name = 'Flicker', url = 'https://flicker-8sul.onrender.com/music.html'}]
+,{ name = 'Flicker', url = 'https://flicker-8sul.onrender.com/music.html'}
+,{ name = 'AICommit-Moran', url = 'https://github.com/RanMoAnRan/AICommit-Moran'}]
 +++
 
 你好，我是MoRan。
