@@ -46,7 +46,9 @@
       {{- $siteName := site.Params.profile.name | default "墨然" -}}
       {{- $siteDesc := site.Params.description | default "记录代码与生活的间隙" -}}
       {{- $siteURL := "https://moran.cc.cd" -}}
-      {{- $avatarRaw := site.Params.profile.avatar | default "img/avatar/moran.jpeg" -}}
+      {{- $avatarRaw := partial "avatar-path.html" . -}}
+      {{- $avatarSrc := $avatarRaw -}}
+      {{- if not (hasPrefix $avatarSrc "http") -}}{{- $avatarSrc = ($avatarSrc | relURL) -}}{{- end -}}
       {{- $avatarURL := $avatarRaw -}}
       {{- if not (hasPrefix $avatarURL "http") -}}
         {{- $avatarPath := $avatarURL | replaceRE "^/+" "" -}}
@@ -60,7 +62,7 @@
         <div class="friends-exchange-card friends-site-card" aria-labelledby="site-info-title">
           <header class="friends-site-card__head">
             <span class="friends-site-card__avatar">
-              <img src="{{ $avatarURL }}" alt="{{ $siteName }} 的头像" loading="lazy" decoding="async">
+              <img src="{{ $avatarSrc }}" alt="{{ $siteName }} 的头像" loading="lazy" decoding="async">
               <span class="friends-site-card__check" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
               </span>

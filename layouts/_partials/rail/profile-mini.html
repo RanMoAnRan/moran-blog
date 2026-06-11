@@ -1,4 +1,4 @@
-{{- $avatar := site.Params.profile.avatar | default "img/bg/bg-01.jpg" -}}
+{{- $avatar := partial "avatar-path.html" . -}}
 {{- if not (hasPrefix $avatar "http") -}}{{- $avatar = ($avatar | relURL) -}}{{- end -}}
 <section class="rail-card rail-profile-mini" aria-label="作者">
   <a class="rail-profile-mini__avatar" href="{{ "about" | relURL }}" aria-label="打开关于页面">

@@ -19,6 +19,7 @@
 {{- $playMode := $music.playMode | default "list" -}}
 {{- $autoplay := $music.autoplay | default true -}}
 {{- $randomOnLoad := $music.randomOnLoad | default true -}}
+{{- $defaultCover := "img/bg/10.png" | relURL -}}
 {{- $localPlaylist := slice -}}
 {{- $musicDir := $local.dir | default "music" -}}
 {{- with $music.playlist -}}
@@ -65,7 +66,7 @@
   <div class="home-music" data-music-player>
     <div class="home-music__top">
       <div class="home-music__cover-wrap">
-        <div class="home-music__cover-fallback" aria-hidden="true">♪</div>
+        <div class="home-music__cover-fallback" aria-hidden="true"><img src="{{ $defaultCover }}" alt="" loading="lazy" decoding="async"></div>
         <img class="home-music__cover" data-music-cover alt="音乐封面" loading="lazy" decoding="async">
       </div>
       <div class="home-music__info">
@@ -88,5 +89,5 @@
     <div class="home-music__playlist" data-music-playlist hidden></div>
     <p class="home-music__error" data-music-error hidden></p>
   </div>
-  <script type="application/json" data-home-music-config>{{ dict "mode" $effectiveMode "volume" $volume "playMode" $playMode "autoplay" $autoplay "randomOnLoad" $randomOnLoad "meting" (dict "api" $api "server" $server "type" $type "id" $id "fallbackApis" $fallbackApis) "localPlaylist" $localPlaylist | jsonify }}</script>
+  <script type="application/json" data-home-music-config>{{ dict "mode" $effectiveMode "volume" $volume "playMode" $playMode "autoplay" $autoplay "randomOnLoad" $randomOnLoad "meting" (dict "api" $api "server" $server "type" $type "id" $id "fallbackApis" $fallbackApis) "localPlaylist" $localPlaylist "defaultCover" $defaultCover | jsonify }}</script>
 </section>

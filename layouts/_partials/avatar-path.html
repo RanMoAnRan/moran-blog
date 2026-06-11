@@ -1,0 +1,12 @@
+{{- $avatar := "img/bg/bg-01.jpg" -}}
+{{- $avatarDir := "static/img/avatar" -}}
+{{- $found := "" -}}
+{{- if fileExists $avatarDir -}}
+  {{- range readDir $avatarDir -}}
+    {{- $ext := lower (path.Ext .Name) -}}
+    {{- if and (not $found) (not .IsDir) (in (slice ".avif" ".webp" ".png" ".jpg" ".jpeg" ".gif") $ext) -}}
+      {{- $found = printf "img/avatar/%s" .Name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $found -}}{{- . -}}{{- else -}}{{- $avatar -}}{{- end -}}

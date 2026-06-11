@@ -75,7 +75,6 @@ enableRobotsTXT = true
 
   [params.profile]
     name = '墨然'
-    avatar = 'img/avatar/moran.jpeg'
     bio = '程序猿一枚，喜欢瞎捣鼓 . never stand still'
     location = 'Asia/Shanghai'
 

@@ -1,4 +1,4 @@
-{{- $avatar := site.Params.profile.avatar | default "img/bg/bg-01.jpg" -}}
+{{- $avatar := partial "avatar-path.html" . -}}
 {{- if not (hasPrefix $avatar "http") -}}{{- $avatar = ($avatar | relURL) -}}{{- end -}}
 <section class="home-widget home-profile-widget" aria-label="个人资料">
   <a class="home-profile-widget__avatar" href="{{ "about" | relURL }}" aria-label="打开关于页面">

@@ -106,6 +106,7 @@
 
       const config = parseJson(widget.querySelector("[data-home-music-config]"), {});
       const sourceKey = JSON.stringify({ mode: config.mode || "meting", meting: config.meting || {}, local: (config.localPlaylist || []).map(getTrackKey) });
+      const defaultCover = config.defaultCover || "";
       const persisted = readMusicState();
       const state = {
         playlist: [],
@@ -160,7 +161,7 @@
         if (!els.playlist) return;
         els.playlist.innerHTML = state.playlist.map((track, index) => `
           <button type="button" class="home-music__playlist-item${index === state.index ? " is-active" : ""}" data-index="${index}">
-            ${track.cover ? `<img src="${track.cover}" alt="" loading="lazy">` : `<span>♪</span>`}
+            ${track.cover ? `<img src="${track.cover}" alt="" loading="lazy">` : (defaultCover ? `<img src="${defaultCover}" alt="" loading="lazy">` : `<span>♪</span>`)}
             <span><strong>${track.title}</strong><small>${track.artist || "未知歌手"}</small></span>
           </button>
         `).join("");
