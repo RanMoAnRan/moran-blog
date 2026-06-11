@@ -7,9 +7,16 @@
           <div class="about-intro-header">
             {{- $aboutName := .Params.aboutName | default site.Params.profile.name | default site.Params.author | default "Author" -}}
             {{- $aboutIntro := .Params.aboutIntro | default site.Params.profile.bio | default site.Params.about.intro | default "" -}}
-            <div>
-              <h1 class="about-name">{{ $aboutName }}</h1>
-              {{ if $aboutIntro }}<p class="about-tagline">{{ $aboutIntro }}</p>{{ end }}
+            {{- $aboutAvatar := partial "avatar-path.html" . -}}
+            {{- if not (hasPrefix $aboutAvatar "http") -}}{{- $aboutAvatar = ($aboutAvatar | relURL) -}}{{- end -}}
+            <div class="about-identity">
+              <div class="about-avatar" aria-hidden="true">
+                <img src="{{ $aboutAvatar }}" alt="" loading="lazy" decoding="async">
+              </div>
+              <div class="about-identity__text">
+                <h1 class="about-name">{{ $aboutName }}</h1>
+                {{ if $aboutIntro }}<p class="about-tagline">{{ $aboutIntro }}</p>{{ end }}
+              </div>
             </div>
             <div class="about-socials about-socials--terminal">
               <div class="about-terminal-card" aria-hidden="true">
@@ -137,8 +144,75 @@
       justify-content: space-between;
       align-items: flex-start; /* Corrected alignment */
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 20px 24px;
       margin-bottom: 32px;
+    }
+
+    .about-identity {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .about-avatar {
+      position: relative;
+      flex: 0 0 auto;
+      width: 92px;
+      height: 92px;
+      padding: 4px;
+      border-radius: 9999px;
+      background:
+        linear-gradient(var(--panel), var(--panel)) padding-box,
+        conic-gradient(from 160deg, rgba(139, 92, 246, 0.88), rgba(52, 211, 153, 0.88), rgba(251, 191, 36, 0.78), rgba(139, 92, 246, 0.88)) border-box;
+      border: 1px solid transparent;
+      box-shadow: 0 22px 42px -30px rgba(15, 23, 42, 0.62);
+    }
+
+    .about-avatar::before {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      z-index: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.16), transparent 68%);
+      pointer-events: none;
+    }
+
+    .about-avatar::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      z-index: 2;
+      width: 14px;
+      height: 14px;
+      border: 3px solid var(--panel);
+      border-radius: 9999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14);
+    }
+
+    .about-avatar img {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+      background: var(--hover-bg);
+    }
+
+    [data-theme='dark'] .about-avatar {
+      background:
+        linear-gradient(var(--panel), var(--panel)) padding-box,
+        conic-gradient(from 160deg, rgba(167, 139, 250, 0.9), rgba(45, 212, 191, 0.78), rgba(251, 191, 36, 0.66), rgba(167, 139, 250, 0.9)) border-box;
+      box-shadow: 0 22px 42px -30px rgba(0, 0, 0, 0.82);
+    }
+
+    .about-identity__text {
+      min-width: 0;
     }
 
     .about-name {
@@ -653,6 +727,33 @@
     @media (max-width: 720px) {
       .about-body {
         padding: 48px 24px 36px;
+      }
+
+      .about-intro-header {
+        gap: 18px;
+      }
+
+      .about-identity {
+        width: 100%;
+        gap: 14px;
+      }
+
+      .about-avatar {
+        width: 72px;
+        height: 72px;
+        padding: 3px;
+      }
+
+      .about-avatar::after {
+        right: 5px;
+        bottom: 5px;
+        width: 12px;
+        height: 12px;
+        border-width: 2px;
+      }
+
+      .about-name {
+        font-size: 1.85rem;
       }
 
       .about-quote-card {
