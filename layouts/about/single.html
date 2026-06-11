@@ -83,9 +83,9 @@
                   </ul>
                </div>
 
-               {{- $links := .Params.friendLinks | default site.Params.about.friendLinks | default (slice) -}}
-               <div id="friends" class="about-now-box about-friends-box">
-                 <h4 class="about-now-title">友情链接</h4>
+               {{- $links := .Params.relatedProjects | default site.Params.about.relatedProjects | default (slice) -}}
+               <div id="related-projects" class="about-now-box about-friends-box">
+                 <h4 class="about-now-title">相关项目</h4>
                  {{ if gt (len $links) 0 }}
                    <ul class="friends-list">
                      {{ range $links }}
@@ -100,7 +100,7 @@
                      {{ end }}
                    </ul>
                  {{ else }}
-                   <p class="friends-empty">暂无友情链接</p>
+                   <p class="friends-empty">暂无相关项目</p>
                  {{ end }}
                </div>
             </div>

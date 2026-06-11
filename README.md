@@ -1,39 +1,40 @@
-# 墨然的博客
+# Moran's Blog
 
-基于 Hugo 的极简主义个人博客
+A minimalist personal blog built with Hugo.
 
-## 本地开发
+## Local Development
 
-安装 Hugo:
+Install Hugo:
 
 ```bash
 brew install hugo
 ```
 
+Start the local development server:
 
 ```bash
 hugo server --buildDrafts
 ```
 
-浏览器打开：`http://localhost:1313/moran-blog/`
+Open in your browser: `http://localhost:1313/moran-blog/`
 
+## Writing
 
-## 写作方式
+- Posts live in `content/posts/`. Each post uses a Page Bundle directory with its content in `index.md`.
+- Create a new post:
 
-- 文章放在 `content/posts/`，每篇文章一个文件夹（Page Bundle），正文为 `index.md`
-- /__new/
 ```bash
 hugo new content posts/my-post/index.md
 ```
 
-- 草稿：Front Matter 中设置 `draft = true`，本地预览用 `hugo server --buildDrafts`
-- 目录：Front Matter 设置 `toc = true`（默认启用）
-- 数学公式：Front Matter 设置 `math = true`（KaTeX 渲染）
+- Drafts: set `draft = true` in the front matter, then preview locally with `hugo server --buildDrafts`.
+- Table of contents: set `toc = true` in the front matter.
+- Math formulas: set `math = true` in the front matter to enable KaTeX rendering.
 
-## 站点配置
+## Site Configuration
 
-主要配置在 `hugo.toml`：
-- `params.profile`：首页简介
-- `params.social`：社交链接
-- `params.giscus`：Giscus 评论（填好 repo / repoId / categoryId 后，把 `enabled = true`）
+The main configuration file is `hugo.toml`:
 
+- `params.profile`: homepage profile information
+- `params.social`: social links
+- `params.giscus`: Giscus comments. Fill in `repo`, `repoId`, and `categoryId`, then set `enabled = true`.
