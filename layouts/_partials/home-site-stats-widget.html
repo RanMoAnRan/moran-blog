@@ -2,7 +2,10 @@
 {{- $categories := site.Taxonomies.categories -}}
 {{- $tags := site.Taxonomies.tags -}}
 {{- $latest := index ($posts.ByDate.Reverse) 0 -}}
-{{- $startDate := site.Params.siteStartDate | default "2024-05-01" -}}
+{{- $startDate := site.Params.siteStartDate | default "2026-01-01" -}}
+{{- range first 1 $posts.ByDate -}}
+  {{- $startDate = .Date.Format "2006-01-02T15:04:05Z07:00" -}}
+{{- end -}}
 <section class="home-widget home-stats-widget" aria-label="站点统计" data-home-stats data-start-date="{{ $startDate }}" data-last-post-date="{{ with $latest }}{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}{{ end }}">
   <div class="home-widget__title"><span>站点统计</span></div>
   <div class="home-stats-list">
