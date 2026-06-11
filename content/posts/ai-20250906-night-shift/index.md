@@ -1,7 +1,7 @@
 +++
 title = '深夜把模型当同事：一次“夜班排障”让我改了用法'
 slug = 'ai-night-shift'
-date = 2025-09-06T21:10:00+08:00
+date = 2025-04-06T21:10:00+08:00
 draft = false
 tags = ['AI', '排障', '效率']
 categories = ['AI']
