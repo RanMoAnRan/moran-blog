@@ -1,13 +1,23 @@
 {{ define "main" }}
+  {{- $bgImages := slice -}}
+  {{- range readDir "static/img/bg" -}}
+    {{- if and (not .IsDir) (findRE `(?i)\.(avif|webp|png|jpe?g|gif)$` .Name) -}}
+      {{- $bgImages = $bgImages | append (printf "img/bg/%s" .Name | relURL) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $bgImages = sort $bgImages -}}
+  {{- if eq (len $bgImages) 0 -}}
+    {{- $bgImages = slice ("img/bg/bg-01.jpg" | relURL) -}}
+  {{- end -}}
   <!-- Hero Section with Background Image -->
   <!--
     这里不需要用 100vw + 负 margin 的“全出血”写法。
     该写法在有滚动条的浏览器里会把滚动条宽度也算进 vw，容易导致页面出现横向滚动条。
   -->
-  <div data-home-hero style="position: relative; width: 100%; overflow: hidden; margin-bottom: 0;">
+  <div data-home-hero style="position: relative; width: 100%; overflow: visible; margin-bottom: 0;">
     <!-- Background Image -->
     <div style="position: absolute; inset: 0; z-index: -2;" id="hero-bg-container">
-      <img id="hero-bg-img" src="{{ "img/bg/bg-01.jpg" | relURL }}" alt="bg" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transition: opacity 0.5s ease-in-out;">
+      <img id="hero-bg-img" src="{{ index $bgImages 0 }}" alt="bg" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transition: opacity 0.5s ease-in-out;">
     </div>
 
     <canvas class="hero-ripple-canvas" data-hero-ripple aria-hidden="true"></canvas>
@@ -21,21 +31,14 @@
 	      (function() {
 	        // 使用 Hugo 的 relURL 生成带 baseURL 子路径前缀的地址
 	        const bgImages = [
-          "{{ "img/bg/bg-01.jpg" | relURL }}",
-          "{{ "img/bg/bg-02.jpg" | relURL }}",
-          "{{ "img/bg/bg-03.jpg" | relURL }}",
-          "{{ "img/bg/bg-04.jpg" | relURL }}",
-          "{{ "img/bg/bg-05.jpg" | relURL }}",
-          "{{ "img/bg/bg-06.jpg" | relURL }}",
-          "{{ "img/bg/bg-07.jpg" | relURL }}",
-          "{{ "img/bg/bg-08.jpg" | relURL }}",
-          "{{ "img/bg/bg-09.jpg" | relURL }}",
-          "{{ "img/bg/bg-10.jpg" | relURL }}"
+          {{- range $bgImages }}
+          {{ . | jsonify | safeJS }},
+          {{- end }}
         ];
 
 	        const btn = document.getElementById('bg-toggle-btn');
 	        const img = document.getElementById('hero-bg-img');
-	        const STORAGE_KEY = 'ink-hero-bg-index';
+	        const STORAGE_KEY = 'ink-hero-bg-index-v2';
 
         let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) || "0");
 
@@ -505,6 +508,45 @@
       margin: 0;
     }
 
+    [data-home-hero] {
+      isolation: isolate;
+      margin-bottom: -50px !important;
+    }
+
+    #hero-bg-container,
+    .hero-gradient-v,
+    .hero-gradient-h {
+      bottom: -86px !important;
+    }
+
+    .home-layout-container {
+      position: relative;
+      z-index: 2;
+      padding-top: 50px;
+      background: transparent;
+    }
+
+    .home-three-column-layout {
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 768px) {
+      [data-home-hero] {
+        margin-bottom: -40px !important;
+      }
+
+      #hero-bg-container,
+      .hero-gradient-v,
+      .hero-gradient-h {
+        bottom: -68px !important;
+      }
+
+      .home-layout-container {
+        padding-top: 40px;
+      }
+    }
+
     .hero-ripple-canvas {
       position: absolute;
       inset: 0;
@@ -528,24 +570,23 @@
 
     /* Home hero spacing: pull the background + headline closer to the sticky header. */
     .home-hero__inner {
-      padding: 118px 0 148px; /* banner starts behind the full-width header; keep headline clear */
+      padding: 133px 0 163px; /* banner starts behind the full-width header; keep headline clear */
     }
 
     @media (max-width: 768px) {
       .home-hero__inner {
-        padding: 104px 0 124px; /* keep headline clear below the overlaid mobile header */
+        padding: 119px 0 139px; /* keep headline clear below the overlaid mobile header */
       }
     }
 
-    /* Hero Text & Elements - Light Mode Defaults */
+    /* Hero Text & Elements */
     .hero-title {
-      color: var(--slate-900);
-      /* Removed white glow, added subtle dark shadow for lift */
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      color: #fff;
+      text-shadow: none;
     }
     .hero-desc {
-      color: var(--slate-700);
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      color: rgba(255, 255, 255, 0.94);
+      text-shadow: none;
     }
 
     .hero-quote {
@@ -580,7 +621,7 @@
 
     .hero-quote:hover {
       transform: translateY(-2px);
-      text-shadow: 0 10px 26px rgba(15, 23, 42, 0.24);
+      text-shadow: none;
     }
 
     .hero-quote:hover::after {
@@ -589,7 +630,7 @@
     }
 
     .hero-quote:focus-visible {
-      outline: 2px solid rgba(15, 23, 42, 0.28);
+      outline: 2px solid rgba(255, 255, 255, 0.55);
       outline-offset: 6px;
       border-radius: 9999px;
     }
@@ -600,14 +641,17 @@
     }
 
     .hero-btn-sub {
-      background: rgba(255,255,255,0.8) !important;
-      border-color: rgba(255,255,255,0.9);
+      background: rgba(255, 255, 255, 0.86) !important;
+      border-color: rgba(255, 255, 255, 0.92);
       color: var(--slate-900);
+      box-shadow: 0 10px 28px -20px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(12px);
     }
       .hero-toggle-btn {
-      background: rgba(255, 255, 255, 0.6);
-      color: var(--slate-700);
-      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.46);
+      box-shadow: 0 10px 28px -20px rgba(0, 0, 0, 0.55);
     }
 
     @media (max-width: 768px) {
@@ -615,45 +659,51 @@
       }
     }
 	    .hero-gradient-v {
-	      background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, var(--bg) 100%);
+	      background:
+	        radial-gradient(760px 260px at 12% 72%, color-mix(in srgb, var(--theme-primary) 5%, transparent), transparent 70%),
+	        radial-gradient(700px 250px at 88% 70%, rgba(96, 165, 250, 0.045), transparent 68%),
+	        radial-gradient(580px 210px at 50% 82%, rgba(236, 72, 153, 0.03), transparent 72%),
+	        linear-gradient(to bottom, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.025) 36%, transparent 70%, rgba(255, 255, 255, 0.12) 80%, rgba(255, 255, 255, 0.62) 92%, #fff 100%);
 	    }
     .hero-gradient-h {
-      background: linear-gradient(to right, rgba(255,255,255,0.1), transparent 15%, transparent 85%, rgba(255,255,255,0.1));
+      background:
+        radial-gradient(460px 720px at 0% 54%, color-mix(in srgb, var(--theme-primary) 3%, transparent), transparent 78%),
+        radial-gradient(460px 720px at 100% 54%, rgba(96, 165, 250, 0.035), transparent 78%),
+        linear-gradient(to right, rgba(0, 0, 0, 0.06), transparent 24%, transparent 76%, rgba(0, 0, 0, 0.06));
     }
 
     /* Dark Mode Overrides */
-    [data-theme='dark'] .hero-title {
-      color: #f1f5f9; /* slate-100 */
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    }
-    [data-theme='dark'] .hero-desc {
-      color: #cbd5e1; /* slate-300 */
-      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-    }
     [data-theme='dark'] .hero-quote:hover {
-      text-shadow: 0 12px 30px rgba(226, 232, 240, 0.18);
+      text-shadow: none;
     }
     [data-theme='dark'] .hero-quote:focus-visible {
       outline-color: rgba(226, 232, 240, 0.32);
     }
     [data-theme='dark'] .hero-btn-sub {
-      background: rgba(30, 41, 59, 0.7) !important; /* slate-800 semi-transparent */
-      border-color: rgba(148, 163, 184, 0.2);
-      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.86) !important;
+      border-color: rgba(255, 255, 255, 0.92);
+      color: var(--slate-900);
     }
     [data-theme='dark'] .hero-toggle-btn {
-      background: rgba(15, 23, 42, 0.6); /* slate-900 */
-      color: #cbd5e1;
-      border-color: rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.34);
+      color: #fff;
+      border-color: rgba(226, 232, 240, 0.32);
     }
 	    [data-theme='dark'] #hero-bg-img {
 	      filter: brightness(0.6) contrast(1.1); /* Dim background in dark mode */
 	    }
     [data-theme='dark'] .hero-gradient-v {
-      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, var(--bg) 100%);
+      background:
+        radial-gradient(760px 260px at 12% 72%, color-mix(in srgb, var(--theme-primary) 8%, transparent), transparent 70%),
+        radial-gradient(700px 250px at 88% 70%, rgba(96, 165, 250, 0.06), transparent 68%),
+        radial-gradient(580px 210px at 50% 82%, rgba(236, 72, 153, 0.04), transparent 72%),
+        linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.045) 36%, transparent 70%, color-mix(in srgb, var(--bg) 14%, transparent) 80%, color-mix(in srgb, var(--bg) 64%, transparent) 92%, var(--bg) 100%);
     }
     [data-theme='dark'] .hero-gradient-h {
-      background: linear-gradient(to right, rgba(0,0,0,0.3), transparent 15%, transparent 85%, rgba(0,0,0,0.3));
+      background:
+        radial-gradient(460px 720px at 0% 54%, color-mix(in srgb, var(--theme-primary) 12%, transparent), transparent 76%),
+        radial-gradient(460px 720px at 100% 54%, rgba(96, 165, 250, 0.10), transparent 76%),
+        linear-gradient(to right, rgba(0,0,0,0.22), transparent 22%, transparent 78%, rgba(0,0,0,0.22));
     }
   </style>
 {{ end }}
