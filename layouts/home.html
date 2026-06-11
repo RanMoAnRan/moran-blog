@@ -6,6 +6,16 @@
     {{- end -}}
   {{- end -}}
   {{- $bgImages = sort $bgImages -}}
+  {{- $defaultBg := "img/bg/3.png" | relURL -}}
+  {{- if in $bgImages $defaultBg -}}
+    {{- $orderedBgImages := slice $defaultBg -}}
+    {{- range $bgImages -}}
+      {{- if ne . $defaultBg -}}
+        {{- $orderedBgImages = $orderedBgImages | append . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $bgImages = $orderedBgImages -}}
+  {{- end -}}
   {{- if eq (len $bgImages) 0 -}}
     {{- $bgImages = slice ("img/bg/bg-01.jpg" | relURL) -}}
   {{- end -}}
@@ -38,7 +48,7 @@
 
 	        const btn = document.getElementById('bg-toggle-btn');
 	        const img = document.getElementById('hero-bg-img');
-	        const STORAGE_KEY = 'ink-hero-bg-index-v2';
+	        const STORAGE_KEY = 'ink-hero-bg-index-v3';
 
         let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) || "0");
 
