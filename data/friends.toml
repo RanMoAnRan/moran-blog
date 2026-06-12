@@ -33,3 +33,9 @@ name = "花墨"
 url = "https://flowersink.com"
 avatar = "https://api.flowersink.com/img/logo.png"
 desc = "好耶！是再花猫猫头ฅ•ω•ฅ"
+
+[[friends]]
+name = "Amiya的导航站"
+url = "https://sayori.org/"
+avatar = "https://blog.sayori.org/assets/home/amiya-desk.webp"
+desc = "Amiya_desi的导航站，是他做的汇总，里面还有 DDLC 的彩蛋嘻嘻"
