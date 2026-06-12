@@ -13,7 +13,6 @@
   {{- $backText = .backText | default "返回" -}}
 {{- end -}}
 <section class="rail-card rail-page-context" aria-label="页面上下文">
-  <div class="rail-page-context__orb" aria-hidden="true"></div>
   <p class="rail-eyebrow">{{ $kind }}</p>
   <h2>{{ $title }}</h2>
   {{ with $desc }}<p>{{ . }}</p>{{ end }}
