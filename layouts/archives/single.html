@@ -87,11 +87,7 @@
 
     .archive-layout-toggle {
       position: fixed;
-      left: max(
-        16px,
-        calc((100vw - min(var(--container), calc(100vw - 32px))) / 2 + 24px + var(--rail-balance-left-width) + var(--rail-column-gap) + var(--rail-main-width) + var(--rail-column-gap)),
-        env(safe-area-inset-left)
-      );
+      left: calc(100vw - max(24px, calc((100vw - var(--rail-layout-width)) / 2)) - var(--rail-right-width));
       top: calc(var(--header-height) + 16px);
       z-index: 60;
       display: inline-flex;
