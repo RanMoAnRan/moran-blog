@@ -53,7 +53,8 @@
       max-width: 1120px;
       display: grid;
       gap: 22px;
-      padding-top: 0;
+      padding-top: 16px;
+      padding-bottom: 16px;
     }
 
     .sites-groups {
@@ -284,7 +285,11 @@
     }
 
     @media (max-width: 640px) {
-      .sites-page { gap: 18px; }
+      .sites-page {
+        gap: 18px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
       .sites-grid { grid-template-columns: 1fr; }
       .site-card { min-height: 190px; }
     }

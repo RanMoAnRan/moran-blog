@@ -99,6 +99,8 @@
 
     let autoplayClaimed = false;
     let activeSourceKey = window.__moranHomeMusicSourceKey || "";
+    const controllers = window.__moranHomeMusicControllers = (window.__moranHomeMusicControllers || [])
+      .filter((controller) => controller?.widget && document.contains(controller.widget));
 
     widgets.forEach((widget) => {
       if (widget.dataset.musicReady === "1") return;
@@ -167,6 +169,29 @@
         `).join("");
       };
 
+      let controller = null;
+
+      const syncFromTrack = (track, preferredIndex = 0) => {
+        if (!track || !state.playlist.length) return;
+        const trackKey = getTrackKey(track);
+        const sameIndex = state.playlist[preferredIndex] && getTrackKey(state.playlist[preferredIndex]) === trackKey;
+        const nextIndex = sameIndex
+          ? preferredIndex
+          : state.playlist.findIndex((item) => getTrackKey(item) === trackKey);
+        if (nextIndex < 0) return;
+        state.index = nextIndex;
+        setTrackInfo(state.playlist[state.index]);
+        renderPlaylist();
+        updatePlaying();
+      };
+
+      const syncPeerWidgets = (track) => {
+        controllers.forEach((peer) => {
+          if (!peer || peer === controller || peer.sourceKey !== state.sourceKey) return;
+          peer.syncFromTrack?.(track, state.index);
+        });
+      };
+
       const loadTrack = (index, autoplay = false) => {
         if (!state.playlist.length) return;
         state.index = (index + state.playlist.length) % state.playlist.length;
@@ -176,6 +201,7 @@
         setTrackInfo(track);
         renderPlaylist();
         if (!audioHasTrack(sharedAudio, track.url)) sharedAudio.src = track.url;
+        syncPeerWidgets(track);
         writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(track), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: !sharedAudio.paused });
         if (autoplay) {
           sharedAudio.play().then(() => {
@@ -207,6 +233,9 @@
         window.__moranHomeMusicSourceKey = activeSourceKey;
         if (!audioHasTrack(sharedAudio, track.url)) sharedAudio.src = track.url;
         sharedAudio.volume = Number(els.volume?.value || config.volume || 0.7);
+        setTrackInfo(track);
+        renderPlaylist();
+        syncPeerWidgets(track);
         writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(track), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: true });
         sharedAudio.play().then(() => {
           updatePlaying();
@@ -339,6 +368,9 @@
         if (!item) return;
         loadTrack(Number(item.dataset.index), true);
       });
+
+      controller = { widget, sourceKey: state.sourceKey, syncFromTrack };
+      controllers.push(controller);
 
       bindAudioEvents();
       fetchPlaylist();
