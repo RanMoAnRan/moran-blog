@@ -1,28 +1,5 @@
 [[friends]]
-name = "Qwerty Learner"
-url = "https://anran.cc.cd/"
-desc = "为键盘输入、单词练习和日常学习准备的小站。"
-tags = ["学习", "工具", "键盘"]
-color = "violet"
-
-[[friends]]
-name = "watermark-studio"
-url = "https://watermark-studio.onrender.com/"
-desc = "轻量的图片水印处理工具，适合快速给作品加上标记。"
-tags = ["工具", "图片", "创作"]
-color = "blue"
-
-[[friends]]
-name = "VSHUB"
-url = "https://video-search-hub-ranmoanrans-projects.vercel.app/"
-desc = "视频搜索与发现入口，把零散内容重新整理成可检索的线索。"
-tags = ["视频", "搜索", "索引"]
-color = "teal"
-
-[[friends]]
-name = "Flicker"
-url = "https://flicker-8sul.onrender.com/music.html"
-desc = "一个带有音乐气息的小角落，适合随手打开听一会儿。"
-tags = ["音乐", "生活", "氛围"]
-color = "rose"
-
+name = "veyliss"
+url = "https://veyliss.top/"
+avatar = "https://veyliss.top/avatar/avatar.png"
+desc = "探索技术，记录成长，分享所学。"
