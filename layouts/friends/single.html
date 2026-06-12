@@ -377,7 +377,8 @@
     }
 
     .friends-exchange {
-      --friend-exchange-accent: #08a9dd;
+      --friend-exchange-accent: var(--theme-primary);
+      --friend-exchange-accent-strong: var(--theme-primary-strong);
       --friend-exchange-text: #263349;
       --friend-exchange-muted: #747474;
       --friend-exchange-line: #e6e6e6;
@@ -443,7 +444,7 @@
       border-radius: 999px;
       background: var(--friend-exchange-accent);
       color: #fff;
-      box-shadow: 0 8px 18px -12px rgba(8, 169, 221, 0.9);
+      box-shadow: 0 8px 18px -12px color-mix(in srgb, var(--friend-exchange-accent) 82%, black);
     }
 
     .friends-site-card__head h2,
@@ -629,7 +630,7 @@
       color: #fff;
       font-size: 0.96rem;
       font-weight: 950;
-      box-shadow: 0 10px 20px -18px rgba(8, 169, 221, 0.9);
+      box-shadow: 0 10px 20px -18px color-mix(in srgb, var(--friend-exchange-accent) 82%, black);
     }
 
     .friends-steps h3 {
@@ -654,8 +655,9 @@
       display: inline-block;
       padding: 1px 8px 2px;
       border-radius: 8px;
-      background: #d8f3fd;
-      color: #007aa8;
+      border: 1px solid color-mix(in srgb, var(--friend-exchange-accent) 18%, transparent);
+      background: color-mix(in srgb, var(--theme-soft) 68%, transparent);
+      color: var(--friend-exchange-accent-strong);
       font-family: var(--font-mono);
       font-size: 0.86rem;
       font-weight: 900;
@@ -814,7 +816,7 @@
     }
 
     [data-theme='dark'] .friends-section-title__icon {
-      background: rgba(8, 169, 221, 0.13);
+      background: color-mix(in srgb, var(--friend-exchange-accent) 13%, transparent);
     }
 
     [data-theme='dark'] .friends-section-title__icon--plain {
@@ -826,8 +828,9 @@
     }
 
     [data-theme='dark'] .friends-steps code {
-      background: rgba(8, 169, 221, 0.15);
-      color: #67e8f9;
+      border-color: color-mix(in srgb, var(--friend-exchange-accent) 26%, transparent);
+      background: color-mix(in srgb, var(--theme-soft) 52%, transparent);
+      color: var(--friend-exchange-accent-strong);
     }
 
     [data-theme='dark'] .friends-note-list li {
