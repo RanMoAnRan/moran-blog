@@ -21,3 +21,15 @@ name = "薄荷の小屋"
 url = "https://www.hoshiroko.com"
 avatar = "https://api.hoshiroko.com/img/avatar.jpg"
 desc = "越是拼命往前伸手，渴望之物越是渐行渐远"
+
+[[friends]]
+name = "某科学的贝壳的博客"
+url = "https://blog.ning.moe"
+avatar = "https://blog.ning.moe/upload/72d4e506-d053-4f89-9e83-b62f1acba5de.png"
+desc = "Get busy living or get busy dying."
+
+[[friends]]
+name = "花墨"
+url = "https://flowersink.com"
+avatar = "https://api.flowersink.com/img/logo.png"
+desc = "好耶！是再花猫猫头ฅ•ω•ฅ"
