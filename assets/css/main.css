@@ -987,7 +987,7 @@ body.is-home {
 
 /* Search Page */
 .search-page {
-  padding: 0 0 48px;
+  padding: 16px 0 48px;
 }
 
 .search-page .page-header {
@@ -1145,7 +1145,7 @@ body.is-home {
 
 /* Posts Page */
 .posts-page {
-  padding: 0 0 48px;
+  padding: 16px 0 48px;
 }
 
 .posts-page .page-header {
@@ -1292,7 +1292,7 @@ body.is-home {
 
 /* Discovery (Taxonomy) Page */
 .discovery-page {
-  padding: 0 0 48px;
+  padding: 16px 0 48px;
 }
 
 .discovery-header {
@@ -2875,6 +2875,7 @@ body.is-lightbox-open {
 .stats-page {
   display: grid;
   gap: 26px;
+  padding-top: 16px;
 }
 
 .stats-hero {
