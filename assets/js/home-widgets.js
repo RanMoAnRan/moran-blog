@@ -471,57 +471,88 @@
 
 
   const initHomeSidebars = () => {
-    const hero = document.querySelector("[data-home-hero]");
+    window.__moranHomeSidebarsCleanup?.();
+
     const layout = document.querySelector("[data-home-layout]");
     const sidebars = Array.from(document.querySelectorAll(".home-sidebar"));
-    if (!hero || !layout || !sidebars.length) return;
+    if (!layout || !sidebars.length) return;
 
     const desktopQuery = window.matchMedia("(min-width: 861px)");
-    let ticking = false;
+    const fixedGap = 24;
+    let anchors = [];
+
+    const getFixedTop = () => {
+      const rootStyle = getComputedStyle(document.documentElement);
+      const headerHeight = Number.parseFloat(rootStyle.getPropertyValue("--header-height")) || 0;
+      return headerHeight + fixedGap;
+    };
 
     const clearFixed = () => {
       sidebars.forEach((sidebar) => {
         sidebar.classList.remove("is-fixed");
         sidebar.style.removeProperty("--home-sidebar-fixed-left");
         sidebar.style.removeProperty("--home-sidebar-fixed-width");
+        sidebar.style.removeProperty("--home-sidebar-placeholder-height");
       });
     };
 
     const sync = () => {
-      ticking = false;
-      if (!desktopQuery.matches) {
+      if (!desktopQuery.matches || !anchors.length) {
         clearFixed();
         return;
       }
 
-      const headerHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 0;
-      const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
-      const layoutRect = layout.getBoundingClientRect();
-      const layoutBottom = layoutRect.bottom + window.scrollY;
-      const viewportCenter = window.scrollY + (window.innerHeight / 2);
-      const shouldFix = window.scrollY >= heroBottom - headerHeight && viewportCenter < layoutBottom;
+      const fixedTop = getFixedTop();
+      const layoutBottom = layout.getBoundingClientRect().bottom + window.scrollY;
+      const beforeLayoutEnds = window.scrollY + fixedTop + fixedGap < layoutBottom;
 
-      sidebars.forEach((sidebar) => sidebar.classList.remove("is-fixed"));
-      sidebars.forEach((sidebar) => {
-        const rect = sidebar.getBoundingClientRect();
-        sidebar.style.setProperty("--home-sidebar-fixed-left", `${rect.left}px`);
-        sidebar.style.setProperty("--home-sidebar-fixed-width", `${rect.width}px`);
-        sidebar.classList.toggle("is-fixed", shouldFix);
+      anchors.forEach((anchor) => {
+        const slotRect = anchor.sidebar.getBoundingClientRect();
+        const shouldFix = beforeLayoutEnds && window.scrollY >= anchor.top - fixedTop;
+        anchor.sidebar.style.setProperty("--home-sidebar-fixed-left", `${slotRect.left}px`);
+        anchor.sidebar.style.setProperty("--home-sidebar-fixed-width", `${slotRect.width}px`);
+        anchor.sidebar.classList.toggle("is-fixed", shouldFix);
       });
     };
 
-    const requestSync = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(sync);
+    const measure = () => {
+      clearFixed();
+      anchors = sidebars.map((sidebar) => {
+        const pin = sidebar.querySelector(".home-sidebar__pin");
+        const rect = sidebar.getBoundingClientRect();
+        const pinHeight = pin?.offsetHeight || rect.height;
+        sidebar.style.setProperty("--home-sidebar-placeholder-height", `${pinHeight}px`);
+        return {
+          sidebar,
+          top: rect.top + window.scrollY,
+        };
+      });
+      sync();
     };
 
-    sync();
-    window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener("resize", requestSync);
+    const watchedImages = Array.from(layout.querySelectorAll("img"));
+    watchedImages.forEach((image) => {
+      if (!image.complete) image.addEventListener("load", measure, { once: true });
+    });
+
+    measure();
+    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", measure);
+    window.addEventListener("load", measure, { once: true });
     if (typeof desktopQuery.addEventListener === "function") {
-      desktopQuery.addEventListener("change", requestSync);
+      desktopQuery.addEventListener("change", measure);
     }
+
+    window.__moranHomeSidebarsCleanup = () => {
+      window.removeEventListener("scroll", sync);
+      window.removeEventListener("resize", measure);
+      watchedImages.forEach((image) => image.removeEventListener("load", measure));
+      if (typeof desktopQuery.removeEventListener === "function") {
+        desktopQuery.removeEventListener("change", measure);
+      }
+      clearFixed();
+      anchors = [];
+    };
   };
 
   const initHueAndPanels = () => {

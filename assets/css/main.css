@@ -3490,19 +3490,23 @@ body.is-home .home-sidebar {
 }
 
 @media (min-width: 861px) {
+  body.is-home .home-sidebar__pin {
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+    z-index: 1;
+  }
+
+  body.is-home .home-sidebar.is-fixed {
+    min-height: var(--home-sidebar-placeholder-height);
+  }
+
   body.is-home .home-sidebar.is-fixed .home-sidebar__pin {
     position: fixed;
     top: calc(var(--header-height) + 24px);
-    z-index: 1;
+    left: var(--home-sidebar-fixed-left);
     width: var(--home-sidebar-fixed-width);
-  }
-
-  body.is-home .home-sidebar--left.is-fixed .home-sidebar__pin {
-    left: var(--home-sidebar-fixed-left);
-  }
-
-  body.is-home .home-sidebar--right.is-fixed .home-sidebar__pin {
-    left: var(--home-sidebar-fixed-left);
+    max-height: calc(100vh - var(--header-height) - 48px);
+    overflow-y: auto;
   }
 }
 
@@ -3564,6 +3568,13 @@ body.is-home .home-sidebar {
 .home-post-list {
   display: grid;
   gap: 0;
+}
+
+@media (min-width: 861px) {
+  body.is-home .home-post-list .post-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 260px;
+  }
 }
 
 .home-widget {
@@ -4893,6 +4904,13 @@ body.is-home .home-sidebar {
 .stats-map-bars {
   display: grid;
   gap: 9px;
+}
+
+.stats-content-map-card--categories .stats-map-bars {
+  max-height: 252px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
 }
 
 .stats-map-bar {
