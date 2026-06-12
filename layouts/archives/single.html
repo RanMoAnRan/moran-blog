@@ -110,7 +110,7 @@
     .archive-layout-toggle:hover {
       transform: translateY(calc(-50% - 1px));
       background: rgba(255, 255, 255, 0.78);
-      border-color: rgba(124, 58, 237, 0.25);
+      border-color: color-mix(in srgb, var(--theme-primary) 25%, var(--border));
       box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
       color: rgba(15, 23, 42, 0.88);
     }
@@ -120,14 +120,14 @@
     }
 
     .archive-layout-toggle:focus-visible {
-      outline: 2px solid rgba(124, 58, 237, 0.85);
+      outline: 2px solid color-mix(in srgb, var(--theme-primary) 85%, transparent);
       outline-offset: 3px;
     }
 
     .archive-layout-toggle[aria-pressed="true"] {
-      border-color: rgba(124, 58, 237, 0.35);
-      background: rgba(124, 58, 237, 0.10);
-      color: rgba(124, 58, 237, 0.95);
+      border-color: color-mix(in srgb, var(--theme-primary) 35%, var(--border));
+      background: color-mix(in srgb, var(--theme-soft) 62%, transparent);
+      color: var(--theme-primary-strong);
     }
 
     [data-theme='dark'] .archive-layout-toggle {
@@ -144,9 +144,9 @@
     }
 
     [data-theme='dark'] .archive-layout-toggle[aria-pressed="true"] {
-      background: rgba(124, 58, 237, 0.18);
-      border-color: rgba(124, 58, 237, 0.35);
-      color: rgba(221, 214, 254, 0.95);
+      background: color-mix(in srgb, var(--theme-soft) 62%, transparent);
+      border-color: color-mix(in srgb, var(--theme-primary) 35%, var(--border));
+      color: var(--theme-primary-strong);
     }
 
     .archives-timeline {
@@ -188,7 +188,7 @@
         bottom: 0;
         width: 2px;
         transform: translateX(-1px);
-        background: rgba(124, 58, 237, 0.40);
+        background: color-mix(in srgb, var(--theme-primary) 40%, transparent);
         border-radius: 9999px;
         pointer-events: none;
       }
@@ -213,11 +213,11 @@
       content: "";
       flex: 1 1 auto;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.34));
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--theme-primary) 34%, transparent));
     }
 
     .timeline-now-marker::after {
-      background: linear-gradient(90deg, rgba(124, 58, 237, 0.34), transparent);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--theme-primary) 34%, transparent), transparent);
     }
 
     .timeline-now-marker span {
@@ -227,22 +227,22 @@
       height: 22px;
       padding: 0 10px;
       border-radius: 999px;
-      border: 1px solid rgba(124, 58, 237, 0.22);
-      background: rgba(255, 255, 255, 0.72);
-      color: rgba(124, 58, 237, 0.82);
+      border: 1px solid color-mix(in srgb, var(--theme-primary) 22%, transparent);
+      background: color-mix(in srgb, var(--panel) 72%, var(--theme-softer));
+      color: var(--theme-primary-strong);
       box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.34);
     }
 
     [data-theme='dark'] .timeline-now-marker span {
-      border-color: rgba(167, 139, 250, 0.24);
-      background: rgba(15, 23, 42, 0.62);
-      color: rgba(221, 214, 254, 0.88);
+      border-color: color-mix(in srgb, var(--theme-primary) 24%, transparent);
+      background: color-mix(in srgb, var(--panel) 76%, transparent);
+      color: var(--theme-primary-strong);
     }
 
     .timeline-year-group {
-      --year-accent: #7c3aed;          /* violet-600 */
-      --year-accent-soft: rgba(124, 58, 237, 0.18);
-      --year-line: rgba(124, 58, 237, 0.40);
+      --year-accent: var(--theme-primary);
+      --year-accent-soft: color-mix(in srgb, var(--theme-soft) 72%, transparent);
+      --year-line: color-mix(in srgb, var(--theme-primary) 40%, transparent);
       position: relative;
       padding-left: 32px;
       border-left: 2px solid var(--year-line);
@@ -250,21 +250,21 @@
     }
 
     .timeline-year-group[data-accent="teal"] {
-      --year-accent: #0d9488;          /* teal-600 */
-      --year-accent-soft: rgba(13, 148, 136, 0.18);
-      --year-line: rgba(13, 148, 136, 0.40);
+      --year-accent: oklch(0.64 0.15 calc(var(--hue) + 28));
+      --year-accent-soft: color-mix(in srgb, var(--year-accent) 18%, transparent);
+      --year-line: color-mix(in srgb, var(--year-accent) 40%, transparent);
     }
 
     .timeline-year-group[data-accent="pink"] {
-      --year-accent: #db2777;          /* pink-600 */
-      --year-accent-soft: rgba(219, 39, 119, 0.18);
-      --year-line: rgba(219, 39, 119, 0.40);
+      --year-accent: oklch(0.64 0.15 calc(var(--hue) - 28));
+      --year-accent-soft: color-mix(in srgb, var(--year-accent) 18%, transparent);
+      --year-line: color-mix(in srgb, var(--year-accent) 40%, transparent);
     }
 
     .timeline-year-group[data-accent="amber"] {
-      --year-accent: #d97706;          /* amber-600 */
-      --year-accent-soft: rgba(217, 119, 6, 0.18);
-      --year-line: rgba(217, 119, 6, 0.40);
+      --year-accent: oklch(0.64 0.15 calc(var(--hue) + 56));
+      --year-accent-soft: color-mix(in srgb, var(--year-accent) 18%, transparent);
+      --year-line: color-mix(in srgb, var(--year-accent) 40%, transparent);
     }
 
     .timeline-year-group::before {
@@ -303,9 +303,9 @@
     }
 
     .timeline-item {
-      --item-accent: var(--year-accent);
-      --item-accent-soft: var(--year-accent-soft);
-      --item-line: var(--year-line);
+      --item-accent: #7c3aed;
+      --item-accent-soft: rgba(124, 58, 237, 0.18);
+      --item-line: rgba(124, 58, 237, 0.40);
       display: flex;
       align-items: center;
       gap: 16px;
@@ -322,7 +322,7 @@
 
     .timeline-item:hover {
       border-color: var(--item-accent);
-      box-shadow: var(--shadow-xl);
+      box-shadow: var(--shadow-xl), 0 18px 34px -28px color-mix(in srgb, var(--item-accent) 70%, black);
       transform: translateY(-2px);
     }
 
@@ -416,8 +416,8 @@
       border-radius: 9999px;
       font-size: 0.75rem;
       font-weight: 600;
-      color: var(--text-muted);
-      background: var(--slate-50);
+      color: var(--slate-900);
+      background: #fff;
       border: 1px solid var(--border);
     }
 
@@ -650,9 +650,9 @@
     }
 
     [data-theme='dark'] .timeline-tag {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(148, 163, 184, 0.18);
-      color: rgba(226, 232, 240, 0.85);
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(226, 232, 240, 0.92);
+      color: #0f172a;
     }
   </style>
 
