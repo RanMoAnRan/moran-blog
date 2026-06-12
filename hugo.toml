@@ -79,9 +79,9 @@ enableRobotsTXT = true
     location = 'Asia/Shanghai'
 
   [[params.social]]
-    name = 'GitHub'
-    url = 'https://github.com/RanMoAnRan'
-    icon = 'github'
+    name = 'RSS订阅'
+    url = '/atom.xml'
+    icon = 'rss'
 
   [[params.social]]
     name = 'Email'
