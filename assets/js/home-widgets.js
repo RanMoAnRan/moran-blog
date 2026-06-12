@@ -318,7 +318,9 @@
       els.next?.addEventListener("click", next);
       els.mode?.addEventListener("click", () => {
         state.playMode = state.playMode === "list" ? "one" : state.playMode === "one" ? "random" : "list";
-        els.mode.textContent = state.playMode === "one" ? "🔂" : state.playMode === "random" ? "🔀" : "↻";
+        els.mode.textContent = state.playMode === "one" ? "①" : state.playMode === "random" ? "⌘" : "∞";
+        els.mode.title = state.playMode === "one" ? "单曲循环" : state.playMode === "random" ? "随机播放" : "列表循环";
+        els.mode.setAttribute("aria-label", els.mode.title);
         writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: !sharedAudio.paused });
       });
       els.volume?.addEventListener("input", () => {
