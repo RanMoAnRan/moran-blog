@@ -85,6 +85,18 @@
 
   const audioHasTrack = (audio, url) => Boolean(audio?.src) && audio.src === resolveTrackUrl(url);
 
+  const escapeHtml = (value) => String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+  const getTrackInitial = (track) => {
+    const first = Array.from(String(track?.title || "").trim()).find((char) => /[\p{L}\p{N}]/u.test(char));
+    return first ? first.toLocaleUpperCase("zh-CN") : "♪";
+  };
+
   const initMusic = () => {
     const widgets = Array.from(document.querySelectorAll("[data-home-music]"));
     if (!widgets.length) return;
@@ -108,7 +120,6 @@
 
       const config = parseJson(widget.querySelector("[data-home-music-config]"), {});
       const sourceKey = JSON.stringify({ mode: config.mode || "meting", meting: config.meting || {}, local: (config.localPlaylist || []).map(getTrackKey) });
-      const defaultCover = config.defaultCover || "";
       const persisted = readMusicState();
       const state = {
         playlist: [],
@@ -149,13 +160,8 @@
         if (!track) return;
         els.title.textContent = track.title;
         els.artist.textContent = track.artist || "未知歌手";
-        if (track.cover) {
-          els.cover.src = track.cover;
-          els.cover.classList.add("is-visible");
-        } else {
-          els.cover.removeAttribute("src");
-          els.cover.classList.remove("is-visible");
-        }
+        els.cover.removeAttribute("src");
+        els.cover.classList.remove("is-visible");
         widget.classList.toggle("is-playing", state.playing);
       };
 
@@ -163,7 +169,7 @@
         if (!els.playlist) return;
         els.playlist.innerHTML = state.playlist.map((track, index) => `
           <button type="button" class="home-music__playlist-item${index === state.index ? " is-active" : ""}" data-index="${index}">
-            ${track.cover ? `<img src="${track.cover}" alt="" loading="lazy">` : (defaultCover ? `<img src="${defaultCover}" alt="" loading="lazy">` : `<span>♪</span>`)}
+            ${track.cover ? `<img src="${track.cover}" alt="" loading="lazy">` : `<span class="home-music__playlist-initial" aria-hidden="true">${escapeHtml(getTrackInitial(track))}</span>`}
             <span><strong>${track.title}</strong><small>${track.artist || "未知歌手"}</small></span>
           </button>
         `).join("");

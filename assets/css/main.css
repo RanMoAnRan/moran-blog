@@ -3921,6 +3921,26 @@ body.is-home .home-sidebar {
   place-items: center;
 }
 
+.home-music__playlist-initial {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  background: #8b5cf6;
+}
+
+.home-music__playlist-item:nth-child(12n+1) .home-music__playlist-initial { background: #8b5cf6; }
+.home-music__playlist-item:nth-child(12n+2) .home-music__playlist-initial { background: #ec4899; }
+.home-music__playlist-item:nth-child(12n+3) .home-music__playlist-initial { background: #ef4444; }
+.home-music__playlist-item:nth-child(12n+4) .home-music__playlist-initial { background: #f97316; }
+.home-music__playlist-item:nth-child(12n+5) .home-music__playlist-initial { background: #eab308; }
+.home-music__playlist-item:nth-child(12n+6) .home-music__playlist-initial { background: #22c55e; }
+.home-music__playlist-item:nth-child(12n+7) .home-music__playlist-initial { background: #14b8a6; }
+.home-music__playlist-item:nth-child(12n+8) .home-music__playlist-initial { background: #06b6d4; }
+.home-music__playlist-item:nth-child(12n+9) .home-music__playlist-initial { background: #3b82f6; }
+.home-music__playlist-item:nth-child(12n+10) .home-music__playlist-initial { background: #6366f1; }
+.home-music__playlist-item:nth-child(12n+11) .home-music__playlist-initial { background: #a855f7; }
+.home-music__playlist-item:nth-child(12n+12) .home-music__playlist-initial { background: #64748b; }
+
 .home-music__playlist-item strong,
 .home-music__playlist-item small {
   display: block;
