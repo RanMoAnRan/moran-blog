@@ -4940,6 +4940,35 @@ body.is-home .home-sidebar {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-right: 4px;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+.stats-content-map-card--categories .stats-map-bars::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.stats-content-map-card--categories .stats-map-bars::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: transparent;
+}
+
+.stats-content-map-card--categories:hover .stats-map-bars,
+.stats-content-map-card--categories:focus-within .stats-map-bars {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--theme-primary) 36%, transparent) transparent;
+}
+
+.stats-content-map-card--categories:hover .stats-map-bars::-webkit-scrollbar,
+.stats-content-map-card--categories:focus-within .stats-map-bars::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.stats-content-map-card--categories:hover .stats-map-bars::-webkit-scrollbar-thumb,
+.stats-content-map-card--categories:focus-within .stats-map-bars::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--theme-primary) 36%, transparent);
 }
 
 .stats-map-bar {
