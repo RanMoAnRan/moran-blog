@@ -2253,7 +2253,7 @@ body.is-home {
   line-height: 1.625;
   margin-bottom: 24px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
