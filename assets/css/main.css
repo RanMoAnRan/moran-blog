@@ -3571,10 +3571,134 @@ body.is-home .home-sidebar {
   gap: 0;
 }
 
+.home-more-posts {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  margin-top: 4px;
+  padding: 22px 24px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, var(--theme-primary) 22%);
+  border-radius: 24px;
+  background:
+    radial-gradient(360px 130px at 0% 0%, color-mix(in srgb, var(--theme-primary) 14%, transparent), transparent 68%),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel) 94%, transparent), color-mix(in srgb, var(--theme-softer) 38%, var(--panel)));
+  box-shadow: var(--shadow-sm);
+}
+
+.home-more-posts::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  bottom: -58px;
+  width: 150px;
+  height: 150px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-primary) 12%, transparent);
+  pointer-events: none;
+}
+
+.home-more-posts__copy,
+.home-more-posts__actions {
+  position: relative;
+  z-index: 1;
+}
+
+.home-more-posts__eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--violet-600);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-more-posts h3 {
+  margin: 0;
+  color: var(--text-heading);
+  font-family: var(--font-serif);
+  font-size: 1.34rem;
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+}
+
+.home-more-posts p {
+  max-width: 34rem;
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.home-more-posts__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-more-posts__primary,
+.home-more-posts__secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 850;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.home-more-posts__primary {
+  padding: 9px 15px 9px 17px;
+  background: var(--primary-gradient);
+  color: #fff;
+  box-shadow: 0 14px 24px -18px color-mix(in srgb, var(--theme-primary) 86%, black);
+}
+
+.home-more-posts__secondary {
+  padding: 8px 13px;
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 16%, var(--border));
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  color: var(--text-muted);
+}
+
+.home-more-posts__primary:hover,
+.home-more-posts__secondary:hover {
+  transform: translateY(-1px);
+}
+
+.home-more-posts__primary:hover {
+  box-shadow: 0 18px 30px -20px color-mix(in srgb, var(--theme-primary) 92%, black);
+}
+
+.home-more-posts__secondary:hover {
+  border-color: color-mix(in srgb, var(--theme-primary) 34%, var(--border));
+  color: var(--violet-700);
+  background: color-mix(in srgb, var(--theme-softer) 54%, transparent);
+}
+
 @media (min-width: 861px) {
   body.is-home .home-post-list .post-card {
     content-visibility: auto;
     contain-intrinsic-size: 260px;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-more-posts {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .home-more-posts__actions {
+    justify-content: flex-start;
   }
 }
 
@@ -4281,6 +4405,18 @@ body.is-home .home-sidebar {
     radial-gradient(260px 80px at 0% 0%, rgba(124, 58, 237, 0.14), transparent 64%),
     rgba(15, 23, 42, 0.62);
   border-color: rgba(148, 163, 184, 0.16);
+}
+
+[data-theme='dark'] .home-more-posts {
+  border-color: rgba(148, 163, 184, 0.16);
+  background:
+    radial-gradient(360px 130px at 0% 0%, color-mix(in srgb, var(--theme-primary) 18%, transparent), transparent 68%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.72), color-mix(in srgb, var(--theme-soft) 36%, rgba(15, 23, 42, 0.72)));
+}
+
+[data-theme='dark'] .home-more-posts__secondary {
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.46);
 }
 
 /* Header Firefly-style music and hue panels */

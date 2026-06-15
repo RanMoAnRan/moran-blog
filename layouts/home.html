@@ -497,6 +497,21 @@
             {{ partial "post-card.html" . }}
           {{ end }}
         </div>
+
+        <section class="home-more-posts" aria-label="继续阅读">
+          <div class="home-more-posts__copy">
+            <span class="home-more-posts__eyebrow">Keep reading</span>
+            <h3>还想继续翻？</h3>
+            <p>这里先放最近更新，完整文章库里还有更多主题、归档和旧文可以慢慢看。</p>
+          </div>
+          <div class="home-more-posts__actions">
+            <a class="home-more-posts__primary" href="{{ "posts" | relURL }}">
+              查看全部文章
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+            </a>
+            <a class="home-more-posts__secondary" href="{{ "tags" | relURL }}">按分类/标签浏览</a>
+          </div>
+        </section>
       </div>
 
       <aside class="home-sidebar home-sidebar--right" aria-label="右侧组件">
