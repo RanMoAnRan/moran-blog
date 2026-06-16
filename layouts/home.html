@@ -1,12 +1,19 @@
 {{ define "main" }}
   {{- $bgImages := slice -}}
   {{- range readDir "static/img/bg" -}}
-    {{- if and (not .IsDir) (findRE `(?i)\.(avif|webp|png|jpe?g|gif)$` .Name) -}}
+    {{- if and (not .IsDir) (findRE `(?i)\.webp$` .Name) -}}
       {{- $bgImages = $bgImages | append (printf "img/bg/%s" .Name | relURL) -}}
     {{- end -}}
   {{- end -}}
+  {{- if eq (len $bgImages) 0 -}}
+    {{- range readDir "static/img/bg" -}}
+      {{- if and (not .IsDir) (findRE `(?i)\.(avif|png|jpe?g|gif)$` .Name) -}}
+        {{- $bgImages = $bgImages | append (printf "img/bg/%s" .Name | relURL) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
   {{- $bgImages = sort $bgImages -}}
-  {{- $defaultBg := "img/bg/3.png" | relURL -}}
+  {{- $defaultBg := "img/bg/3.webp" | relURL -}}
   {{- if in $bgImages $defaultBg -}}
     {{- $orderedBgImages := slice $defaultBg -}}
     {{- range $bgImages -}}
@@ -17,7 +24,7 @@
     {{- $bgImages = $orderedBgImages -}}
   {{- end -}}
   {{- if eq (len $bgImages) 0 -}}
-    {{- $bgImages = slice ("img/bg/bg-01.jpg" | relURL) -}}
+    {{- $bgImages = slice ("img/bg/3.png" | relURL) -}}
   {{- end -}}
   <!-- Hero Section with Background Image -->
   <!--
