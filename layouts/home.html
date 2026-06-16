@@ -34,7 +34,7 @@
   <div data-home-hero style="position: relative; width: 100%; overflow: visible; margin-bottom: 0;">
     <!-- Background Image -->
     <div style="position: absolute; inset: 0; z-index: -2;" id="hero-bg-container">
-      <img id="hero-bg-img" src="{{ index $bgImages 0 }}" alt="bg" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transition: opacity 0.5s ease-in-out;">
+      <img id="hero-bg-img" src="{{ index $bgImages 0 }}" alt="bg" loading="eager" fetchpriority="high" decoding="async" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transition: opacity 0.5s ease-in-out;">
     </div>
 
     <canvas class="hero-ripple-canvas" data-hero-ripple aria-hidden="true"></canvas>

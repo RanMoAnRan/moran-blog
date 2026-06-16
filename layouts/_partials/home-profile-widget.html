@@ -2,7 +2,7 @@
 {{- if not (hasPrefix $avatar "http") -}}{{- $avatar = ($avatar | relURL) -}}{{- end -}}
 <section class="home-widget home-profile-widget" aria-label="个人资料">
   <a class="home-profile-widget__avatar" href="{{ "about" | relURL }}" aria-label="打开关于页面">
-    <img src="{{ $avatar }}" alt="{{ site.Params.profile.name | default site.Title }} 的头像" loading="lazy" decoding="async">
+    <img src="{{ $avatar }}" alt="{{ site.Params.profile.name | default site.Title }} 的头像" loading="eager" fetchpriority="low" decoding="async">
   </a>
   <div class="home-profile-widget__body">
     <strong>{{ site.Params.profile.name | default site.Title }}</strong>
