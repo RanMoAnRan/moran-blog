@@ -16,7 +16,7 @@ Start the local development server:
 hugo server --buildDrafts
 ```
 
-Open in your browser: `http://localhost:1313/moran-blog/`
+Open in your browser: `http://localhost:1313/`
 
 ## Writing
 

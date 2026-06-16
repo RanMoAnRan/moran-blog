@@ -1,4 +1,4 @@
-baseURL = 'https://ranmoanran.github.io/moran-blog/'
+baseURL = 'https://moran.is-a.dev/'
 title = '墨然'
 languageCode = 'zh-cn'
 defaultContentLanguage = 'zh'
