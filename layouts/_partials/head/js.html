@@ -1,7 +1,8 @@
 {{- $main := resources.Get "js/main.js" -}}
 {{- $homeWidgets := resources.Get "js/home-widgets.js" -}}
+{{- $postPage := resources.Get "js/post-page.js" -}}
 {{- $cat := resources.Get "js/pet-cat-fishing.js" -}}
 {{- $pjax := resources.Get "js/pjax.js" -}}
-{{- $js := slice $main $homeWidgets $cat $pjax | resources.Concat "js/bundle.js" | minify | fingerprint -}}
+{{- $js := slice $main $homeWidgets $postPage $cat $pjax | resources.Concat "js/bundle.js" | minify | fingerprint -}}
 <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
 
