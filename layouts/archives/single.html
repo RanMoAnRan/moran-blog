@@ -772,12 +772,12 @@
 		      }
 
 		      .archives-timeline[data-layout="split"] .timeline-item.is-left::before {
-		        right: calc(-1 * (var(--split-connector) + var(--split-arrow)));
+		        right: calc(-1 * var(--split-connector));
 		        border-left: var(--split-arrow) solid var(--year-line);
 		      }
 
 		      .archives-timeline[data-layout="split"] .timeline-item.is-right::before {
-		        left: calc(-1 * (var(--split-connector) + var(--split-arrow)));
+		        left: calc(-1 * var(--split-connector));
 		        border-right: var(--split-arrow) solid var(--year-line);
 		      }
 		    }
