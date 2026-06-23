@@ -160,7 +160,7 @@
 
     .archive-back-to-top {
       position: fixed;
-      right: 132px;
+      right: calc(max(24px, calc((100vw - var(--rail-layout-width)) / 2)) + var(--rail-right-width) - 46px);
       bottom: calc(96px + env(safe-area-inset-bottom, 0px));
       z-index: 46;
       display: inline-flex;
