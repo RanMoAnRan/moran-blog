@@ -24,18 +24,25 @@
       ticking = false;
 
       const target = prose || article;
-      if (!target) return;
+      let rect = null;
+      let value = 0;
 
-      const rect = target.getBoundingClientRect();
-      const start = window.scrollY + rect.top;
-      const end = start + target.offsetHeight - window.innerHeight;
-      const total = Math.max(1, end - start);
-      const value = Math.min(1, Math.max(0, (window.scrollY - start) / total));
+      if (target) {
+        rect = target.getBoundingClientRect();
+        const start = window.scrollY + rect.top;
+        const end = start + target.offsetHeight - window.innerHeight;
+        const total = Math.max(1, end - start);
+        value = Math.min(1, Math.max(0, (window.scrollY - start) / total));
+      } else {
+        const root = document.documentElement;
+        const maxScroll = Math.max(1, root.scrollHeight - window.innerHeight);
+        value = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      }
       const percent = Math.round(value * 100);
 
       if (progress && progressBar) {
         progressBar.style.transform = `scaleX(${value})`;
-        progress.hidden = rect.bottom <= 0;
+        progress.hidden = rect ? rect.bottom <= 0 : window.scrollY <= 0;
       }
 
       if (readingPercent) readingPercent.textContent = `${percent}%`;
