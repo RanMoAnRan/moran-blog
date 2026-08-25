@@ -2,6 +2,7 @@ public/
 public-preview/
 resources/
 .hugo_build.lock
+.omc/
 .DS_Store
 __pycache__/
 *.py[cod]
