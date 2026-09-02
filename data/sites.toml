@@ -10,6 +10,13 @@ desc = "工具、资料与灵感入口。"
   accent = "blue"
 
   [[groups.sites]]
+  name = "PriceAI"
+  url = "https://priceai.cc/"
+  desc = "聚合 AI 官方订阅、卡网订阅、官方 API 与中转 API 的价格、库存和来源信息。"
+  tags = ["AI", "订阅比价", "API"]
+  accent = "amber"
+
+  [[groups.sites]]
   name = "真测 Ztest"
   url = "https://ztest.ai/"
   desc = "独立第三方 AI 中转站验证平台，用于查看模型真实性、响应质量与服务可用性。"
@@ -84,4 +91,3 @@ desc = "工具、资料与灵感入口。"
   desc = "面向幼儿教育与亲子阅读的内容项目，提供阅读启蒙与学习相关内容。"
   tags = ["教育", "阅读", "项目"]
   accent = "teal"
-
