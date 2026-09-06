@@ -29,12 +29,6 @@ avatar = "https://blog.ning.moe/upload/72d4e506-d053-4f89-9e83-b62f1acba5de.png"
 desc = "Get busy living or get busy dying."
 
 [[friends]]
-name = "花墨"
-url = "https://flowersink.com"
-avatar = "https://api.flowersink.com/img/logo.png"
-desc = "好耶！是再花猫猫头ฅ•ω•ฅ"
-
-[[friends]]
 name = "Amiya的导航站"
 url = "https://sayori.org/"
 avatar = "https://blog.sayori.org/assets/home/amiya-desk.webp"
@@ -45,3 +39,9 @@ name = "口袋分享记"
 url = "https://111620.xyz/"
 avatar = "https://img.111620.xyz/2025/07/29/6887b5efbf768.png"
 desc = "所谓过往，皆为序章。虚室生白️"
+
+[[friends]]
+name = "Lin Blog"
+url = "https://linlog.top"
+avatar = "https://linlog.top/api/uploads/2026/09/1788411216332767920-dca59196a965c5e8.jpg"
+desc = "记录技术、互联网与日常观察"
