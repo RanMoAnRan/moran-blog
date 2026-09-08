@@ -2,33 +2,41 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 const STATE_COOKIE = 'moran_cms_oauth_state';
 const STATE_TTL_SECONDS = 10 * 60;
-const DEFAULT_ORIGIN = 'https://moran.is-a.dev';
+const DEFAULT_CMS_ORIGIN = 'https://moran.is-a.dev';
+const DEFAULT_AUTH_ORIGIN = 'https://moran-blog.vercel.app';
+
+function normalizedOrigin(value, name) {
+  const origin = new URL(value.replace(/\/$/, ''));
+  if (origin.protocol !== 'https:' && origin.hostname !== 'localhost') {
+    throw new Error(`${name} must use HTTPS`);
+  }
+  return origin;
+}
 
 export function getOAuthConfig(env = process.env) {
   const config = {
     clientId: env.GITHUB_CLIENT_ID,
     clientSecret: env.GITHUB_CLIENT_SECRET,
     cookieSecret: env.OAUTH_COOKIE_SECRET,
-    origin: (env.CMS_ORIGIN || DEFAULT_ORIGIN).replace(/\/$/, ''),
   };
 
   const missing = Object.entries(config)
-    .filter(([key, value]) => key !== 'origin' && !value)
+    .filter(([, value]) => !value)
     .map(([key]) => key);
 
   if (missing.length) {
     throw new Error(`Missing OAuth configuration: ${missing.join(', ')}`);
   }
 
-  const origin = new URL(config.origin);
-  if (origin.protocol !== 'https:' && origin.hostname !== 'localhost') {
-    throw new Error('CMS_ORIGIN must use HTTPS');
-  }
+  const cmsOrigin = normalizedOrigin(env.CMS_ORIGIN || DEFAULT_CMS_ORIGIN, 'CMS_ORIGIN');
+  const authOrigin = normalizedOrigin(env.AUTH_ORIGIN || DEFAULT_AUTH_ORIGIN, 'AUTH_ORIGIN');
 
   return {
     ...config,
-    callbackUrl: `${config.origin}/api/callback`,
-    hostname: origin.hostname,
+    cmsOrigin: cmsOrigin.origin,
+    authOrigin: authOrigin.origin,
+    callbackUrl: `${authOrigin.origin}/api/callback`,
+    cmsHostname: cmsOrigin.hostname,
   };
 }
 
@@ -111,7 +119,7 @@ export function applySecurityHeaders(response) {
 
 export function isAllowedSite(request, config) {
   const siteId = request.query.site_id;
-  return !siteId || siteId === config.hostname;
+  return !siteId || siteId === config.cmsHostname;
 }
 
 function safeJson(value) {
@@ -178,4 +186,3 @@ export async function exchangeGitHubCode({ code, config, fetchImpl = fetch }) {
   if (!payload.access_token) throw new Error('GitHub did not return an access token');
   return payload.access_token;
 }
-

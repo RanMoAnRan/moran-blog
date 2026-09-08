@@ -2,7 +2,7 @@ backend:
   name: github
   repo: RanMoAnRan/moran-blog
   branch: main
-  base_url: https://moran.is-a.dev
+  base_url: https://moran-blog.vercel.app
   auth_endpoint: api/auth
   site_domain: moran.is-a.dev
   auth_scope: repo
@@ -93,4 +93,3 @@ collections:
       - label: 正文
         name: body
         widget: markdown
-

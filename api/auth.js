@@ -34,11 +34,10 @@ export default function handler(request, response) {
 
     response.setHeader(
       'Set-Cookie',
-      stateCookie(cookieValue, { secure: new URL(config.origin).protocol === 'https:' }),
+      stateCookie(cookieValue, { secure: new URL(config.authOrigin).protocol === 'https:' }),
     );
     return response.redirect(302, authorizeUrl.toString());
   } catch {
     return response.status(500).send('OAuth is not configured correctly');
   }
 }
-

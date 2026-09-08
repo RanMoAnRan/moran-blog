@@ -25,7 +25,7 @@ export default async function handler(request, response) {
 
   response.setHeader(
     'Set-Cookie',
-    stateCookie('', { clear: true, secure: new URL(config.origin).protocol === 'https:' }),
+    stateCookie('', { clear: true, secure: new URL(config.authOrigin).protocol === 'https:' }),
   );
 
   const validState = validateOAuthState(
@@ -49,7 +49,7 @@ export default async function handler(request, response) {
     }
   }
 
-  const page = buildAuthResultPage({ origin: config.origin, token, error });
+  const page = buildAuthResultPage({ origin: config.cmsOrigin, token, error });
   response.setHeader(
     'Content-Security-Policy',
     `default-src 'none'; script-src 'nonce-${page.nonce}'; style-src 'none'; base-uri 'none'; form-action 'none'`,
@@ -57,4 +57,3 @@ export default async function handler(request, response) {
   response.setHeader('Content-Type', 'text/html; charset=utf-8');
   return response.status(token ? 200 : 401).send(page.html);
 }
-

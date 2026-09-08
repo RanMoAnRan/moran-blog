@@ -33,10 +33,11 @@ hugo new content posts/my-post/index.md
 
 ## Online editor
 
-The Decap CMS editor is published at `/admin/`. In production it signs in with
-GitHub and writes posts directly to the `main` branch. It keeps Hugo page bundle
-content in `content/posts/<directory>/index.md` and stores uploaded post media
-beside that `index.md` file.
+The Decap CMS editor is published by GitHub Pages at `/admin/`. Its OAuth
+endpoints run separately at `https://moran-blog.vercel.app`, and published posts
+are written directly to the `main` branch. It keeps Hugo page bundle content in
+`content/posts/<directory>/index.md` and stores uploaded post media beside that
+`index.md` file.
 
 ### Local preview
 
@@ -55,7 +56,7 @@ and writes changes to the working tree without committing them.
 1. Create a GitHub OAuth App under **Settings > Developer settings > OAuth Apps**.
 2. Set its **Homepage URL** to `https://moran.is-a.dev`.
 3. Set its **Authorization callback URL** to
-   `https://moran.is-a.dev/api/callback`.
+   `https://moran-blog.vercel.app/api/callback`.
 4. Add the following environment variables to the Vercel project for the
    Production environment:
 
@@ -63,8 +64,11 @@ and writes changes to the working tree without committing them.
    - `GITHUB_CLIENT_SECRET`: the OAuth App client secret.
    - `OAUTH_COOKIE_SECRET`: a random secret generated with
      `openssl rand -base64 32`.
+   - `CMS_ORIGIN` (optional): defaults to `https://moran.is-a.dev`.
+   - `AUTH_ORIGIN` (optional): defaults to `https://moran-blog.vercel.app`.
 
-5. Redeploy the project and open `https://moran.is-a.dev/admin/`.
+5. Redeploy the Vercel project, enable the GitHub Pages workflow, and open
+   `https://moran.is-a.dev/admin/`.
 
 Do not add these secrets to the repository or to `config.yml`. The GitHub
 account used in the editor must have write access to `RanMoAnRan/moran-blog`.

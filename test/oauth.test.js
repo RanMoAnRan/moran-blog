@@ -45,12 +45,14 @@ async function withOAuthEnvironment(callback) {
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     OAUTH_COOKIE_SECRET: process.env.OAUTH_COOKIE_SECRET,
     CMS_ORIGIN: process.env.CMS_ORIGIN,
+    AUTH_ORIGIN: process.env.AUTH_ORIGIN,
   };
   Object.assign(process.env, {
     GITHUB_CLIENT_ID: 'client',
     GITHUB_CLIENT_SECRET: 'client-secret',
     OAUTH_COOKIE_SECRET: secret,
     CMS_ORIGIN: 'https://example.com',
+    AUTH_ORIGIN: 'https://auth.example.com',
   });
   try {
     return await callback();
@@ -78,16 +80,18 @@ test('cookie helpers encode values and parse cookie headers', () => {
   assert.equal(parseCookies('one=1; moran_cms_oauth_state=value.with%2Fsignature').moran_cms_oauth_state, 'value.with/signature');
 });
 
-test('configuration derives the callback URL and validates secrets', () => {
+test('configuration keeps the CMS and authentication origins separate', () => {
   const config = getOAuthConfig({
     GITHUB_CLIENT_ID: 'client',
     GITHUB_CLIENT_SECRET: 'secret',
     OAUTH_COOKIE_SECRET: 'cookie',
     CMS_ORIGIN: 'https://example.com/',
+    AUTH_ORIGIN: 'https://auth.example.com/',
   });
-  assert.equal(config.origin, 'https://example.com');
-  assert.equal(config.callbackUrl, 'https://example.com/api/callback');
-  assert.equal(config.hostname, 'example.com');
+  assert.equal(config.cmsOrigin, 'https://example.com');
+  assert.equal(config.authOrigin, 'https://auth.example.com');
+  assert.equal(config.callbackUrl, 'https://auth.example.com/api/callback');
+  assert.equal(config.cmsHostname, 'example.com');
   assert.throws(() => getOAuthConfig({}), /Missing OAuth configuration/);
 });
 

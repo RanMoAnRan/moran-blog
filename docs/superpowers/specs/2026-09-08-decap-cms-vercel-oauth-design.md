@@ -2,7 +2,7 @@
 
 ## 目标
 
-为现有 Hugo 博客增加可从 `https://moran.is-a.dev/admin/` 访问的在线编辑后台。后台使用 GitHub 账号登录，保存或发布文章时直接提交到 `RanMoAnRan/moran-blog` 的 `main` 分支，由现有 Vercel 集成继续完成自动构建和发布。整个方案不要求自建常驻服务器。
+为现有 Hugo 博客增加可从 `https://moran.is-a.dev/admin/` 访问的在线编辑后台。后台和博客静态文件由 GitHub Pages 托管，GitHub OAuth 接口由 `https://moran-blog.vercel.app` 上的 Vercel Functions 托管。保存或发布文章时直接提交到 `RanMoAnRan/moran-blog` 的 `main` 分支，再由 GitHub Pages 工作流构建公开网站。整个方案不要求自建常驻服务器。
 
 ## 保持不变的部分
 
@@ -10,12 +10,13 @@
 - 文章继续存储在 `content/posts/<slug>/index.md`。
 - 文章图片继续与 `index.md` 放在同一个 Page Bundle 目录中。
 - Front Matter 继续使用 TOML 分隔符 `+++`。
-- Vercel 继续运行现有 `hugo --gc --minify` 构建命令。
+- GitHub Pages 继续运行现有 Hugo 构建工作流。
+- Vercel 仅作为 OAuth Functions 的运行平台；其静态博客副本不是公开主站。
 
 ## 架构
 
 ```text
-浏览器 /admin/
+GitHub Pages /admin/
        |
        v
    Decap CMS ----------------------+
@@ -26,7 +27,7 @@ Vercel /api/auth            RanMoAnRan/moran-blog
        |                           |
        v                           | push main
 GitHub OAuth                        v
-       |                      Vercel 自动部署
+       |                    GitHub Pages 自动部署
        v
 Vercel /api/callback
        |
@@ -82,17 +83,18 @@ Vercel 项目必须配置：
 - `GITHUB_CLIENT_SECRET`
 - `OAUTH_COOKIE_SECRET`
 - 可选 `CMS_ORIGIN`，默认值为 `https://moran.is-a.dev`
+- 可选 `AUTH_ORIGIN`，默认值为 `https://moran-blog.vercel.app`
 
 GitHub OAuth App 使用：
 
 - Homepage URL：`https://moran.is-a.dev`
-- Authorization callback URL：`https://moran.is-a.dev/api/callback`
+- Authorization callback URL：`https://moran-blog.vercel.app/api/callback`
 
 环境变量缺失时，接口返回通用配置错误，不泄露具体秘密或上游响应内容。
 
 ## 发布流程
 
-后台用户必须使用对目标仓库具有推送权限的 GitHub 账号登录。点击发布后，Decap CMS 通过 GitHub API 直接提交到 `main`。不启用 Editorial Workflow，不创建审核分支或 PR。Vercel 收到 GitHub 推送后自动重新构建。
+后台用户必须使用对目标仓库具有推送权限的 GitHub 账号登录。点击发布后，Decap CMS 通过 GitHub API 直接提交到 `main`。不启用 Editorial Workflow，不创建审核分支或 PR。GitHub Pages 工作流收到推送后自动重新构建公开站点，Vercel 同时保留 OAuth Functions 部署。
 
 ## 错误处理
 
