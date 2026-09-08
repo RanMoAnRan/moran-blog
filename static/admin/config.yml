@@ -1,0 +1,96 @@
+backend:
+  name: github
+  repo: RanMoAnRan/moran-blog
+  branch: main
+  base_url: https://moran.is-a.dev
+  auth_endpoint: api/auth
+  site_domain: moran.is-a.dev
+  auth_scope: repo
+  use_graphql: true
+
+site_url: https://moran.is-a.dev
+display_url: https://moran.is-a.dev
+locale: zh_Hans
+show_preview_links: false
+local_backend: true
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+
+media_folder: static/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: posts
+    label: 文章
+    label_singular: 文章
+    description: 创建和维护博客文章；发布后会直接提交到 main 分支。
+    folder: content/posts
+    create: true
+    delete: true
+    extension: md
+    format: toml-frontmatter
+    path: "{{slug}}/index"
+    media_folder: ""
+    public_folder: ""
+    summary: "{{title}} · {{date}}"
+    sortable_fields: [date, title, commit_date]
+    view_filters:
+      - label: 草稿
+        field: draft
+        pattern: true
+      - label: 已发布
+        field: draft
+        pattern: false
+    fields:
+      - label: 标题
+        name: title
+        widget: string
+      - label: URL 别名
+        name: slug
+        widget: string
+        required: false
+        hint: 用于公开文章地址；已有旧文章可能没有该字段。
+      - label: 发布时间
+        name: date
+        widget: datetime
+        format: "YYYY-MM-DDTHH:mm:ssZ"
+        date_format: "YYYY-MM-DD"
+        time_format: "HH:mm"
+        picker_utc: false
+      - label: 草稿
+        name: draft
+        widget: boolean
+        default: true
+      - label: 标签
+        name: tags
+        widget: list
+        default: []
+        allow_add: true
+      - label: 分类
+        name: categories
+        widget: list
+        default: []
+        allow_add: true
+      - label: 摘要
+        name: summary
+        widget: text
+      - label: 显示目录
+        name: toc
+        widget: boolean
+        default: true
+      - label: 启用数学公式
+        name: math
+        widget: boolean
+        default: false
+      - label: 封面图片
+        name: cover
+        widget: image
+        required: false
+        choose_url: false
+      - label: 正文
+        name: body
+        widget: markdown
+
