@@ -98,22 +98,20 @@
         const pointer = { x: 0.5, y: 0.46, active: false, lastX: 0, lastY: 0, lastTime: 0 };
         let width = 0;
         let height = 0;
-        let dpr = 1;
         let raf = 0;
-        let lastAmbient = 0;
+        let lastFrameTime = 0;
         let isRunning = false;
         let isHeroVisible = true;
+        const frameInterval = 1000 / 40; // 限制至 40fps，视觉丝滑且节能
 
         const resize = () => {
           const rect = hero.getBoundingClientRect();
-          dpr = Math.min(window.devicePixelRatio || 1, 2);
           width = Math.max(1, Math.floor(rect.width));
           height = Math.max(1, Math.floor(rect.height));
-          canvas.width = Math.floor(width * dpr);
-          canvas.height = Math.floor(height * dpr);
+          canvas.width = width;
+          canvas.height = height;
           canvas.style.width = `${width}px`;
           canvas.style.height = `${height}px`;
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         };
 
         const addRipple = (x, y, strength = 1) => {
@@ -121,26 +119,27 @@
             x,
             y,
             born: performance.now(),
-            life: 1700 + Math.random() * 520,
+            life: 1500 + Math.random() * 400,
             radius: 10 + Math.random() * 10,
             speed: 0.18 + Math.random() * 0.08,
-            strength: Math.min(1.35, strength)
+            strength: Math.min(1.2, strength)
           });
-          while (ripples.length > 16) ripples.shift();
+          while (ripples.length > 8) ripples.shift();
 
-          const sparkCount = Math.round(4 + strength * 6);
+          const sparkCount = Math.round(3 + strength * 4);
           for (let i = 0; i < sparkCount; i += 1) {
             sparks.push({
               x: x + (Math.random() - 0.5) * 20,
               y: y + (Math.random() - 0.5) * 20,
-              vx: (Math.random() - 0.5) * 0.18,
-              vy: -0.08 - Math.random() * 0.12,
+              vx: (Math.random() - 0.5) * 0.16,
+              vy: -0.08 - Math.random() * 0.10,
               born: performance.now(),
-              life: 900 + Math.random() * 500,
-              size: 1.2 + Math.random() * 2.4
+              life: 800 + Math.random() * 400,
+              size: 1.2 + Math.random() * 2.0
             });
           }
-          while (sparks.length > 100) sparks.shift();
+          while (sparks.length > 50) sparks.shift();
+          wakeUp();
         };
 
         const localPoint = (event) => {
@@ -165,19 +164,19 @@
           const dx = point.x - pointer.lastX;
           const dy = point.y - pointer.lastY;
           const distance = Math.hypot(dx, dy);
-          if (now - pointer.lastTime > 95 && distance > 18) {
-            addRipple(point.x, point.y, Math.min(1.2, distance / 120));
+          if (now - pointer.lastTime > 110 && distance > 22) {
+            addRipple(point.x, point.y, Math.min(1.1, distance / 130));
             pointer.lastX = point.x;
             pointer.lastY = point.y;
             pointer.lastTime = now;
           }
+          wakeUp();
         };
 
         const handlePointerDown = (event) => {
           if (isFromBgToggle(event)) return;
-
           const point = localPoint(event);
-          addRipple(point.x, point.y, 1.35);
+          addRipple(point.x, point.y, 1.2);
         };
 
         const drawCausticRibbon = (time, offset, alpha, colorA, colorB) => {
@@ -190,11 +189,9 @@
           ctx.save();
           ctx.globalAlpha = alpha;
           ctx.strokeStyle = gradient;
-          ctx.lineWidth = 1.15;
-          ctx.shadowColor = colorB;
-          ctx.shadowBlur = 18;
+          ctx.lineWidth = 1.8;
           ctx.beginPath();
-          for (let x = -40; x <= width + 40; x += 18) {
+          for (let x = -40; x <= width + 40; x += 24) {
             const y = yBase
               + Math.sin(x * 0.011 + time * 0.0011 + offset) * 16
               + Math.sin(x * 0.027 - time * 0.00072 + offset * 1.7) * 8;
@@ -229,12 +226,10 @@
           for (let i = 0; i < 3; i += 1) {
             const ringRadius = radius + i * 12;
             ctx.beginPath();
-            ctx.lineWidth = (2.2 - i * 0.45) * fade;
+            ctx.lineWidth = (2.0 - i * 0.45) * fade;
             ctx.strokeStyle = i % 2 === 0
               ? `rgba(255,255,255,${0.52 * fade})`
               : `rgba(96,165,250,${0.40 * fade})`;
-            ctx.shadowColor = i % 2 === 0 ? 'rgba(245,208,254,0.9)' : 'rgba(147,197,253,0.8)';
-            ctx.shadowBlur = 18 * fade;
             ctx.arc(ripple.x, ripple.y, ringRadius, 0, Math.PI * 2);
             ctx.stroke();
           }
@@ -277,21 +272,31 @@
         };
 
         const draw = (now) => {
+          if (!isRunning) return;
+
+          // 帧率控制
+          if (now - lastFrameTime < frameInterval) {
+            raf = requestAnimationFrame(draw);
+            return;
+          }
+          lastFrameTime = now;
+
           ctx.clearRect(0, 0, width, height);
 
+          // 柔和光晕
           const pointerX = pointer.x * width;
           const pointerY = pointer.y * height;
           const lens = ctx.createRadialGradient(pointerX, pointerY, 0, pointerX, pointerY, Math.max(width, height) * 0.34);
-          lens.addColorStop(0, 'rgba(255,255,255,0.075)');
-          lens.addColorStop(0.26, 'rgba(217,70,239,0.05)');
-          lens.addColorStop(0.62, 'rgba(96,165,250,0.028)');
+          lens.addColorStop(0, 'rgba(255,255,255,0.06)');
+          lens.addColorStop(0.26, 'rgba(217,70,239,0.04)');
+          lens.addColorStop(0.62, 'rgba(96,165,250,0.02)');
           lens.addColorStop(1, 'rgba(255,255,255,0)');
           ctx.globalCompositeOperation = 'screen';
           ctx.fillStyle = lens;
           ctx.fillRect(0, 0, width, height);
 
-          drawCausticRibbon(now, 0, 0.34, 'rgba(255,255,255,0)', 'rgba(245,208,254,0.42)');
-          drawCausticRibbon(now, 4.1, 0.22, 'rgba(191,219,254,0)', 'rgba(96,165,250,0.34)');
+          drawCausticRibbon(now, 0, 0.30, 'rgba(255,255,255,0)', 'rgba(245,208,254,0.38)');
+          drawCausticRibbon(now, 4.1, 0.20, 'rgba(191,219,254,0)', 'rgba(96,165,250,0.30)');
 
           for (let i = ripples.length - 1; i >= 0; i -= 1) {
             if (!drawRipple(ripples[i], now)) ripples.splice(i, 1);
@@ -301,19 +306,41 @@
             if (!drawSpark(sparks[i], now)) sparks.splice(i, 1);
           }
 
-          if (now - lastAmbient > 1450 && ripples.length < 10) {
-            const x = width * (0.12 + Math.random() * 0.76);
-            const y = height * (0.20 + Math.random() * 0.56);
-            addRipple(x, y, 0.56 + Math.random() * 0.22);
-            lastAmbient = now;
+          // 智能休眠判断：当没有待渲染的水波和火花且鼠标停止时，停止循环省电
+          if (ripples.length === 0 && sparks.length === 0 && !pointer.active) {
+            stop();
+            return;
           }
 
-          if (isRunning) raf = requestAnimationFrame(draw);
+          raf = requestAnimationFrame(draw);
         };
 
-        const start = () => {
+        let ambientTimer = null;
+
+        const triggerAmbientRipple = () => {
+          if (document.hidden || !isHeroVisible) return;
+          // 仅在当前没有过多活跃水波时产生优雅微澜
+          if (ripples.length < 3) {
+            const x = width * (0.18 + Math.random() * 0.64);
+            const y = height * (0.24 + Math.random() * 0.52);
+            addRipple(x, y, 0.48 + Math.random() * 0.24);
+          }
+        };
+
+        const startAmbientTimer = () => {
+          if (ambientTimer) clearInterval(ambientTimer);
+          ambientTimer = setInterval(triggerAmbientRipple, 4200);
+        };
+
+        const stopAmbientTimer = () => {
+          if (ambientTimer) {
+            clearInterval(ambientTimer);
+            ambientTimer = null;
+          }
+        };
+
+        const wakeUp = () => {
           if (isRunning || document.hidden || !isHeroVisible) return;
-          resize();
           isRunning = true;
           raf = requestAnimationFrame(draw);
         };
@@ -328,39 +355,45 @@
 
         const boot = () => {
           resize();
-          addRipple(width * 0.5, height * 0.46, 0.8);
+          addRipple(width * 0.5, height * 0.46, 0.7);
+          startAmbientTimer();
 
           if ('IntersectionObserver' in window) {
             const visibilityObserver = new IntersectionObserver((entries) => {
               const entry = entries[0];
               isHeroVisible = Boolean(entry && entry.isIntersecting);
-              if (isHeroVisible) start();
-              else stop();
-            }, { rootMargin: '120px 0px', threshold: 0.01 });
+              if (isHeroVisible) {
+                startAmbientTimer();
+                if (ripples.length > 0 || pointer.active) wakeUp();
+              } else {
+                stopAmbientTimer();
+                stop();
+              }
+            }, { rootMargin: '80px 0px', threshold: 0.01 });
 
             visibilityObserver.observe(hero);
             window.addEventListener('pagehide', () => visibilityObserver.disconnect(), { once: true });
           } else {
             isHeroVisible = true;
-            start();
+            wakeUp();
           }
         };
 
         hero.addEventListener('pointermove', handlePointerMove, { passive: true });
         hero.addEventListener('pointerdown', handlePointerDown, { passive: true });
-        hero.addEventListener('pointerleave', () => { pointer.active = false; }, { passive: true });
+        hero.addEventListener('pointerleave', () => {
+          pointer.active = false;
+        }, { passive: true });
         window.addEventListener('resize', resize, { passive: true });
-        window.addEventListener('load', resize, { once: true, passive: true });
         document.addEventListener('visibilitychange', () => {
-          if (document.hidden) stop();
-          else start();
+          if (document.hidden) {
+            stopAmbientTimer();
+            stop();
+          } else {
+            startAmbientTimer();
+            if (ripples.length > 0 || pointer.active) wakeUp();
+          }
         });
-
-        if ('ResizeObserver' in window) {
-          const observer = new ResizeObserver(resize);
-          observer.observe(hero);
-          window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
-        }
 
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(boot), { once: true });
@@ -368,7 +401,10 @@
           requestAnimationFrame(boot);
         }
 
-        window.addEventListener('pagehide', stop, { once: true });
+        window.addEventListener('pagehide', () => {
+          stopAmbientTimer();
+          stop();
+        }, { once: true });
       })();
     </script>
 

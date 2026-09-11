@@ -1,6 +1,11 @@
 {{- $main := resources.Get "css/main.css" -}}
-{{- $cat := resources.Get "css/pet-cat-fishing.css" -}}
-{{- $css := slice $main $cat | resources.Concat "css/bundle.css" | minify | fingerprint -}}
+{{- $styles := slice $main -}}
+{{- if not (eq site.Params.petCat false) -}}
+  {{- with resources.Get "css/pet-cat-fishing.css" -}}
+    {{- $styles = $styles | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- $css := $styles | resources.Concat "css/bundle.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
 {{ with site.Params.accent }}<style>:root{--accent: {{ . }};}</style>{{ end }}
 

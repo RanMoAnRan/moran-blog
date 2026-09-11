@@ -259,6 +259,7 @@
 
       const prev = () => loadTrack(state.index - 1, true);
 
+      let lastTimeupdateSave = 0;
       const bindAudioEvents = () => {
         sharedAudio.addEventListener("timeupdate", () => {
           if (!state.playlist[state.index]) return;
@@ -269,7 +270,9 @@
           els.duration.textContent = formatTime(duration);
           els.progressBar.style.width = `${pct}%`;
           els.progress.setAttribute("aria-valuenow", String(Math.round(pct)));
-          if (activeSourceKey === state.sourceKey) {
+          const now = Date.now();
+          if (activeSourceKey === state.sourceKey && now - lastTimeupdateSave > 3000) {
+            lastTimeupdateSave = now;
             writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: current, playMode: state.playMode, wasPlaying: !sharedAudio.paused });
           }
         });

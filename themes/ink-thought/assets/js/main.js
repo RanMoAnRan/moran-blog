@@ -238,198 +238,211 @@
 
 
 (() => {
-  const progress = document.querySelector("[data-reading-progress]");
-  const progressBar = document.querySelector("[data-reading-progress-bar]");
-  const article = document.querySelector(".post-detail-card");
-  const prose = document.querySelector(".post-detail-card .detail-prose");
-  const backToTop = document.querySelector("[data-back-to-top]");
-  const readingPercent = document.querySelector("[data-reading-percent]");
-  const toc = document.querySelector("[data-post-toc]");
-  const tocToggle = document.querySelector("[data-toc-toggle]");
-  const tocLinks = toc ? Array.from(toc.querySelectorAll('a[href*="#"]')) : [];
-  const headings = prose ? Array.from(prose.querySelectorAll("h2[id], h3[id], h4[id]")) : [];
+  let cleanup = null;
 
-  const copyToClipboard = async (text) => {
-    if (!text) return false;
-    try {
-      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-        await navigator.clipboard.writeText(text);
-        return true;
+  const initPostControls = () => {
+    if (cleanup) {
+      cleanup();
+      cleanup = null;
+    }
+
+    const progress = document.querySelector("[data-reading-progress]");
+    const progressBar = document.querySelector("[data-reading-progress-bar]");
+    const article = document.querySelector(".post-detail-card");
+    const prose = document.querySelector(".post-detail-card .detail-prose");
+    const backToTop = document.querySelector("[data-back-to-top]");
+    const readingPercent = document.querySelector("[data-reading-percent]");
+    const toc = document.querySelector("[data-post-toc]");
+    const tocToggle = document.querySelector("[data-toc-toggle]");
+    const tocLinks = toc ? Array.from(toc.querySelectorAll('a[href*="#"]')) : [];
+    const headings = prose ? Array.from(prose.querySelectorAll("h2[id], h3[id], h4[id]")) : [];
+
+    if (!progress && !backToTop && !toc && !headings.length) return;
+
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const copyToClipboard = async (text) => {
+      if (!text) return false;
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch {}
+
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.top = "-9999px";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return !!ok;
+      } catch {
+        return false;
       }
-    } catch {
-      // fallback below
-    }
+    };
 
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "");
-      ta.style.position = "fixed";
-      ta.style.top = "-9999px";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand("copy");
-      document.body.removeChild(ta);
-      return !!ok;
-    } catch {
-      return false;
-    }
-  };
+    const decodeHash = (hash) => {
+      if (!hash) return "";
+      try {
+        return decodeURIComponent(hash.replace(/^#/, ""));
+      } catch {
+        return hash.replace(/^#/, "");
+      }
+    };
 
-  const decodeHash = (hash) => {
-    if (!hash) return "";
-    try {
-      return decodeURIComponent(hash.replace(/^#/, ""));
-    } catch {
-      return hash.replace(/^#/, "");
-    }
-  };
+    const baseUrl = () => `${window.location.origin}${window.location.pathname}`;
 
-  const baseUrl = () => `${window.location.origin}${window.location.pathname}`;
+    const enhanceHeadingAnchors = () => {
+      if (!headings.length) return;
 
-  const enhanceHeadingAnchors = () => {
-    if (!headings.length) return;
+      headings.forEach((heading) => {
+        if (heading.dataset.headingAnchorReady === "1") return;
+        heading.dataset.headingAnchorReady = "1";
+        heading.classList.add("has-heading-anchor");
 
-    headings.forEach((heading) => {
-      if (heading.dataset.headingAnchorReady === "1") return;
-      heading.dataset.headingAnchorReady = "1";
-      heading.classList.add("has-heading-anchor");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "heading-anchor-copy";
+        btn.setAttribute("aria-label", "复制标题链接");
+        btn.title = "复制标题链接";
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "heading-anchor-copy";
-      btn.setAttribute("aria-label", "复制标题链接");
-      btn.title = "复制标题链接";
-      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+        let timer = null;
+        btn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const ok = await copyToClipboard(`${baseUrl()}#${encodeURIComponent(heading.id)}`);
+          if (timer) window.clearTimeout(timer);
+          btn.classList.toggle("is-copied", ok);
+          btn.setAttribute("aria-label", ok ? "标题链接已复制" : "复制失败");
+          btn.title = ok ? "已复制" : "复制失败";
+          timer = window.setTimeout(() => {
+            btn.classList.remove("is-copied");
+            btn.setAttribute("aria-label", "复制标题链接");
+            btn.title = "复制标题链接";
+          }, 1400);
+        }, { signal });
 
-      let timer = null;
-      btn.addEventListener("click", async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const ok = await copyToClipboard(`${baseUrl()}#${encodeURIComponent(heading.id)}`);
-        if (timer) window.clearTimeout(timer);
-        btn.classList.toggle("is-copied", ok);
-        btn.setAttribute("aria-label", ok ? "标题链接已复制" : "复制失败");
-        btn.title = ok ? "已复制" : "复制失败";
-        timer = window.setTimeout(() => {
-          btn.classList.remove("is-copied");
-          btn.setAttribute("aria-label", "复制标题链接");
-          btn.title = "复制标题链接";
-        }, 1400);
+        heading.appendChild(btn);
+      });
+    };
+
+    const linkById = new Map();
+    tocLinks.forEach((link) => {
+      try {
+        const url = new URL(link.getAttribute("href"), window.location.href);
+        const id = decodeHash(url.hash);
+        if (id && !linkById.has(id)) linkById.set(id, link);
+      } catch {
+        const id = decodeHash(link.getAttribute("href").split("#")[1] || "");
+        if (id && !linkById.has(id)) linkById.set(id, link);
+      }
+    });
+
+    const setTocOpen = (open) => {
+      if (!toc || !tocToggle) return;
+      toc.classList.toggle("is-open", open);
+      tocToggle.setAttribute("aria-expanded", open ? "true" : "false");
+      tocToggle.setAttribute("aria-label", open ? "关闭文章目录" : "打开文章目录");
+    };
+
+    if (toc && tocToggle) {
+      setTocOpen(false);
+
+      tocToggle.addEventListener("click", () => {
+        setTocOpen(!toc.classList.contains("is-open"));
+      }, { signal });
+
+      tocLinks.forEach((link) => {
+        link.addEventListener("click", () => setTocOpen(false), { signal });
       });
 
-      heading.appendChild(btn);
-    });
-  };
+      document.addEventListener("click", (event) => {
+        if (!toc.classList.contains("is-open")) return;
+        if (event.target.closest("[data-post-toc]")) return;
+        if (event.target.closest("[data-toc-toggle]")) return;
+        setTocOpen(false);
+      }, { signal });
 
-  const linkById = new Map();
-  tocLinks.forEach((link) => {
-    try {
-      const url = new URL(link.getAttribute("href"), window.location.href);
-      const id = decodeHash(url.hash);
-      if (id && !linkById.has(id)) linkById.set(id, link);
-    } catch {
-      const id = decodeHash(link.getAttribute("href").split("#")[1] || "");
-      if (id && !linkById.has(id)) linkById.set(id, link);
-    }
-  });
-
-  const setTocOpen = (open) => {
-    if (!toc || !tocToggle) return;
-    toc.classList.toggle("is-open", open);
-    tocToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    tocToggle.setAttribute("aria-label", open ? "关闭文章目录" : "打开文章目录");
-  };
-
-  if (toc && tocToggle) {
-    setTocOpen(false);
-
-    tocToggle.addEventListener("click", () => {
-      setTocOpen(!toc.classList.contains("is-open"));
-    });
-
-    tocLinks.forEach((link) => {
-      link.addEventListener("click", () => setTocOpen(false));
-    });
-
-    document.addEventListener("click", (event) => {
-      if (!toc.classList.contains("is-open")) return;
-      if (event.target.closest("[data-post-toc]")) return;
-      if (event.target.closest("[data-toc-toggle]")) return;
-      setTocOpen(false);
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") return;
-      setTocOpen(false);
-    });
-  }
-
-  let ticking = false;
-  const update = () => {
-    ticking = false;
-
-    const progressTarget = prose || article;
-    if (progress && progressBar && progressTarget) {
-      const rect = progressTarget.getBoundingClientRect();
-      const start = window.scrollY + rect.top;
-      const end = start + progressTarget.offsetHeight - window.innerHeight;
-      const total = Math.max(1, end - start);
-      const value = Math.min(1, Math.max(0, (window.scrollY - start) / total));
-      const percent = Math.round(value * 100);
-      progressBar.style.transform = `scaleX(${value})`;
-      progress.hidden = rect.bottom <= 0;
-
-      if (readingPercent) readingPercent.textContent = `${percent}%`;
-      if (backToTop) {
-        const visible = window.scrollY > Math.min(520, Math.max(240, window.innerHeight * 0.55));
-        backToTop.classList.toggle("is-visible", visible);
-        backToTop.setAttribute("aria-hidden", visible ? "false" : "true");
-        backToTop.setAttribute("aria-label", `回到顶部，当前阅读进度 ${percent}%`);
-      }
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        setTocOpen(false);
+      }, { signal });
     }
 
-    if (headings.length && linkById.size) {
-      const offset = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 64;
-      const threshold = offset + 32;
-      let active = headings[0];
+    let ticking = false;
+    const update = () => {
+      ticking = false;
 
-      for (const heading of headings) {
-        if (heading.getBoundingClientRect().top <= threshold) active = heading;
-        else break;
+      const progressTarget = prose || article;
+      if (progress && progressBar && progressTarget) {
+        const rect = progressTarget.getBoundingClientRect();
+        const start = window.scrollY + rect.top;
+        const end = start + progressTarget.offsetHeight - window.innerHeight;
+        const total = Math.max(1, end - start);
+        const value = Math.min(1, Math.max(0, (window.scrollY - start) / total));
+        const percent = Math.round(value * 100);
+        progressBar.style.transform = `scaleX(${value})`;
+        progress.hidden = rect.bottom <= 0;
+
+        if (readingPercent) readingPercent.textContent = `${percent}%`;
+        if (backToTop) {
+          const visible = window.scrollY > Math.min(520, Math.max(240, window.innerHeight * 0.55));
+          backToTop.classList.toggle("is-visible", visible);
+          backToTop.setAttribute("aria-hidden", visible ? "false" : "true");
+          backToTop.setAttribute("aria-label", `回到顶部，当前阅读进度 ${percent}%`);
+        }
       }
 
-      tocLinks.forEach((link) => link.classList.remove("is-active"));
-      const activeLink = active ? linkById.get(active.id) : null;
-      if (activeLink) activeLink.classList.add("is-active");
+      if (headings.length && linkById.size) {
+        const offset = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 64;
+        const threshold = offset + 32;
+        let active = headings[0];
+
+        for (const heading of headings) {
+          if (heading.getBoundingClientRect().top <= threshold) active = heading;
+          else break;
+        }
+
+        tocLinks.forEach((link) => link.classList.remove("is-active"));
+        const activeLink = active ? linkById.get(active.id) : null;
+        if (activeLink) activeLink.classList.add("is-active");
+      }
+    };
+
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    };
+
+    if (backToTop) {
+      backToTop.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, { signal });
     }
-  };
 
-  const requestUpdate = () => {
-    if (ticking) return;
-    ticking = true;
-    window.requestAnimationFrame(update);
-  };
-
-  if (backToTop) {
-    backToTop.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-
-  const init = () => {
     enhanceHeadingAnchors();
     requestUpdate();
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
+    window.addEventListener("scroll", requestUpdate, { passive: true, signal });
+    window.addEventListener("resize", requestUpdate, { signal });
+
+    cleanup = () => controller.abort();
   };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", initPostControls, { once: true });
   } else {
-    init();
+    initPostControls();
   }
+  document.addEventListener("moran:page-load", initPostControls);
 })();
 
 
@@ -672,7 +685,13 @@
     continueHref,
   };
 
+  let articleScrollCleanup = null;
   const setupArticleTracking = () => {
+    if (articleScrollCleanup) {
+      articleScrollCleanup();
+      articleScrollCleanup = null;
+    }
+
     const prose = document.querySelector(".post-detail-card .detail-prose");
     const article = document.querySelector(".post-detail-card");
     if (!article || !prose) return;
@@ -718,7 +737,9 @@
     };
 
     if (!restoreIfRequested() && !readState(url)) save(true);
-    window.addEventListener("scroll", () => save(false), { passive: true });
+    const onScroll = () => save(false);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    articleScrollCleanup = () => window.removeEventListener("scroll", onScroll);
     window.addEventListener("pagehide", () => save(true));
     window.addEventListener("beforeunload", () => save(true));
   };
