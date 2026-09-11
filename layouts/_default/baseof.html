@@ -13,6 +13,8 @@
   </main>
 
   {{ partial "footer.html" . }}
-  {{ partial "pet-cat-fishing.html" . }}
+  {{ if not (eq site.Params.petCat false) }}
+    {{ partial "pet-cat-fishing.html" . }}
+  {{ end }}
 </body>
 </html>

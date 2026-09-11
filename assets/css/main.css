@@ -3937,6 +3937,8 @@ body.is-home .home-sidebar {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  will-change: transform;
+  transform: translateZ(0);
   animation: home-music-spin 18s linear infinite;
   animation-play-state: paused;
 }
@@ -3950,6 +3952,8 @@ body.is-home .home-sidebar {
   height: 100%;
   object-fit: cover;
   opacity: 0;
+  will-change: transform;
+  transform: translateZ(0);
   animation: home-music-spin 18s linear infinite;
   animation-play-state: paused;
   transition: opacity 0.25s ease;
@@ -3960,7 +3964,8 @@ body.is-home .home-sidebar {
 }
 
 @keyframes home-music-spin {
-  to { transform: rotate(360deg); }
+  from { transform: rotate(0deg) translateZ(0); }
+  to { transform: rotate(360deg) translateZ(0); }
 }
 
 .home-music__info {
