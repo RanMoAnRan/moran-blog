@@ -452,6 +452,8 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   right: 0;
   z-index: 50;
+  transform: translateZ(0);
+  isolation: isolate;
   background:
     linear-gradient(to bottom, color-mix(in srgb, var(--header-bg) 88%, transparent), color-mix(in srgb, var(--header-bg) 64%, transparent)),
     color-mix(in srgb, var(--theme-soft) 10%, transparent);
@@ -3581,6 +3583,8 @@ body.is-home .home-sidebar {
     width: var(--home-sidebar-fixed-width);
     max-height: calc(100vh - var(--header-height) - 48px);
     overflow-y: auto;
+    transform: translateZ(0);
+    will-change: left, width;
   }
 }
 

@@ -1,0 +1,17 @@
+{
+  "files.watcherExclude": {
+    "**/public/**": true,
+    "**/public-preview/**": true,
+    "**/resources/**": true,
+    "**/.git/objects/**": true
+  },
+  "search.exclude": {
+    "**/public": true,
+    "**/public-preview": true,
+    "**/resources": true
+  },
+  "files.exclude": {
+    "**/public": true,
+    "**/public-preview": true
+  }
+}

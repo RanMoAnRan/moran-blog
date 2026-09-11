@@ -502,6 +502,15 @@
       });
     };
 
+    let syncRaf = 0;
+    const requestSync = () => {
+      if (syncRaf) return;
+      syncRaf = window.requestAnimationFrame(() => {
+        syncRaf = 0;
+        sync();
+      });
+    };
+
     const sync = () => {
       if (!desktopQuery.matches || !anchors.length) {
         clearFixed();
@@ -512,12 +521,23 @@
       const layoutBottom = layout.getBoundingClientRect().bottom + window.scrollY;
       const beforeLayoutEnds = window.scrollY + fixedTop + fixedGap < layoutBottom;
 
-      anchors.forEach((anchor) => {
+      // 读写分离：先统一读取几何尺寸，避免读写交替引发强制同步回流
+      const updates = anchors.map((anchor) => {
         const slotRect = anchor.sidebar.getBoundingClientRect();
         const shouldFix = beforeLayoutEnds && window.scrollY >= anchor.top - fixedTop;
-        anchor.sidebar.style.setProperty("--home-sidebar-fixed-left", `${slotRect.left}px`);
-        anchor.sidebar.style.setProperty("--home-sidebar-fixed-width", `${slotRect.width}px`);
-        anchor.sidebar.classList.toggle("is-fixed", shouldFix);
+        return {
+          sidebar: anchor.sidebar,
+          shouldFix,
+          left: slotRect.left,
+          width: slotRect.width,
+        };
+      });
+
+      // 统一写入 DOM 样式
+      updates.forEach(({ sidebar, shouldFix, left, width }) => {
+        sidebar.style.setProperty("--home-sidebar-fixed-left", `${left}px`);
+        sidebar.style.setProperty("--home-sidebar-fixed-width", `${width}px`);
+        sidebar.classList.toggle("is-fixed", shouldFix);
       });
     };
 
@@ -542,7 +562,7 @@
     });
 
     measure();
-    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("scroll", requestSync, { passive: true });
     window.addEventListener("resize", measure);
     window.addEventListener("load", measure, { once: true });
     if (typeof desktopQuery.addEventListener === "function") {
@@ -550,7 +570,11 @@
     }
 
     window.__moranHomeSidebarsCleanup = () => {
-      window.removeEventListener("scroll", sync);
+      if (syncRaf) {
+        window.cancelAnimationFrame(syncRaf);
+        syncRaf = 0;
+      }
+      window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", measure);
       watchedImages.forEach((image) => image.removeEventListener("load", measure));
       if (typeof desktopQuery.removeEventListener === "function") {

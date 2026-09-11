@@ -25,6 +25,8 @@
   opacity: 0.96;
   filter: drop-shadow(0 14px 28px rgba(15, 23, 42, 0.14));
   overflow: visible;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .pet-cat-fishing__svg {
@@ -48,18 +50,22 @@
 
 /* 默认关闭动效：只有开启开关后才会跑动画（降低 CPU/GPU 占用） */
 html[data-pet-cat='on'] .pet-cat-fishing__svg {
+  will-change: transform;
   animation: pet-cat-fishing-float 3.4s ease-in-out infinite;
 }
 
 html[data-pet-cat='on'] .pet-cat-fishing__tail {
+  will-change: transform;
   animation: pet-cat-fishing-tail 1.1s ease-in-out infinite;
 }
 
 html[data-pet-cat='on'] .pet-cat-fishing__bobber {
+  will-change: transform;
   animation: pet-cat-fishing-bobber 1.7s ease-in-out infinite;
 }
 
 html[data-pet-cat='on'] .pet-cat-fishing__fish {
+  will-change: transform, opacity;
   animation: pet-cat-fishing-fish 5.2s ease-in-out infinite;
 }
 

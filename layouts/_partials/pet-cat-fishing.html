@@ -37,16 +37,13 @@
         <stop offset="0" stop-color="rgba(56,189,248,0.34)"/>
         <stop offset="1" stop-color="rgba(2,132,199,0.22)"/>
       </linearGradient>
-      <filter id="pet-ink-shadow" x="-40%" y="-40%" width="180%" height="180%">
-        <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="rgba(15,23,42,0.18)"/>
-      </filter>
     </defs>
 
     <!-- Ground shadow -->
     <ellipse cx="84" cy="142" rx="38" ry="10" fill="rgba(15,23,42,0.12)"/>
 
     <!-- Water puddle -->
-    <g filter="url(#pet-ink-shadow)">
+    <g class="pet-cat-fishing__puddle">
       <path d="M88 130c28 0 52 7 52 14s-24 12-52 12-54-5-54-12 26-14 54-14z"
             fill="url(#water)" stroke="var(--cat-ink)" stroke-width="3" stroke-linejoin="round"/>
       <path d="M64 140c10-3 20-3 30 0" fill="none" stroke="rgba(2,132,199,0.35)" stroke-width="3" stroke-linecap="round"/>
@@ -54,7 +51,7 @@
     </g>
 
     <!-- Cat (comic-real) -->
-    <g class="pet-cat-fishing__cat" filter="url(#pet-ink-shadow)">
+    <g class="pet-cat-fishing__cat">
       <!-- Tail (animated) -->
       <path class="pet-cat-fishing__tail"
             d="M40 98c-14 2-20 12-12 18 7 5 20 2 24-6"
@@ -98,7 +95,7 @@
     </g>
 
     <!-- Fishing rod + line -->
-    <g class="pet-cat-fishing__rod" filter="url(#pet-ink-shadow)">
+    <g class="pet-cat-fishing__rod">
       <path d="M98 90c18 6 34 10 50 10" fill="none" stroke="rgba(124,45,18,0.92)" stroke-width="4" stroke-linecap="round"/>
       <path d="M98 90c18 6 34 10 50 10" fill="none" stroke="var(--cat-ink)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
       <path d="M148 100c-6 14-12 24-12 34" fill="none" stroke="rgba(15,23,42,0.65)" stroke-width="2.4" stroke-linecap="round"/>
