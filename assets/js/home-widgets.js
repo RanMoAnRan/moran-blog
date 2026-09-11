@@ -482,21 +482,8 @@
   const initHomeSidebars = () => {
     window.__moranHomeSidebarsCleanup?.();
 
-    const layout = document.querySelector("[data-home-layout]");
     const sidebars = Array.from(document.querySelectorAll(".home-sidebar"));
-    if (!layout || !sidebars.length) return;
-
-    const desktopQuery = window.matchMedia("(min-width: 861px)");
-    const fixedGap = 24;
-    let anchors = [];
-
-    const getFixedTop = () => {
-      const rootStyle = getComputedStyle(document.documentElement);
-      const headerHeight = Number.parseFloat(rootStyle.getPropertyValue("--header-height")) || 0;
-      return headerHeight + fixedGap;
-    };
-
-    const clearFixed = () => {
+    const reset = () => {
       sidebars.forEach((sidebar) => {
         sidebar.classList.remove("is-fixed");
         sidebar.style.removeProperty("--home-sidebar-fixed-left");
@@ -505,87 +492,8 @@
       });
     };
 
-    let syncRaf = 0;
-    const requestSync = () => {
-      if (syncRaf) return;
-      syncRaf = window.requestAnimationFrame(() => {
-        syncRaf = 0;
-        sync();
-      });
-    };
-
-    const sync = () => {
-      if (!desktopQuery.matches || !anchors.length) {
-        clearFixed();
-        return;
-      }
-
-      const fixedTop = getFixedTop();
-      const layoutBottom = layout.getBoundingClientRect().bottom + window.scrollY;
-      const beforeLayoutEnds = window.scrollY + fixedTop + fixedGap < layoutBottom;
-
-      // 读写分离：先统一读取几何尺寸，避免读写交替引发强制同步回流
-      const updates = anchors.map((anchor) => {
-        const slotRect = anchor.sidebar.getBoundingClientRect();
-        const shouldFix = beforeLayoutEnds && window.scrollY >= anchor.top - fixedTop;
-        return {
-          sidebar: anchor.sidebar,
-          shouldFix,
-          left: slotRect.left,
-          width: slotRect.width,
-        };
-      });
-
-      // 统一写入 DOM 样式
-      updates.forEach(({ sidebar, shouldFix, left, width }) => {
-        sidebar.style.setProperty("--home-sidebar-fixed-left", `${left}px`);
-        sidebar.style.setProperty("--home-sidebar-fixed-width", `${width}px`);
-        sidebar.classList.toggle("is-fixed", shouldFix);
-      });
-    };
-
-    const measure = () => {
-      clearFixed();
-      anchors = sidebars.map((sidebar) => {
-        const pin = sidebar.querySelector(".home-sidebar__pin");
-        const rect = sidebar.getBoundingClientRect();
-        const pinHeight = pin?.offsetHeight || rect.height;
-        sidebar.style.setProperty("--home-sidebar-placeholder-height", `${pinHeight}px`);
-        return {
-          sidebar,
-          top: rect.top + window.scrollY,
-        };
-      });
-      sync();
-    };
-
-    const watchedImages = Array.from(layout.querySelectorAll("img"));
-    watchedImages.forEach((image) => {
-      if (!image.complete) image.addEventListener("load", measure, { once: true });
-    });
-
-    measure();
-    window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener("resize", measure);
-    window.addEventListener("load", measure, { once: true });
-    if (typeof desktopQuery.addEventListener === "function") {
-      desktopQuery.addEventListener("change", measure);
-    }
-
-    window.__moranHomeSidebarsCleanup = () => {
-      if (syncRaf) {
-        window.cancelAnimationFrame(syncRaf);
-        syncRaf = 0;
-      }
-      window.removeEventListener("scroll", requestSync);
-      window.removeEventListener("resize", measure);
-      watchedImages.forEach((image) => image.removeEventListener("load", measure));
-      if (typeof desktopQuery.removeEventListener === "function") {
-        desktopQuery.removeEventListener("change", measure);
-      }
-      clearFixed();
-      anchors = [];
-    };
+    reset();
+    window.__moranHomeSidebarsCleanup = reset;
   };
 
   const initHueAndPanels = () => {

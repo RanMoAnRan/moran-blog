@@ -151,8 +151,12 @@
   box-sizing: border-box;
 }
 
-html, body {
+html {
   overflow-x: hidden; /* 防止全宽元素/小数像素导致的横向滚动条 */
+}
+
+body {
+  overflow-x: clip; /* 现代标准：clip 不会生成内部滚动容器，杜绝 overflow-y 强制被推导为 auto 形成双重滚动链与惯性漂移 */
 }
 
 body {
@@ -3567,24 +3571,14 @@ body.is-home .home-sidebar {
 
 @media (min-width: 861px) {
   body.is-home .home-sidebar__pin {
+    position: -webkit-sticky;
     position: sticky;
     top: calc(var(--header-height) + 24px);
-    z-index: 1;
-  }
-
-  body.is-home .home-sidebar.is-fixed {
-    min-height: var(--home-sidebar-placeholder-height);
-  }
-
-  body.is-home .home-sidebar.is-fixed .home-sidebar__pin {
-    position: fixed;
-    top: calc(var(--header-height) + 24px);
-    left: var(--home-sidebar-fixed-left);
-    width: var(--home-sidebar-fixed-width);
-    max-height: calc(100vh - var(--header-height) - 48px);
+    max-height: calc(100vh - var(--header-height) - 32px);
     overflow-y: auto;
-    transform: translateZ(0);
-    will-change: left, width;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    z-index: 10;
   }
 }
 
@@ -5058,6 +5052,7 @@ body.is-home .home-sidebar {
     top: calc(var(--header-height) + 24px);
     max-height: calc(100vh - var(--header-height) - 48px);
     overflow: auto;
+    overscroll-behavior: contain;
     scrollbar-width: thin;
     z-index: 42;
   }
