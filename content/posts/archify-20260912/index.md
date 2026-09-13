@@ -137,9 +137,59 @@ Archify 生成的产物，具有严苛的工程自洽性：
    - `visual-check`：自动调用真实无头浏览器加载该页面，验证在真实视口下的渲染表现并抓取基准截图，与人类主观视觉评审独立分开。
 3. **高保真卡片导出（Share Cards）**：支持一键导出符合 OpenGraph 标准的 1200×630 分享卡片、SVG 矢量切片、无损 PNG 以及演示专用的短动效。放在 README、PR 描述或技术方案文档中，观感极度舒适。
 
-## 五种图表类型与四种工业级预设
+## 实战成果：Archify 生成的 4 类工业级成品图
 
-Archify 并不把所有图都叫“架构图”，它把工程制图精确划分为了 5 种专门模型，每种模型对应不同的语义约束：
+光讲原理不够过瘾。我安装了 Archify 技能，并让它针对我们真实的工程场景，直接编译输出了 4 种最核心的图表类型。
+
+看这些实际渲染生成的成品图，你就能明白它与传统 AI 绘图的云泥之别：
+
+### 1. 系统架构图 (`architecture`)：生产级多层部署拓扑
+
+![生产级多层部署架构图](production-architecture.png)
+*Archify 编译的云端多层架构：包含 AWS Region 边界隔离、安全组（sg-api）网络切片、负载均衡、API 实例集群、PostgreSQL、Redis 缓存、SQS 任务队列与异步 Worker。*
+> **可交互原型**：[打开本图的自包含交互式 HTML ↗](production-architecture.html)（支持深浅色切换、节点搜索、链路探测与故事章节播放）
+
+注意看图中的几个关键工程细节：
+- **边界划分极其干净**：`AWS Region: us-west-2` 与 `sg-api` 的嵌套虚线框层级分明，组件自动对齐；
+- **端口分散与桥接**：API Server 同时连着 Auth Provider、Redis、PostgreSQL 和 SQS，4 条连线在边界上均匀打散，完全没有出现传统制图中“多根线挤进同一个像素拐点”的事故；
+- **自包含控制台**：顶部自带 3 个预设故事（`Primary request path`、`Identity and cache`、`Static and async work`），底部提供角色切片图例（Backend 2、Database 2、Cloud 3 等）。
+
+### 2. 工作流图 (`workflow`)：AI Agent 工具调用与异常恢复决策
+
+![AI Agent 工具调用决策工作流图](agent-workflow.png)
+*AI Coding Agent 的核心调度循环：从用户输入、Planner 规划、Tool Router 路由，到安全策略门禁（Approval Gate）、异常拦截与重试恢复分支。*
+> **可交互原型**：[打开本图的自包含交互式 HTML ↗](agent-tool-call-workflow.html)
+
+在 `Signal Flow` 预设下，整个流程图呈现出极具动感的流线设计：
+- **分层泳道（Lanes）**：清晰划分出 `01 / User Interface`、`02 / Agent Runtime`、`EX / Policy & Recovery` 和 `04 / Tool Execution`；
+- **异常回环与阻断**：当工具调用触发人工审批门禁被拒绝时，红色的 `denied` 连线平滑接入 `Blocked` 状态，并引出 `Retry Path` 修正请求重新规划，逻辑分支极为直观。
+
+### 3. 调用时序图 (`sequence`)：缓存未命中与鉴权链路
+
+![缓存未命中与数据库回填调用时序图](cache-miss-sequence.png)
+*微服务请求时序：包含用户发起请求、JWT 鉴权、Redis 缓存探测、未命中时回退查库、反写缓存以及异步发送 Trace 埋点。*
+> **可交互原型**：[打开本图的自包含交互式 HTML ↗](cache-miss-sequence.html)
+
+做过分布式系统的同学都知道，画时序图最头疼的是“异步事件”和“激活生命周期条（Activation Bars）”错位。
+在 Archify 生成的时序图中：
+- 垂直生命周期条根据同步调用的起止自动拉伸，严格对应生命周期；
+- 同步 HTTP 请求（实线箭头）、JWT 鉴权（红色高亮）、数据库查询与行数据返回（虚线箭头）、以及异步上报 Trace（紫色独立箭头）有着严格的色彩与线型区分；
+- 顶部同样自带时序分步演播控制（`Request and identity` ➔ `Cache fallback` ➔ `Return and trace`）。
+
+### 4. 状态生命周期图 (`lifecycle`)：Agent 运行时状态机
+
+![Agent 运行时状态生命周期图](agent-lifecycle.png)
+*Agent 状态转移图：覆盖主生命周期（Queued ➔ Planning ➔ Executing ➔ Reviewing ➔ Completed），以及中断审批、等待输入、错误重试与超时销毁终态。*
+> **可交互原型**：[打开本图的自包含交互式 HTML ↗](agent-run-lifecycle.html)
+
+面对复杂的有限状态机（FSM），Archify 表现出了教科书级别的状态转移约束：
+- 正常主链路保持水平主干排列，视觉重心明确；
+- 可恢复错误（`Failed`）采用平滑环路折回 `Queued`，不可逆终态（`Cancelled`、`Expired`）规整下沉到终端退出区；
+- 底部图例自动标注不同状态语义（起始状态、活跃状态、等待状态、决策分支、终态成功与失败退出）。
+
+## 五种图表类型与四种工业级预设速查
+
+通过上面的实物对比，我们可以归纳出 Archify 针对工程制图的 5 种专门模型：
 
 | 图表类型 (`type`) | 核心关注点 | 典型应用场景 |
 | :--- | :--- | :--- |
@@ -149,14 +199,14 @@ Archify 并不把所有图都叫“架构图”，它把工程制图精确划分
 | **`data-flow`** | 数据流向、ETL 转换节点、处理吞吐与存储 | 数据湖加工管道、实时流计算、事件驱动中继 |
 | **`lifecycle`** | 实体状态机、触发事件、合法与非法跃迁 | 订单生命周期、连接池状态、虚拟机实例流转 |
 
-在视觉风格上，Archify 坚决摈弃了 AI 常见的那种浮夸且廉价的渐变毛玻璃，提供了 4 套沉稳扎实的专业工程预设：
+在视觉风格上，Archify 摈弃了 AI 绘图常见的廉价渐变毛玻璃，提供了 4 套沉稳扎实的专业工程预设：
 
 - **`Signal Flow`**：强调流动感与数据流速，适合分布式系统与高吞吐网络；
 - **`Blueprint`**：经典工程蓝图风格，网格底纹配严密标注，工程严谨感拉满；
 - **`Classic`**：克制的高对比度现代设计系统，适合官方文档与技术白皮书；
 - **`Editorial`**：杂志级版式排版与优雅衬线点缀，专为公开演讲、技术博客与产品发布会打造。
 
-配合一键切换的 Dark / Light 主题，无论嵌在深色终端文档还是浅色 Notion 知识库中，都不会违和。
+配合一键切换的 Dark / Light 主题，无论嵌在深色终端文档还是浅色 Notion 知识库中，都毫无违和感。
 
 ## 如何在日常开发中使用
 
@@ -182,9 +232,15 @@ npx -y skills add tt-a1i/archify --skill archify --agent cursor --global --copy 
 dsh plugin --profile web add @tt-a1i/archify-dsh@0.1.0
 ```
 
+安装完成后，可以通过自带的 doctor 进行自检：
+
+```bash
+node ~/.agents/skills/archify/bin/archify.mjs doctor
+```
+
 ### 2. 在对话中直接唤醒
 
-安装完成后，你甚至不需要提前准备规范文件。直接在与 Claude Code、Cursor 或 Codex 的对话框里说人话：
+安装完成后，你甚至不需要提前准备规范文件。直接在与 Claude Code、Cursor、Codex 或 Antigravity 的对话框里说人话：
 
 > “分析我们当前仓库中的认证模块和鉴权流程，使用 Archify 生成一张 dark 主题的 sequence 时序图，重点展示 JWT 校验失败与刷新 Token 的分支。”
 
