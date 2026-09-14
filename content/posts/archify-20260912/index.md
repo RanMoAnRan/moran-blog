@@ -147,7 +147,19 @@ Archify 生成的产物，具有严苛的工程自洽性：
 
 ![生产级多层部署架构图](production-architecture.png)
 *Archify 编译的云端多层架构：包含 AWS Region 边界隔离、安全组（sg-api）网络切片、负载均衡、API 实例集群、PostgreSQL、Redis 缓存、SQS 任务队列与异步 Worker。*
-> **可交互原型**：[打开本图的自包含交互式 HTML ↗](/artifacts/archify/production-architecture.html)（支持深浅色切换、节点搜索、链路探测与故事章节播放）
+
+<div class="interactive-diagram-box" style="margin: 1.25rem 0; padding: 0.9rem 1.15rem; border-radius: 12px; background: rgba(128, 128, 128, 0.05); border: 1px solid rgba(128, 128, 128, 0.15);">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+    <span style="font-weight: 600; font-size: 0.88rem;">✨ 可交互原型控制台</span>
+    <a href="/artifacts/archify/production-architecture.html" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem; color: var(--accent, #c026d3); text-decoration: underline; text-underline-offset: 3px;">在新标签页全屏打开 ↗（不中断博客音乐）</a>
+  </div>
+  <details style="margin-top: 0.6rem;">
+    <summary style="cursor: pointer; color: var(--accent, #c026d3); font-size: 0.85rem; user-select: none;">🎮 点击在当前页直接内嵌体验（无需离开博客，背景音乐不中断）</summary>
+    <div style="width: 100%; height: 580px; border-radius: 8px; overflow: hidden; margin-top: 0.75rem; border: 1px solid rgba(128, 128, 128, 0.2);">
+      <iframe src="/artifacts/archify/production-architecture.html?embed=1&theme=dark" style="width: 100%; height: 100%; border: none;" loading="lazy" title="生产级分布式部署架构图交互原型"></iframe>
+    </div>
+  </details>
+</div>
 
 注意看图中的几个关键工程细节：
 - **边界划分极其干净**：`AWS Region: us-west-2` 与 `sg-api` 的嵌套虚线框层级分明，组件自动对齐；
@@ -158,7 +170,19 @@ Archify 生成的产物，具有严苛的工程自洽性：
 
 ![AI Agent 工具调用决策工作流图](agent-workflow.png)
 *AI Coding Agent 的核心调度循环：从用户输入、Planner 规划、Tool Router 路由，到安全策略门禁（Approval Gate）、异常拦截与重试恢复分支。*
-> **可交互原型**：[打开本图的自包含交互式 HTML ↗](/artifacts/archify/agent-tool-call-workflow.html)
+
+<div class="interactive-diagram-box" style="margin: 1.25rem 0; padding: 0.9rem 1.15rem; border-radius: 12px; background: rgba(128, 128, 128, 0.05); border: 1px solid rgba(128, 128, 128, 0.15);">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+    <span style="font-weight: 600; font-size: 0.88rem;">✨ 可交互原型控制台</span>
+    <a href="/artifacts/archify/agent-tool-call-workflow.html" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem; color: var(--accent, #c026d3); text-decoration: underline; text-underline-offset: 3px;">在新标签页全屏打开 ↗（不中断博客音乐）</a>
+  </div>
+  <details style="margin-top: 0.6rem;">
+    <summary style="cursor: pointer; color: var(--accent, #c026d3); font-size: 0.85rem; user-select: none;">🎮 点击在当前页直接内嵌体验（无需离开博客，背景音乐不中断）</summary>
+    <div style="width: 100%; height: 580px; border-radius: 8px; overflow: hidden; margin-top: 0.75rem; border: 1px solid rgba(128, 128, 128, 0.2);">
+      <iframe src="/artifacts/archify/agent-tool-call-workflow.html?embed=1&theme=dark" style="width: 100%; height: 100%; border: none;" loading="lazy" title="AI Agent 工具调用决策流交互原型"></iframe>
+    </div>
+  </details>
+</div>
 
 在 `Signal Flow` 预设下，整个流程图呈现出极具动感的流线设计：
 - **分层泳道（Lanes）**：清晰划分出 `01 / User Interface`、`02 / Agent Runtime`、`EX / Policy & Recovery` 和 `04 / Tool Execution`；
@@ -168,7 +192,19 @@ Archify 生成的产物，具有严苛的工程自洽性：
 
 ![缓存未命中与数据库回填调用时序图](cache-miss-sequence.png)
 *微服务请求时序：包含用户发起请求、JWT 鉴权、Redis 缓存探测、未命中时回退查库、反写缓存以及异步发送 Trace 埋点。*
-> **可交互原型**：[打开本图的自包含交互式 HTML ↗](/artifacts/archify/cache-miss-sequence.html)
+
+<div class="interactive-diagram-box" style="margin: 1.25rem 0; padding: 0.9rem 1.15rem; border-radius: 12px; background: rgba(128, 128, 128, 0.05); border: 1px solid rgba(128, 128, 128, 0.15);">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+    <span style="font-weight: 600; font-size: 0.88rem;">✨ 可交互原型控制台</span>
+    <a href="/artifacts/archify/cache-miss-sequence.html" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem; color: var(--accent, #c026d3); text-decoration: underline; text-underline-offset: 3px;">在新标签页全屏打开 ↗（不中断博客音乐）</a>
+  </div>
+  <details style="margin-top: 0.6rem;">
+    <summary style="cursor: pointer; color: var(--accent, #c026d3); font-size: 0.85rem; user-select: none;">🎮 点击在当前页直接内嵌体验（无需离开博客，背景音乐不中断）</summary>
+    <div style="width: 100%; height: 580px; border-radius: 8px; overflow: hidden; margin-top: 0.75rem; border: 1px solid rgba(128, 128, 128, 0.2);">
+      <iframe src="/artifacts/archify/cache-miss-sequence.html?embed=1&theme=dark" style="width: 100%; height: 100%; border: none;" loading="lazy" title="缓存未命中与鉴权链路时序交互原型"></iframe>
+    </div>
+  </details>
+</div>
 
 做过分布式系统的同学都知道，画时序图最头疼的是“异步事件”和“激活生命周期条（Activation Bars）”错位。
 在 Archify 生成的时序图中：
@@ -180,7 +216,19 @@ Archify 生成的产物，具有严苛的工程自洽性：
 
 ![Agent 运行时状态生命周期图](agent-lifecycle.png)
 *Agent 状态转移图：覆盖主生命周期（Queued ➔ Planning ➔ Executing ➔ Reviewing ➔ Completed），以及中断审批、等待输入、错误重试与超时销毁终态。*
-> **可交互原型**：[打开本图的自包含交互式 HTML ↗](/artifacts/archify/agent-run-lifecycle.html)
+
+<div class="interactive-diagram-box" style="margin: 1.25rem 0; padding: 0.9rem 1.15rem; border-radius: 12px; background: rgba(128, 128, 128, 0.05); border: 1px solid rgba(128, 128, 128, 0.15);">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+    <span style="font-weight: 600; font-size: 0.88rem;">✨ 可交互原型控制台</span>
+    <a href="/artifacts/archify/agent-run-lifecycle.html" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem; color: var(--accent, #c026d3); text-decoration: underline; text-underline-offset: 3px;">在新标签页全屏打开 ↗（不中断博客音乐）</a>
+  </div>
+  <details style="margin-top: 0.6rem;">
+    <summary style="cursor: pointer; color: var(--accent, #c026d3); font-size: 0.85rem; user-select: none;">🎮 点击在当前页直接内嵌体验（无需离开博客，背景音乐不中断）</summary>
+    <div style="width: 100%; height: 580px; border-radius: 8px; overflow: hidden; margin-top: 0.75rem; border: 1px solid rgba(128, 128, 128, 0.2);">
+      <iframe src="/artifacts/archify/agent-run-lifecycle.html?embed=1&theme=dark" style="width: 100%; height: 100%; border: none;" loading="lazy" title="Agent 运行时状态机交互原型"></iframe>
+    </div>
+  </details>
+</div>
 
 面对复杂的有限状态机（FSM），Archify 表现出了教科书级别的状态转移约束：
 - 正常主链路保持水平主干排列，视觉重心明确；
