@@ -34,43 +34,104 @@
             <p class="stats-kicker">Site Overview</p>
             <h2 id="site-overview-title">站点概览</h2>
           </div>
-          {{ with $latestPost }}<span class="stats-section__note">最近更新 {{ .Date.Format "01.02" }}</span>{{ end }}
+          {{ with $latestPost }}
+            <span class="stats-section__note">
+              <span class="stats-status-dot" aria-hidden="true"></span>
+              最近更新 {{ .Date.Format "01.02" }}
+            </span>
+          {{ end }}
         </div>
         <div class="stats-metric-grid">
-          <div class="stats-metric-card is-featured">
-            <span>文章总数</span>
-            <strong>{{ len $postPages }}</strong>
-            <small>已发布长文</small>
+          <div class="stats-metric-card is-hero" data-stat="posts">
+            <div class="stats-metric-card__inner">
+              <div class="stats-metric-card__head">
+                <span>文章总数</span>
+                <span class="stats-card-badge">TOTAL POSTS</span>
+              </div>
+              <strong class="stats-metric-number">{{ len $postPages }}</strong>
+              <div class="stats-metric-card__foot">
+                <span class="stats-status-dot" aria-hidden="true"></span>
+                <small>累计发布长文篇目</small>
+              </div>
+            </div>
+            <div class="stats-metric-card__watermark" aria-hidden="true">{{ len $postPages }}</div>
           </div>
-          <div class="stats-metric-card">
-            <span>最近 30 天</span>
-            <strong>{{ $recentPostCount }}</strong>
-            <small>新发布文章</small>
+
+          <div class="stats-metric-card is-year" data-stat="year">
+            <div class="stats-metric-card__inner">
+              <div class="stats-metric-card__head">
+                <span>今年发布</span>
+                <span class="stats-card-badge">{{ $currentYear }}</span>
+              </div>
+              <strong class="stats-metric-number">{{ $yearPostCount }}</strong>
+              <div class="stats-metric-card__foot">
+                <small>年度产出节奏</small>
+              </div>
+            </div>
+            <div class="stats-metric-card__watermark" aria-hidden="true">{{ $currentYear }}</div>
           </div>
-          <div class="stats-metric-card">
-            <span>内容重心</span>
-            {{ range first 1 site.Taxonomies.categories.ByCount }}
-              <strong>{{ .Page.Title }}</strong>
-              <small>最多分类 · {{ len .Pages }} 篇</small>
-            {{ else }}
-              <strong>--</strong>
-              <small>暂无分类</small>
-            {{ end }}
+
+          <div class="stats-metric-card is-recent" data-stat="recent">
+            <div class="stats-metric-card__inner">
+              <div class="stats-metric-card__head">
+                <span>最近 30 天</span>
+                <span class="stats-card-badge">ACTIVITY</span>
+              </div>
+              <strong class="stats-metric-number">{{ $recentPostCount }}</strong>
+              <div class="stats-metric-card__foot">
+                <small>持续创作中</small>
+              </div>
+            </div>
+            <div class="stats-metric-card__watermark" aria-hidden="true">30D</div>
           </div>
-          <div class="stats-metric-card">
-            <span>今年发布</span>
-            <strong>{{ $yearPostCount }}</strong>
-            <small>{{ $currentYear }} 年</small>
+
+          <div class="stats-metric-card is-focus" data-stat="focus">
+            <div class="stats-metric-card__inner">
+              <div class="stats-metric-card__head">
+                <span>内容重心</span>
+                <span class="stats-card-badge">FOCUS</span>
+              </div>
+              {{ range first 1 site.Taxonomies.categories.ByCount }}
+                <strong class="stats-metric-text">{{ .Page.Title }}</strong>
+                <div class="stats-metric-card__foot">
+                  <small>核心专注 · {{ len .Pages }} 篇</small>
+                </div>
+              {{ else }}
+                <strong class="stats-metric-text">--</strong>
+                <div class="stats-metric-card__foot">
+                  <small>暂无分类</small>
+                </div>
+              {{ end }}
+            </div>
+            <div class="stats-metric-card__watermark" aria-hidden="true">CORE</div>
           </div>
-          <div class="stats-metric-card">
-            <span>标签</span>
-            <strong>{{ $tagCount }}</strong>
-            <small>主题线索</small>
+
+          <div class="stats-metric-card is-tags" data-stat="tags">
+            <div class="stats-metric-card__inner">
+              <div class="stats-metric-card__head">
+                <span>主题标签</span>
+                <span class="stats-card-badge">TAGS</span>
+              </div>
+              <strong class="stats-metric-number">{{ $tagCount }}</strong>
+              <div class="stats-metric-card__foot">
+                <small>多元思维触角</small>
+              </div>
+            </div>
+            <div class="stats-metric-card__watermark" aria-hidden="true">{{ $tagCount }}</div>
           </div>
-          <div class="stats-metric-card">
-            <span>分类</span>
-            <strong>{{ $categoryCount }}</strong>
-            <small>内容分区</small>
+
+          <div class="stats-metric-card is-categories" data-stat="categories">
+            <div class="stats-metric-card__inner">
+              <div class="stats-metric-card__head">
+                <span>知识分区</span>
+                <span class="stats-card-badge">TOPICS</span>
+              </div>
+              <strong class="stats-metric-number">{{ $categoryCount }}</strong>
+              <div class="stats-metric-card__foot">
+                <small>结构化分类专栏</small>
+              </div>
+            </div>
+            <div class="stats-metric-card__watermark" aria-hidden="true">{{ $categoryCount }}</div>
           </div>
         </div>
       </section>
@@ -88,28 +149,28 @@
         <div class="stats-reading-grid">
           <div class="stats-reading-summary" aria-label="阅读数字">
             <div class="reading-pulse__tile">
+              <span class="reading-pulse__label">文章</span>
               <strong>{{ len $postPages }}</strong>
-              <span>文章</span>
             </div>
             <div class="reading-pulse__tile">
+              <span class="reading-pulse__label">标签</span>
               <strong>{{ $tagCount }}</strong>
-              <span>标签</span>
             </div>
             <div class="reading-pulse__tile">
+              <span class="reading-pulse__label">分类</span>
               <strong>{{ $categoryCount }}</strong>
-              <span>分类</span>
             </div>
             <div class="reading-pulse__tile is-local">
+              <span class="reading-pulse__label">已读</span>
               <strong data-read-count>0</strong>
-              <span>已读</span>
             </div>
             <div class="reading-pulse__tile is-local">
+              <span class="reading-pulse__label">继续阅读</span>
               <strong data-progress-count>0</strong>
-              <span>继续阅读</span>
             </div>
             <div class="reading-pulse__tile is-local">
+              <span class="reading-pulse__label">完成率</span>
               <strong data-completion-rate>--</strong>
-              <span>完成率</span>
             </div>
           </div>
 
@@ -125,7 +186,6 @@
           </div>
         </div>
       </section>
-
 
       <div class="stats-content-map-mobile">
         {{ partial "rail/stats-category-map.html" . }}
@@ -143,9 +203,20 @@
         <div class="stats-latest-list">
           {{ range first 6 $postsByDate }}
             <a class="stats-latest-item" href="{{ .RelPermalink }}">
-              <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
-              <strong>{{ .Title }}</strong>
-              <span>{{ .ReadingTime }} 分钟</span>
+              <div class="stats-latest-item__date">
+                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01.02" }}</time>
+                <span class="stats-latest-item__year">{{ .Date.Format "2006" }}</span>
+              </div>
+              <div class="stats-latest-item__main">
+                <strong class="stats-latest-item__title">{{ .Title }}</strong>
+                {{ with .Params.categories }}
+                  <span class="stats-latest-item__cat">{{ index . 0 }}</span>
+                {{ end }}
+              </div>
+              <div class="stats-latest-item__meta">
+                <span class="stats-latest-item__reading-time">{{ .ReadingTime }} 分钟</span>
+                <span class="stats-latest-item__arrow" aria-hidden="true">→</span>
+              </div>
             </a>
           {{ end }}
         </div>
