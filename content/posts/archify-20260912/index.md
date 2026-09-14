@@ -147,7 +147,7 @@ Archify 生成的产物，具有严苛的工程自洽性：
 
 ![生产级多层部署架构图](production-architecture.png)
 *Archify 编译的云端多层架构：包含 AWS Region 边界隔离、安全组（sg-api）网络切片、负载均衡、API 实例集群、PostgreSQL、Redis 缓存、SQS 任务队列与异步 Worker。*
-> **可交互原型**：<a href="/artifacts/archify/production-architecture.html" target="_blank" rel="noopener noreferrer">在新标签页打开自包含交互式 HTML ↗</a>（支持深浅色切换、节点搜索、链路探测与故事章节播放）
+> **可交互原型**：<a href="/artifacts/archify/production-architecture.html" target="_blank" rel="noopener noreferrer">在新标签页打开自包含交互式 HTML ↗</a>
 
 注意看图中的几个关键工程细节：
 - **边界划分极其干净**：`AWS Region: us-west-2` 与 `sg-api` 的嵌套虚线框层级分明，组件自动对齐；
