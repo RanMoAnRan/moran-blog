@@ -2,6 +2,7 @@ baseURL = 'https://moran.is-a.dev/'
 title = '墨然'
 languageCode = 'zh-cn'
 defaultContentLanguage = 'zh'
+hasCJKLanguage = true
 timeZone = 'Asia/Shanghai'
 
 theme = 'ink-thought'

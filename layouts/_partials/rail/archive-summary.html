@@ -1,9 +1,23 @@
 {{- $posts := where site.RegularPages "Section" "posts" -}}
 {{- $groups := sort ($posts.GroupByDate "2006") "Key" "desc" -}}
 <section class="rail-card rail-page-context rail-archive-summary" aria-label="归档概览">
-  <div class="rail-page-context__orb" aria-hidden="true"></div>
-  <p class="rail-eyebrow">Archive</p>
-  <h2>时间线</h2>
-  <p>按年份保存写作痕迹，适合从时间维度回看主题变化。</p>
-  <div class="rail-context-count"><strong>{{ len $groups }}</strong><span>years</span></div>
+  <div class="rail-archive-summary__head">
+    <div class="rail-archive-summary__badge">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>TIMELINE</span>
+    </div>
+  </div>
+  <h2>时光足迹</h2>
+  <p>按时间脉络记录思考与沉淀，回望每一段写作轨迹。</p>
+  <div class="rail-archive-stats">
+    <div class="rail-stat-item">
+      <strong>{{ len $posts }}</strong>
+      <span>篇记录</span>
+    </div>
+    <div class="rail-stat-divider" aria-hidden="true"></div>
+    <div class="rail-stat-item">
+      <strong>{{ len $groups }}</strong>
+      <span>个年度</span>
+    </div>
+  </div>
 </section>

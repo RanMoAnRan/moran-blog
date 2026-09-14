@@ -2,11 +2,19 @@
 {{- $groups := sort ($posts.GroupByDate "2006") "Key" "desc" -}}
 <section class="rail-card rail-archive-years" aria-label="归档年份">
   <div class="rail-card__head">
-    <p class="rail-eyebrow">Timeline</p>
+    <p class="rail-eyebrow">Years</p>
+    <button type="button" class="rail-top-btn" data-action="scroll-top" title="快速回到最顶部" aria-label="快速回到最顶部">
+      <span>TOP</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
   </div>
-  <div class="rail-year-list">
+  <div class="rail-year-list" data-archive-year-list>
     {{- range $groups -}}
-      <a href="#archive-year-{{ .Key }}"><span>{{ .Key }}</span><em>{{ len .Pages }}</em></a>
+      <a href="#archive-year-{{ .Key }}" class="rail-year-link" data-year-link="{{ .Key }}">
+        <span class="rail-year-link__name">{{ .Key }}</span>
+        <em class="rail-year-link__count">{{ len .Pages }}</em>
+      </a>
     {{- end -}}
   </div>
 </section>
+
