@@ -1,0 +1,22 @@
+{{- $img := "img/sidebar/home.jpg" -}}
+{{- $url := "" -}}
+{{- if . -}}
+  {{- with .RelPermalink -}}{{- $url = . -}}{{- end -}}
+  {{- if or .IsHome (eq $url "/") -}}
+    {{- $img = "img/sidebar/home.jpg" -}}
+  {{- else if or (eq .Kind "taxonomy") (eq .Kind "term") (strings.Contains $url "/categories/") (strings.Contains $url "/tags/") (in (slice "categories" "tags") .Section) -}}
+    {{- $img = "img/sidebar/taxonomy.jpg" -}}
+  {{- else if or (eq .Section "subscribe") (strings.Contains $url "/subscribe/") -}}
+    {{- $img = "img/sidebar/subscribe.jpg" -}}
+  {{- else if or (eq .Section "stats") (strings.Contains $url "/stats/") -}}
+    {{- $img = "img/sidebar/stats.jpg" -}}
+  {{- else -}}
+    {{- $img = "img/sidebar/home.jpg" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if not (fileExists (printf "static/%s" $img)) -}}
+  {{- $img = partial "avatar-path.html" . -}}
+{{- end -}}
+
+{{- $img -}}
