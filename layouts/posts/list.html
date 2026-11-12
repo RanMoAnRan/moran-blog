@@ -6,13 +6,13 @@
         {{ partial "home-music-widget.html" (dict "Page" . "class" "rail-music-widget") }}
       </aside>
 
-      <main class="rail-main content posts-page">
+      <div class="rail-main content posts-page">
         <header class="page-header posts-compact-header">
           <div class="posts-compact-header__main">
             <a
               class="posts-back-btn"
               href="{{ "/" | relURL }}"
-              onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+              data-history-back="1"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
               返回
@@ -34,7 +34,7 @@
         </div>
 
         {{ partial "pagination.html" . }}
-      </main>
+      </div>
 
       <aside class="rail-sidebar rail-sidebar--right" aria-label="探索侧栏">
         {{ partial "rail/taxonomy-explore.html" (dict "tagLimit" 5 "catLimit" 4) }}

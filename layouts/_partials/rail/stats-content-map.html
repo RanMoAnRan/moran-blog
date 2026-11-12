@@ -22,10 +22,19 @@
 <section class="rail-card stats-content-map-card stats-content-map-card--years" aria-label="年份节奏">
   <div class="stats-map-group">
     <h3>年份节奏</h3>
+    {{- $maxYearCount := 1 -}}
+    {{- range $years -}}
+      {{- $c := $yearScratch.Get . -}}
+      {{- if gt $c $maxYearCount -}}{{- $maxYearCount = $c -}}{{- end -}}
+    {{- end -}}
     <div class="stats-map-years">
       {{ range sort $years "value" "desc" }}
         {{- $count := $yearScratch.Get . -}}
-        <a href="{{ printf "archives/#year-%s" . | relURL }}"><span>{{ . }}</span><strong>{{ $count }}</strong></a>
+        {{- $pct := div (mul $count 100.0) $maxYearCount -}}
+        <a href="{{ printf "archives/#archive-year-%s" . | relURL }}">
+          <span class="stats-map-year__row"><span>{{ . }}</span><strong>{{ $count }} 篇</strong></span>
+          <span class="stats-map-year__track"><span style="width: {{ printf "%.2f" $pct }}%"></span></span>
+        </a>
       {{ else }}
         <p class="stats-empty">暂无年份数据。</p>
       {{ end }}

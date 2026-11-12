@@ -9,7 +9,7 @@
         {{ partial "home-profile-widget.html" . }}
         {{ partial "rail/page-context.html" (dict "kind" $taxonomyLabel "title" .Title "count" (len .Pages) "desc" "当前主题下的文章集合。左侧给出上下文，右侧继续探索其他线索。" "backLink" (printf "%s" $taxonomyPlural) "backText" (printf "全部%s" $taxonomyLabel)) }}
       </aside>
-      <main class="rail-main content post-detail-container term-page">
+      <div class="rail-main content post-detail-container term-page">
 
       <header class="page-header term-compact-header" data-taxonomy="{{ $taxonomyPlural }}">
         <a class="term-back-btn" href="{{ printf "%s" $taxonomyPlural | relURL }}">
@@ -35,7 +35,7 @@
       </div>
 
       {{ partial "pagination.html" . }}
-      </main>
+      </div>
       <aside class="rail-sidebar rail-sidebar--right" aria-label="主题侧栏">
         {{ partial "rail/taxonomy-explore.html" (dict "tagLimit" 10 "catLimit" 4) }}
         {{ partial "rail/recent-posts.html" (dict "limit" 4) }}

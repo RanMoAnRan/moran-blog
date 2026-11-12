@@ -1,14 +1,22 @@
 (() => {
-  const input =
-    document.getElementById("search-input") || document.getElementById("header-search-input");
+  if (typeof window.__moranSearchCleanup === "function") {
+    window.__moranSearchCleanup();
+    window.__moranSearchCleanup = null;
+  }
+
+  const pageInput = document.getElementById("search-input");
+  const headerInput = document.getElementById("header-search-input");
+  const input = pageInput || headerInput;
   const results = document.getElementById("search-results");
   const status = document.getElementById("search-status");
 
   if (!input || !results || !status) return;
 
+  const controller = new AbortController();
+  const { signal } = controller;
   const container = document.querySelector("[data-search-index]");
   const endpoint = (container && container.getAttribute("data-search-index")) || "/index.json";
-  let pages = [];
+  let pages = window.__moranSearchIndexCache?.[endpoint] || [];
   let loaded = false;
 
   const setStatus = (text) => {
@@ -184,6 +192,8 @@
   };
 
   const doSearch = (query) => {
+    if (pageInput && pageInput.value !== query) pageInput.value = query;
+    if (headerInput && headerInput.value !== query) headerInput.value = query;
     if (!loaded) return;
 
     updateUrl(query);
@@ -208,12 +218,17 @@
     );
   };
 
+  const getQueryFromUrl = () => {
+    try {
+      return new URLSearchParams(window.location.search).get("q") || "";
+    } catch {
+      return "";
+    }
+  };
+
   const prefillFromUrl = () => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    if (!q) return;
-    input.value = q;
-    doSearch(q);
+    const q = getQueryFromUrl();
+    if (q) doSearch(q);
   };
 
   const focusInput = () => {
@@ -226,36 +241,66 @@
 
   const load = async () => {
     try {
-      const res = await fetch(endpoint, { cache: "force-cache" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      pages = await res.json();
+      if (Array.isArray(window.__moranSearchIndexCache?.[endpoint])) {
+        pages = window.__moranSearchIndexCache[endpoint];
+      } else {
+        const res = await fetch(endpoint, { cache: "force-cache", signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        pages = await res.json();
+        window.__moranSearchIndexCache = window.__moranSearchIndexCache || {};
+        window.__moranSearchIndexCache[endpoint] = pages;
+      }
+      if (signal.aborted) return;
       loaded = true;
       setStatus("输入关键词开始搜索。");
       focusInput();
       prefillFromUrl();
     } catch {
+      if (signal.aborted) return;
       setStatus("索引加载失败，请稍后刷新。");
     }
   };
 
-  const form = input.closest("form");
-  if (form) {
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      doSearch(input.value);
-    });
-  }
-
-  input.addEventListener("input", () => doSearch(input.value));
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      input.value = "";
-      doSearch("");
-      return;
+  const bindInput = (field) => {
+    if (!field) return;
+    const form = field.closest("form");
+    if (form) {
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        doSearch(field.value);
+      }, { signal });
     }
-    if (event.key !== "Enter") return;
-    doSearch(input.value);
-  });
+
+    field.addEventListener("input", () => doSearch(field.value), { signal });
+    field.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        field.value = "";
+        doSearch("");
+        return;
+      }
+      if (event.key !== "Enter") return;
+      doSearch(field.value);
+    }, { signal });
+  };
+
+  bindInput(pageInput);
+  if (headerInput && headerInput !== pageInput) bindInput(headerInput);
+
+  const cleanup = () => {
+    controller.abort();
+    if (window.__moranSearchCleanup === cleanup) window.__moranSearchCleanup = null;
+  };
+  window.__moranSearchCleanup = cleanup;
+
+  document.addEventListener("moran:page-load", () => {
+    if (!document.contains(results)) cleanup();
+  }, { signal });
+
+  const initialQuery = getQueryFromUrl();
+  if (initialQuery) {
+    if (pageInput) pageInput.value = initialQuery;
+    if (headerInput) headerInput.value = initialQuery;
+  }
 
   load();
 })();

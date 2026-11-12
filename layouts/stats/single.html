@@ -18,6 +18,35 @@
     {{- $yearScratch.Add $year 1 -}}
   {{- end -}}
   {{- $yearPostCount := default 0 ($yearScratch.Get $currentYear) -}}
+  {{- $totalWords := 0 -}}
+  {{- $totalMinutes := 0 -}}
+  {{- $longestWords := 0 -}}
+  {{- $longestPost := false -}}
+  {{- $postsPayload := slice -}}
+  {{- range $postsByDate -}}
+    {{- $wc := .WordCount -}}
+    {{- $rt := .ReadingTime -}}
+    {{- $totalWords = add $totalWords $wc -}}
+    {{- $totalMinutes = add $totalMinutes $rt -}}
+    {{- if gt $wc $longestWords -}}
+      {{- $longestWords = $wc -}}
+      {{- $longestPost = . -}}
+    {{- end -}}
+    {{- $cat := "" -}}
+    {{- with .Params.categories -}}
+      {{- $cat = index . 0 -}}
+    {{- end -}}
+    {{- $postsPayload = $postsPayload | append (dict "title" .Title "url" .RelPermalink "date" (.Date.Format "2006-01-02") "words" $wc "minutes" $rt "cat" $cat) -}}
+  {{- end -}}
+  {{- $postCount := len $postPages -}}
+  {{- $avgWords := 0 -}}
+  {{- if gt $postCount 0 -}}
+    {{- $avgWords = div $totalWords $postCount -}}
+  {{- end -}}
+  {{- $totalWordsDisplay := printf "%d" $totalWords -}}
+  {{- if ge $totalWords 10000 -}}
+    {{- $totalWordsDisplay = printf "%.1f 万" (div (float $totalWords) 10000.0) -}}
+  {{- end -}}
   <div class="container rail-layout-container rail-layout-container--three stats-page-container stats-rail-container">
     <div class="rail-layout rail-layout--three">
       <aside class="rail-sidebar rail-sidebar--left stats-content-map-sidebar" aria-label="统计侧栏">
@@ -25,7 +54,7 @@
         {{ partial "rail/stats-category-map.html" . }}
       </aside>
 
-      <main class="rail-main content post-detail-container stats-page">
+      <div class="rail-main content post-detail-container stats-page">
       {{ with .Content }}<div class="prose stats-intro">{{ . }}</div>{{ end }}
 
       <section class="stats-section" aria-labelledby="site-overview-title">
@@ -42,7 +71,7 @@
           {{ end }}
         </div>
         <div class="stats-metric-grid">
-          <div class="stats-metric-card is-hero" data-stat="posts">
+          <a class="stats-metric-card is-hero" data-stat="posts" href="{{ "posts" | relURL }}">
             <div class="stats-metric-card__inner">
               <div class="stats-metric-card__head">
                 <span>文章总数</span>
@@ -51,62 +80,75 @@
               <strong class="stats-metric-number">{{ len $postPages }}</strong>
               <div class="stats-metric-card__foot">
                 <span class="stats-status-dot" aria-hidden="true"></span>
-                <small>累计发布长文篇目</small>
+                <small>累计发布长文 · 点击浏览全部</small>
+                <span class="stats-metric-card__portal" aria-hidden="true">↗</span>
               </div>
             </div>
             <div class="stats-metric-card__watermark" aria-hidden="true">{{ len $postPages }}</div>
-          </div>
+          </a>
 
-          <div class="stats-metric-card is-year" data-stat="year">
+          <a class="stats-metric-card is-year" data-stat="year" href="{{ printf "archives/#archive-year-%s" $currentYear | relURL }}" data-stats-year-link>
             <div class="stats-metric-card__inner">
               <div class="stats-metric-card__head">
                 <span>今年发布</span>
-                <span class="stats-card-badge">{{ $currentYear }}</span>
+                <span class="stats-card-badge" data-stats-year-label>{{ $currentYear }}</span>
               </div>
-              <strong class="stats-metric-number">{{ $yearPostCount }}</strong>
+              <strong class="stats-metric-number" data-stats-year-count>{{ $yearPostCount }}</strong>
               <div class="stats-metric-card__foot">
                 <small>年度产出节奏</small>
+                <span class="stats-metric-card__portal" aria-hidden="true">↗</span>
               </div>
             </div>
-            <div class="stats-metric-card__watermark" aria-hidden="true">{{ $currentYear }}</div>
-          </div>
+            <div class="stats-metric-card__watermark" aria-hidden="true" data-stats-year-watermark>{{ $currentYear }}</div>
+          </a>
 
-          <div class="stats-metric-card is-recent" data-stat="recent">
+          <a class="stats-metric-card is-recent" data-stat="recent" href="{{ "archives" | relURL }}">
             <div class="stats-metric-card__inner">
               <div class="stats-metric-card__head">
                 <span>最近 30 天</span>
                 <span class="stats-card-badge">ACTIVITY</span>
               </div>
-              <strong class="stats-metric-number">{{ $recentPostCount }}</strong>
+              <strong class="stats-metric-number" data-stats-recent-count>{{ $recentPostCount }}</strong>
               <div class="stats-metric-card__foot">
                 <small>持续创作中</small>
+                <span class="stats-metric-card__portal" aria-hidden="true">↗</span>
               </div>
             </div>
             <div class="stats-metric-card__watermark" aria-hidden="true">30D</div>
-          </div>
+          </a>
 
-          <div class="stats-metric-card is-focus" data-stat="focus">
-            <div class="stats-metric-card__inner">
-              <div class="stats-metric-card__head">
-                <span>内容重心</span>
-                <span class="stats-card-badge">FOCUS</span>
-              </div>
-              {{ range first 1 site.Taxonomies.categories.ByCount }}
+          {{ range first 1 site.Taxonomies.categories.ByCount }}
+            <a class="stats-metric-card is-focus" data-stat="focus" href="{{ .Page.RelPermalink }}">
+              <div class="stats-metric-card__inner">
+                <div class="stats-metric-card__head">
+                  <span>内容重心</span>
+                  <span class="stats-card-badge">FOCUS</span>
+                </div>
                 <strong class="stats-metric-text">{{ .Page.Title }}</strong>
                 <div class="stats-metric-card__foot">
                   <small>核心专注 · {{ len .Pages }} 篇</small>
+                  <span class="stats-metric-card__portal" aria-hidden="true">↗</span>
                 </div>
-              {{ else }}
+              </div>
+              <div class="stats-metric-card__watermark" aria-hidden="true">CORE</div>
+            </a>
+          {{ else }}
+            <div class="stats-metric-card is-focus" data-stat="focus">
+              <div class="stats-metric-card__inner">
+                <div class="stats-metric-card__head">
+                  <span>内容重心</span>
+                  <span class="stats-card-badge">FOCUS</span>
+                </div>
                 <strong class="stats-metric-text">--</strong>
                 <div class="stats-metric-card__foot">
                   <small>暂无分类</small>
                 </div>
-              {{ end }}
+              </div>
+              <div class="stats-metric-card__watermark" aria-hidden="true">CORE</div>
             </div>
-            <div class="stats-metric-card__watermark" aria-hidden="true">CORE</div>
-          </div>
+          {{ end }}
 
-          <div class="stats-metric-card is-tags" data-stat="tags">
+          <a class="stats-metric-card is-tags" data-stat="tags" href="{{ "tags" | relURL }}">
             <div class="stats-metric-card__inner">
               <div class="stats-metric-card__head">
                 <span>主题标签</span>
@@ -115,12 +157,13 @@
               <strong class="stats-metric-number">{{ $tagCount }}</strong>
               <div class="stats-metric-card__foot">
                 <small>多元思维触角</small>
+                <span class="stats-metric-card__portal" aria-hidden="true">↗</span>
               </div>
             </div>
             <div class="stats-metric-card__watermark" aria-hidden="true">{{ $tagCount }}</div>
-          </div>
+          </a>
 
-          <div class="stats-metric-card is-categories" data-stat="categories">
+          <a class="stats-metric-card is-categories" data-stat="categories" href="{{ "categories" | relURL }}">
             <div class="stats-metric-card__inner">
               <div class="stats-metric-card__head">
                 <span>知识分区</span>
@@ -129,11 +172,29 @@
               <strong class="stats-metric-number">{{ $categoryCount }}</strong>
               <div class="stats-metric-card__foot">
                 <small>结构化分类专栏</small>
+                <span class="stats-metric-card__portal" aria-hidden="true">↗</span>
               </div>
             </div>
             <div class="stats-metric-card__watermark" aria-hidden="true">{{ $categoryCount }}</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="stats-section stats-trend-section" data-stats-trend aria-labelledby="writing-trend-title">
+        <div class="stats-section__head">
+          <div>
+            <p class="stats-kicker">Publishing Rhythm</p>
+            <h2 id="writing-trend-title">近 12 个月创作趋势</h2>
+            <p class="stats-section__desc">点击任意有更新的月份柱条，查看当月发布篇目与字数分布。</p>
+          </div>
+          <div class="stats-trend-badges" data-trend-summary>
+            <span class="stats-section__note" data-trend-total>近 12 月 -- 篇</span>
+            <span class="stats-section__note" data-trend-peak>峰值 --</span>
           </div>
         </div>
+
+        <div class="stats-trend-chart" data-trend-chart role="list" aria-label="近 12 个月发文柱状图"></div>
+        <div class="stats-trend-drawer" data-trend-drawer hidden></div>
       </section>
 
       <section class="stats-section stats-reading-section" data-reading-pulse data-total-posts="{{ len $postPages }}" aria-labelledby="reading-overview-title">
@@ -148,29 +209,35 @@
 
         <div class="stats-reading-grid">
           <div class="stats-reading-summary" aria-label="阅读数字">
-            <div class="reading-pulse__tile">
-              <span class="reading-pulse__label">文章</span>
-              <strong>{{ len $postPages }}</strong>
+            <div class="reading-pulse__tile" title="全站正文累计约 {{ $totalWords }} 字">
+              <span class="reading-pulse__label">全站总字数</span>
+              <strong>{{ $totalWordsDisplay }}</strong>
+              <small class="reading-pulse__hint">字数积累</small>
             </div>
             <div class="reading-pulse__tile">
-              <span class="reading-pulse__label">标签</span>
-              <strong>{{ $tagCount }}</strong>
+              <span class="reading-pulse__label">累计阅读</span>
+              <strong>{{ $totalMinutes }}<small class="reading-pulse__unit"> 分</small></strong>
+              <small class="reading-pulse__hint">通读全站</small>
             </div>
             <div class="reading-pulse__tile">
-              <span class="reading-pulse__label">分类</span>
-              <strong>{{ $categoryCount }}</strong>
+              <span class="reading-pulse__label">篇均长度</span>
+              <strong>{{ $avgWords }}</strong>
+              <small class="reading-pulse__hint">平均每篇字数</small>
             </div>
             <div class="reading-pulse__tile is-local">
               <span class="reading-pulse__label">已读</span>
               <strong data-read-count>0</strong>
+              <small class="reading-pulse__hint">进度 ≥ 90%</small>
             </div>
             <div class="reading-pulse__tile is-local">
               <span class="reading-pulse__label">继续阅读</span>
               <strong data-progress-count>0</strong>
+              <small class="reading-pulse__hint">半途未完</small>
             </div>
             <div class="reading-pulse__tile is-local">
               <span class="reading-pulse__label">完成率</span>
               <strong data-completion-rate>--</strong>
+              <small class="reading-pulse__hint">占全站篇目</small>
             </div>
           </div>
 
@@ -183,6 +250,13 @@
               还没有阅读记录。读几篇长文后，这里会显示你的继续阅读入口。
             </div>
             <div class="reading-pulse__list" data-reading-recent hidden></div>
+            {{ with $longestPost }}
+              <a class="stats-longest-pill" href="{{ .RelPermalink }}" title="最长单篇：{{ .Title }}">
+                <span class="stats-longest-pill__badge">镇站长文</span>
+                <span class="stats-longest-pill__title">{{ .Title }}</span>
+                <em>{{ .WordCount }} 字 · {{ .ReadingTime }}m</em>
+              </a>
+            {{ end }}
           </div>
         </div>
       </section>
@@ -214,18 +288,192 @@
                 {{ end }}
               </div>
               <div class="stats-latest-item__meta">
-                <span class="stats-latest-item__reading-time">{{ .ReadingTime }} 分钟</span>
+                <span class="stats-latest-item__reading-time">{{ .WordCount }} 字 · {{ .ReadingTime }} 分钟</span>
                 <span class="stats-latest-item__arrow" aria-hidden="true">→</span>
               </div>
             </a>
           {{ end }}
         </div>
       </section>
-      </main>
+      </div>
 
       <aside class="rail-sidebar rail-sidebar--right stats-content-map-sidebar" aria-label="标签和年份侧栏">
         {{ partial "rail/stats-content-map.html" . }}
       </aside>
     </div>
   </div>
+
+  <script type="application/json" data-stats-posts-json>{{ $postsPayload | jsonify }}</script>
+  <script>
+    (() => {
+      const dataNode = document.querySelector('[data-stats-posts-json]');
+      if (!dataNode) return;
+
+      let posts = [];
+      try {
+        const raw = JSON.parse(dataNode.textContent || '[]');
+        posts = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      } catch {
+        return;
+      }
+      if (!Array.isArray(posts)) return;
+
+      const now = new Date();
+      const currentYear = String(now.getFullYear());
+      const recentCutoffMs = now.getTime() - 30 * 24 * 60 * 60 * 1000;
+
+      const yearCount = posts.filter((post) => String(post.date || '').startsWith(`${currentYear}-`)).length;
+      const recentCount = posts.filter((post) => {
+        const ms = Date.parse(`${post.date}T00:00:00`);
+        return Number.isFinite(ms) && ms >= recentCutoffMs && ms <= now.getTime() + 86400000;
+      }).length;
+
+      const yearCountEl = document.querySelector('[data-stats-year-count]');
+      const yearLabelEl = document.querySelector('[data-stats-year-label]');
+      const yearWatermarkEl = document.querySelector('[data-stats-year-watermark]');
+      const yearLinkEl = document.querySelector('[data-stats-year-link]');
+      const recentCountEl = document.querySelector('[data-stats-recent-count]');
+
+      if (yearCountEl) yearCountEl.textContent = String(yearCount);
+      if (yearLabelEl) yearLabelEl.textContent = currentYear;
+      if (yearWatermarkEl) yearWatermarkEl.textContent = currentYear;
+      if (yearLinkEl) {
+        const href = yearLinkEl.getAttribute('href') || '';
+        yearLinkEl.setAttribute('href', href.replace(/#archive-year-\d{4}/, `#archive-year-${currentYear}`));
+      }
+      if (recentCountEl) recentCountEl.textContent = String(recentCount);
+
+      const chartEl = document.querySelector('[data-trend-chart]');
+      const drawerEl = document.querySelector('[data-trend-drawer]');
+      const totalBadgeEl = document.querySelector('[data-trend-total]');
+      const peakBadgeEl = document.querySelector('[data-trend-peak]');
+      if (!chartEl) return;
+
+      const escapeHtml = (value) => String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+
+      const monthBuckets = [];
+      const bucketMap = new Map();
+      for (let offset = 11; offset >= 0; offset -= 1) {
+        const d = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const bucket = {
+          key,
+          year: d.getFullYear(),
+          month: d.getMonth() + 1,
+          label: d.getMonth() === 0 ? `${d.getFullYear().toString().slice(-2)}/1` : `${d.getMonth() + 1}月`,
+          fullLabel: `${d.getFullYear()} 年 ${d.getMonth() + 1} 月`,
+          posts: [],
+          words: 0,
+        };
+        monthBuckets.push(bucket);
+        bucketMap.set(key, bucket);
+      }
+
+      posts.forEach((post) => {
+        const key = String(post.date || '').slice(0, 7);
+        const bucket = bucketMap.get(key);
+        if (!bucket) return;
+        bucket.posts.push(post);
+        bucket.words += Number(post.words || 0);
+      });
+
+      const maxCount = Math.max(1, ...monthBuckets.map((b) => b.posts.length));
+      const totalInWindow = monthBuckets.reduce((sum, b) => sum + b.posts.length, 0);
+      const peakBucket = monthBuckets.reduce((best, b) => (b.posts.length > best.posts.length ? b : best), monthBuckets[0]);
+
+      if (totalBadgeEl) totalBadgeEl.textContent = `近 12 月 ${totalInWindow} 篇`;
+      if (peakBadgeEl) {
+        peakBadgeEl.textContent = peakBucket && peakBucket.posts.length > 0
+          ? `峰值 ${peakBucket.fullLabel} (${peakBucket.posts.length}篇)`
+          : '暂无峰值';
+      }
+
+      let activeKey = '';
+
+      const renderDrawer = (key) => {
+        if (!drawerEl) return;
+        const bucket = bucketMap.get(key);
+        if (!bucket || !bucket.posts.length) {
+          drawerEl.hidden = true;
+          drawerEl.innerHTML = '';
+          return;
+        }
+        drawerEl.hidden = false;
+        const wordText = bucket.words >= 10000
+          ? `${(bucket.words / 10000).toFixed(1)} 万字`
+          : `${bucket.words.toLocaleString('zh-CN')} 字`;
+        drawerEl.innerHTML = `
+          <div class="stats-trend-drawer__head">
+            <strong>${escapeHtml(bucket.fullLabel)} · ${bucket.posts.length} 篇文章 · ${escapeHtml(wordText)}</strong>
+            <button type="button" class="stats-trend-drawer__close" data-trend-close aria-label="收起">收起</button>
+          </div>
+          <div class="stats-trend-drawer__list">
+            ${bucket.posts.map((post) => `
+              <a class="stats-trend-drawer__item" href="${escapeHtml(post.url)}">
+                <span class="stats-trend-drawer__date">${escapeHtml(String(post.date || '').slice(5))}</span>
+                <span class="stats-trend-drawer__title">${escapeHtml(post.title)}</span>
+                <span class="stats-trend-drawer__meta">${Number(post.words || 0).toLocaleString('zh-CN')} 字</span>
+              </a>
+            `).join('')}
+          </div>
+        `;
+        drawerEl.querySelector('[data-trend-close]')?.addEventListener('click', () => {
+          activeKey = '';
+          renderChart();
+          renderDrawer('');
+        });
+      };
+
+      const renderChart = () => {
+        chartEl.innerHTML = monthBuckets.map((bucket) => {
+          const count = bucket.posts.length;
+          const heightPct = count > 0 ? Math.max(16, Math.round((count / maxCount) * 100)) : 6;
+          const isPeak = peakBucket && peakBucket.key === bucket.key && count > 0;
+          const isActive = activeKey === bucket.key;
+          const classes = [
+            'stats-trend-bar',
+            count > 0 ? 'has-posts' : 'is-empty',
+            isPeak ? 'is-peak' : '',
+            isActive ? 'is-active' : '',
+          ].filter(Boolean).join(' ');
+          return `
+            <button
+              type="button"
+              class="${classes}"
+              data-trend-month="${escapeHtml(bucket.key)}"
+              ${count === 0 ? 'disabled' : ''}
+              title="${escapeHtml(bucket.fullLabel)}：${count} 篇文章"
+              aria-label="${escapeHtml(bucket.fullLabel)}：${count} 篇文章"
+              aria-pressed="${isActive ? 'true' : 'false'}"
+            >
+              <span class="stats-trend-bar__count">${count > 0 ? count : ''}</span>
+              <span class="stats-trend-bar__track">
+                <span class="stats-trend-bar__fill" style="height: ${heightPct}%"></span>
+              </span>
+              <span class="stats-trend-bar__label">${escapeHtml(bucket.label)}</span>
+            </button>
+          `;
+        }).join('');
+
+        chartEl.querySelectorAll('[data-trend-month]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-trend-month') || '';
+            activeKey = activeKey === key ? '' : key;
+            renderChart();
+            renderDrawer(activeKey);
+          });
+        });
+      };
+
+      const defaultBucket = [...monthBuckets].reverse().find((b) => b.posts.length > 0);
+      if (defaultBucket) activeKey = defaultBucket.key;
+      renderChart();
+      if (activeKey) renderDrawer(activeKey);
+    })();
+  </script>
 {{ end }}

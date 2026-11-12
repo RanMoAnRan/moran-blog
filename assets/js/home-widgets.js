@@ -97,22 +97,415 @@
     return first ? first.toLocaleUpperCase("zh-CN") : "♪";
   };
 
+  const sanitizeMediaUrl = (url) => {
+    const raw = String(url || "").trim();
+    if (!raw) return "";
+    try {
+      const parsed = new URL(raw, window.location.href);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+        return parsed.origin === window.location.origin ? `${parsed.pathname}${parsed.search}${parsed.hash}` : parsed.href;
+      }
+    } catch {
+      // ignore invalid URLs
+    }
+    return "";
+  };
+
+  const validPlayModes = new Set(["list", "one", "random"]);
+  const playModeMeta = {
+    list: { icon: "∞", title: "列表循环" },
+    one: { icon: "①", title: "单曲循环" },
+    random: { icon: "⌘", title: "随机播放" },
+  };
+
+  const clampVolume = (value, fallback = 0.7) => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.min(1, Math.max(0, n));
+  };
+
+  const getMusicEngine = () => {
+    if (window.__moranMusicEngine) return window.__moranMusicEngine;
+
+    const audio = window.__moranHomeMusicAudio || new Audio();
+    audio.removeAttribute("crossorigin");
+    audio.preload = "none";
+    window.__moranHomeMusicAudio = audio;
+
+    const engine = {
+      audio,
+      playlist: [],
+      index: 0,
+      playMode: "list",
+      volume: 0.7,
+      sourceKey: "",
+      loaded: false,
+      loadingPromise: null,
+      loadingSourceKey: "",
+      errorMessage: "",
+      controllers: [],
+      lastTimeupdateSave: 0,
+    };
+
+    const activeControllers = () => {
+      engine.controllers = engine.controllers.filter((ctrl) => ctrl?.widget && document.contains(ctrl.widget));
+      return engine.controllers;
+    };
+
+    const persistState = (wasPlaying = !audio.paused) => {
+      const currentTrack = engine.playlist[engine.index];
+      if (!currentTrack) return;
+      writeMusicState({
+        sourceKey: engine.sourceKey,
+        trackKey: getTrackKey(currentTrack),
+        index: engine.index,
+        currentTime: audio.currentTime || 0,
+        playMode: engine.playMode,
+        volume: engine.volume,
+        wasPlaying,
+      });
+    };
+
+    const syncErrorUI = () => {
+      activeControllers().forEach((ctrl) => {
+        if (!ctrl.els.error) return;
+        ctrl.els.error.hidden = !engine.errorMessage;
+        ctrl.els.error.textContent = engine.errorMessage;
+      });
+    };
+
+    const syncPlayingUI = () => {
+      const playing = !audio.paused;
+      activeControllers().forEach((ctrl) => {
+        ctrl.widget.classList.toggle("is-playing", playing);
+        if (ctrl.els.play) {
+          ctrl.els.play.textContent = playing ? "⏸" : "▶";
+          ctrl.els.play.setAttribute("aria-label", playing ? "暂停" : "播放");
+        }
+        if (ctrl.els.cover) {
+          ctrl.els.cover.style.animationPlayState = playing ? "running" : "paused";
+        }
+      });
+    };
+
+    const syncModeUI = () => {
+      const meta = playModeMeta[engine.playMode] || playModeMeta.list;
+      activeControllers().forEach((ctrl) => {
+        if (!ctrl.els.mode) return;
+        ctrl.els.mode.textContent = meta.icon;
+        ctrl.els.mode.title = meta.title;
+        ctrl.els.mode.setAttribute("aria-label", meta.title);
+      });
+    };
+
+    const syncVolumeUI = () => {
+      activeControllers().forEach((ctrl) => {
+        if (!ctrl.els.volume) return;
+        ctrl.els.volume.value = String(engine.volume);
+      });
+    };
+
+    const syncTimeUI = () => {
+      const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+      const pct = duration ? Math.min(100, (current / duration) * 100) : 0;
+      activeControllers().forEach((ctrl) => {
+        if (ctrl.els.current) ctrl.els.current.textContent = formatTime(current);
+        if (ctrl.els.duration) ctrl.els.duration.textContent = formatTime(duration);
+        if (ctrl.els.progressBar) ctrl.els.progressBar.style.width = `${pct}%`;
+        if (ctrl.els.progress) ctrl.els.progress.setAttribute("aria-valuenow", String(Math.round(pct)));
+      });
+    };
+
+    const syncTrackToController = (ctrl) => {
+      const track = engine.playlist[engine.index];
+      if (!track) return;
+      if (ctrl.els.title) ctrl.els.title.textContent = track.title;
+      if (ctrl.els.artist) ctrl.els.artist.textContent = track.artist || "未知歌手";
+      if (ctrl.els.cover) {
+        const safeCover = sanitizeMediaUrl(track.cover);
+        if (safeCover) {
+          ctrl.els.cover.onload = () => ctrl.els.cover.classList.add("is-visible");
+          ctrl.els.cover.onerror = () => {
+            ctrl.els.cover.classList.remove("is-visible");
+            ctrl.els.cover.removeAttribute("src");
+          };
+          if (ctrl.els.cover.getAttribute("src") !== safeCover) {
+            ctrl.els.cover.classList.remove("is-visible");
+            ctrl.els.cover.src = safeCover;
+          } else if (ctrl.els.cover.complete && ctrl.els.cover.naturalWidth > 0) {
+            ctrl.els.cover.classList.add("is-visible");
+          }
+        } else {
+          ctrl.els.cover.classList.remove("is-visible");
+          ctrl.els.cover.removeAttribute("src");
+        }
+      }
+      if (ctrl.els.playlist) {
+        ctrl.els.playlist.innerHTML = engine.playlist.map((item, idx) => {
+          const cover = sanitizeMediaUrl(item.cover);
+          return `
+            <button type="button" class="home-music__playlist-item${idx === engine.index ? " is-active" : ""}" data-index="${idx}">
+              ${cover ? `<img src="${escapeHtml(cover)}" alt="" loading="lazy">` : `<span class="home-music__playlist-initial" aria-hidden="true">${escapeHtml(getTrackInitial(item))}</span>`}
+              <span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.artist || "未知歌手")}</small></span>
+            </button>
+          `;
+        }).join("");
+      }
+    };
+
+    const syncAllUI = () => {
+      activeControllers().forEach((ctrl) => syncTrackToController(ctrl));
+      syncModeUI();
+      syncVolumeUI();
+      syncPlayingUI();
+      syncTimeUI();
+      syncErrorUI();
+    };
+
+    const setError = (message) => {
+      engine.errorMessage = message || "";
+      syncErrorUI();
+    };
+
+    const loadTrack = (index, autoplay = false) => {
+      if (!engine.playlist.length) return;
+      engine.index = (index + engine.playlist.length) % engine.playlist.length;
+      const track = engine.playlist[engine.index];
+      window.__moranHomeMusicSourceKey = engine.sourceKey;
+      setError("");
+      audio.volume = engine.volume;
+      if (!audioHasTrack(audio, track.url)) audio.src = track.url;
+      syncAllUI();
+      persistState(autoplay ? true : !audio.paused);
+      if (autoplay) {
+        audio.play().then(() => {
+          setError("");
+          syncPlayingUI();
+          persistState(true);
+        }).catch(() => {
+          syncPlayingUI();
+        });
+      }
+    };
+
+    const playCurrent = () => {
+      if (!engine.playlist.length) return;
+      const track = engine.playlist[engine.index];
+      window.__moranHomeMusicSourceKey = engine.sourceKey;
+      setError("");
+      audio.volume = engine.volume;
+      if (!audioHasTrack(audio, track.url)) audio.src = track.url;
+      syncAllUI();
+      persistState(true);
+      audio.play().then(() => {
+        setError("");
+        syncPlayingUI();
+        persistState(true);
+      }).catch(() => {
+        setError("当前歌曲无法播放，可能是音源限制。");
+        syncPlayingUI();
+      });
+    };
+
+    const next = () => {
+      if (!engine.playlist.length) return;
+      if (engine.playMode === "random" && engine.playlist.length > 1) {
+        let candidate = Math.floor(Math.random() * engine.playlist.length);
+        if (candidate === engine.index) candidate = (engine.index + 1) % engine.playlist.length;
+        loadTrack(candidate, true);
+      } else {
+        loadTrack(engine.index + 1, true);
+      }
+    };
+
+    const prev = () => {
+      if (!engine.playlist.length) return;
+      loadTrack(engine.index - 1, true);
+    };
+
+    const cyclePlayMode = () => {
+      engine.playMode = engine.playMode === "list" ? "one" : engine.playMode === "one" ? "random" : "list";
+      syncModeUI();
+      persistState();
+    };
+
+    const setVolume = (value) => {
+      engine.volume = clampVolume(value, engine.volume);
+      audio.volume = engine.volume;
+      syncVolumeUI();
+      persistState();
+    };
+
+    audio.addEventListener("timeupdate", () => {
+      if (!engine.playlist[engine.index]) return;
+      syncTimeUI();
+      const now = Date.now();
+      if (now - engine.lastTimeupdateSave > 3000) {
+        engine.lastTimeupdateSave = now;
+        persistState();
+      }
+    });
+
+    audio.addEventListener("loadedmetadata", () => {
+      syncTimeUI();
+    });
+
+    audio.addEventListener("play", () => {
+      setError("");
+      syncPlayingUI();
+      persistState(true);
+    });
+
+    audio.addEventListener("pause", () => {
+      syncPlayingUI();
+      persistState(false);
+    });
+
+    audio.addEventListener("ended", () => {
+      if (!engine.playlist.length) return;
+      if (engine.playMode === "one") loadTrack(engine.index, true);
+      else next();
+    });
+
+    audio.addEventListener("error", () => {
+      if (!audio.getAttribute("src")) return;
+      setError("当前歌曲无法播放，可能是音源限制。");
+      syncPlayingUI();
+    });
+
+    engine.syncController = (ctrl) => {
+      if (engine.playlist.length) {
+        syncTrackToController(ctrl);
+      }
+      syncModeUI();
+      syncVolumeUI();
+      syncPlayingUI();
+      syncTimeUI();
+      syncErrorUI();
+    };
+    engine.loadTrack = loadTrack;
+    engine.playCurrent = playCurrent;
+    engine.next = next;
+    engine.prev = prev;
+    engine.cyclePlayMode = cyclePlayMode;
+    engine.setVolume = setVolume;
+    engine.setError = setError;
+    engine.syncAllUI = syncAllUI;
+
+    window.__moranMusicEngine = engine;
+    return engine;
+  };
+
   const initMusic = () => {
     const widgets = Array.from(document.querySelectorAll("[data-home-music]"));
     if (!widgets.length) return;
 
-    let sharedAudio = window.__moranHomeMusicAudio;
-    if (!sharedAudio) {
-      sharedAudio = new Audio();
-      sharedAudio.crossOrigin = "anonymous";
-      sharedAudio.preload = "none";
-      window.__moranHomeMusicAudio = sharedAudio;
-    }
+    const engine = getMusicEngine();
+    const sharedAudio = engine.audio;
+    const persisted = readMusicState();
 
-    let autoplayClaimed = false;
-    let activeSourceKey = window.__moranHomeMusicSourceKey || "";
-    const controllers = window.__moranHomeMusicControllers = (window.__moranHomeMusicControllers || [])
-      .filter((controller) => controller?.widget && document.contains(controller.widget));
+    const ensurePlaylistLoaded = async (config, sourceKey) => {
+      if (engine.loaded && engine.sourceKey === sourceKey && engine.playlist.length) {
+        engine.syncAllUI();
+        return;
+      }
+      if (engine.loadingPromise && engine.loadingSourceKey === sourceKey) {
+        await engine.loadingPromise;
+        engine.syncAllUI();
+        return;
+      }
+
+      engine.loadingSourceKey = sourceKey;
+      engine.loadingPromise = (async () => {
+        const localTracks = Array.isArray(config.localPlaylist)
+          ? config.localPlaylist.map(normalizeTrack).filter((track) => track.url)
+          : [];
+
+        let playlist = [];
+        if (config.mode === "local") {
+          playlist = localTracks;
+        } else {
+          const meting = config.meting || {};
+          const apis = [meting.api, ...(meting.fallbackApis || [])].filter(Boolean);
+          let data = null;
+          for (const api of apis) {
+            try {
+              const res = await fetch(fillApiUrl(api, meting), { cache: "no-store", referrerPolicy: "no-referrer" });
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              data = await res.json();
+              if (Array.isArray(data) && data.length) break;
+            } catch {
+              data = null;
+            }
+          }
+          playlist = Array.isArray(data) ? data.map(normalizeTrack).filter((track) => track.url) : [];
+          if (!playlist.length && localTracks.length) {
+            playlist = localTracks;
+          }
+        }
+
+        if (!playlist.length) throw new Error("empty playlist");
+
+        engine.playlist = playlist;
+        engine.sourceKey = sourceKey;
+        engine.loaded = true;
+        engine.playMode = validPlayModes.has(persisted.playMode)
+          ? persisted.playMode
+          : (validPlayModes.has(config.playMode) ? config.playMode : "list");
+        engine.volume = persisted.sourceKey === sourceKey && Number.isFinite(Number(persisted.volume))
+          ? clampVolume(persisted.volume, clampVolume(config.volume, 0.7))
+          : clampVolume(config.volume, 0.7);
+        sharedAudio.volume = engine.volume;
+
+        const restoredIndex = persisted.sourceKey === sourceKey
+          ? playlist.findIndex((track) => getTrackKey(track) === persisted.trackKey)
+          : -1;
+        const currentAudioIndex = sharedAudio.src
+          ? playlist.findIndex((track) => audioHasTrack(sharedAudio, track.url))
+          : -1;
+        const shouldRestore = restoredIndex >= 0;
+        const shouldReuseCurrentAudio = currentAudioIndex >= 0 && window.__moranHomeMusicSourceKey === sourceKey;
+        const startIndex = shouldReuseCurrentAudio
+          ? currentAudioIndex
+          : shouldRestore
+            ? restoredIndex
+            : (config.randomOnLoad !== false ? Math.floor(Math.random() * playlist.length) : 0);
+
+        const hasSavedPlayingState = shouldRestore && typeof persisted.wasPlaying === "boolean";
+        const shouldAutoplay = !shouldReuseCurrentAudio && (
+          hasSavedPlayingState ? persisted.wasPlaying : config.autoplay !== false
+        );
+
+        if (shouldReuseCurrentAudio) {
+          engine.index = startIndex;
+          engine.syncAllUI();
+        } else {
+          engine.loadTrack(startIndex, shouldAutoplay);
+          if (shouldRestore && Number(persisted.currentTime) > 0) {
+            const applySavedTime = () => {
+              if (Number.isFinite(sharedAudio.duration) && sharedAudio.duration > 1) {
+                sharedAudio.currentTime = Math.min(Number(persisted.currentTime), Math.max(0, sharedAudio.duration - 1));
+              }
+            };
+            if (sharedAudio.readyState >= 1) applySavedTime();
+            else sharedAudio.addEventListener("loadedmetadata", applySavedTime, { once: true });
+          }
+        }
+      })();
+
+      try {
+        await engine.loadingPromise;
+      } catch {
+        engine.loadingSourceKey = "";
+        engine.controllers.forEach((ctrl) => {
+          if (ctrl.els.artist && !engine.playlist.length) ctrl.els.artist.textContent = "歌单加载失败";
+        });
+        engine.setError("Meting 歌单加载失败，可在 data/music.toml 或 hugo.toml 配置本地音乐备用。");
+      } finally {
+        engine.loadingPromise = null;
+      }
+    };
 
     widgets.forEach((widget) => {
       if (widget.dataset.musicReady === "1") return;
@@ -120,18 +513,6 @@
 
       const config = parseJson(widget.querySelector("[data-home-music-config]"), {});
       const sourceKey = JSON.stringify({ mode: config.mode || "meting", meting: config.meting || {}, local: (config.localPlaylist || []).map(getTrackKey) });
-      const persisted = readMusicState();
-      const state = {
-        playlist: [],
-        index: 0,
-        playMode: config.playMode || "list",
-        autoplay: config.autoplay !== false && !autoplayClaimed,
-        randomOnLoad: config.randomOnLoad !== false,
-        playing: false,
-        sourceKey,
-      };
-      if (state.autoplay) autoplayClaimed = true;
-
       const els = {
         cover: widget.querySelector("[data-music-cover]"),
         title: widget.querySelector("[data-music-title]"),
@@ -150,239 +531,37 @@
         error: widget.querySelector("[data-music-error]"),
       };
 
-      const showError = (message) => {
-        if (!els.error) return;
-        els.error.hidden = false;
-        els.error.textContent = message;
-      };
-
-      const setTrackInfo = (track) => {
-        if (!track) return;
-        els.title.textContent = track.title;
-        els.artist.textContent = track.artist || "未知歌手";
-        els.cover.removeAttribute("src");
-        els.cover.classList.remove("is-visible");
-        widget.classList.toggle("is-playing", state.playing);
-      };
-
-      const renderPlaylist = () => {
-        if (!els.playlist) return;
-        els.playlist.innerHTML = state.playlist.map((track, index) => `
-          <button type="button" class="home-music__playlist-item${index === state.index ? " is-active" : ""}" data-index="${index}">
-            ${track.cover ? `<img src="${track.cover}" alt="" loading="lazy">` : `<span class="home-music__playlist-initial" aria-hidden="true">${escapeHtml(getTrackInitial(track))}</span>`}
-            <span><strong>${track.title}</strong><small>${track.artist || "未知歌手"}</small></span>
-          </button>
-        `).join("");
-      };
-
-      let controller = null;
-
-      const syncFromTrack = (track, preferredIndex = 0) => {
-        if (!track || !state.playlist.length) return;
-        const trackKey = getTrackKey(track);
-        const sameIndex = state.playlist[preferredIndex] && getTrackKey(state.playlist[preferredIndex]) === trackKey;
-        const nextIndex = sameIndex
-          ? preferredIndex
-          : state.playlist.findIndex((item) => getTrackKey(item) === trackKey);
-        if (nextIndex < 0) return;
-        state.index = nextIndex;
-        setTrackInfo(state.playlist[state.index]);
-        renderPlaylist();
-        updatePlaying();
-      };
-
-      const syncPeerWidgets = (track) => {
-        controllers.forEach((peer) => {
-          if (!peer || peer === controller || peer.sourceKey !== state.sourceKey) return;
-          peer.syncFromTrack?.(track, state.index);
-        });
-      };
-
-      const loadTrack = (index, autoplay = false) => {
-        if (!state.playlist.length) return;
-        state.index = (index + state.playlist.length) % state.playlist.length;
-        const track = state.playlist[state.index];
-        activeSourceKey = state.sourceKey;
-        window.__moranHomeMusicSourceKey = activeSourceKey;
-        setTrackInfo(track);
-        renderPlaylist();
-        if (!audioHasTrack(sharedAudio, track.url)) sharedAudio.src = track.url;
-        syncPeerWidgets(track);
-        writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(track), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: !sharedAudio.paused });
-        if (autoplay) {
-          sharedAudio.play().then(() => {
-            state.playing = true;
-            updatePlaying();
-          }).catch(() => {
-            // Browsers may block audible autoplay before a user gesture. This is expected,
-            // not a broken source, so keep the player ready without showing an error.
-            state.playing = false;
-            updatePlaying();
-          });
-        } else {
-          updatePlaying();
-        }
-      };
-
-      const updatePlaying = () => {
-        state.playing = !sharedAudio.paused;
-        widget.classList.toggle("is-playing", state.playing);
-        els.play.textContent = state.playing ? "⏸" : "▶";
-        els.play.setAttribute("aria-label", state.playing ? "暂停" : "播放");
-        if (els.cover) els.cover.style.animationPlayState = state.playing ? "running" : "paused";
-      };
-
-      const playCurrent = () => {
-        if (!state.playlist.length) return;
-        const track = state.playlist[state.index];
-        activeSourceKey = state.sourceKey;
-        window.__moranHomeMusicSourceKey = activeSourceKey;
-        if (!audioHasTrack(sharedAudio, track.url)) sharedAudio.src = track.url;
-        sharedAudio.volume = Number(els.volume?.value || config.volume || 0.7);
-        setTrackInfo(track);
-        renderPlaylist();
-        syncPeerWidgets(track);
-        writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(track), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: true });
-        sharedAudio.play().then(() => {
-          updatePlaying();
-          writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(track), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: true });
-        }).catch(() => showError("当前歌曲无法播放，可能是音源限制。"));
-      };
-
-      const next = () => {
-        if (state.playMode === "random" && state.playlist.length > 1) {
-          loadTrack(Math.floor(Math.random() * state.playlist.length), true);
-        } else {
-          loadTrack(state.index + 1, true);
-        }
-      };
-
-      const prev = () => loadTrack(state.index - 1, true);
-
-      let lastTimeupdateSave = 0;
-      const bindAudioEvents = () => {
-        sharedAudio.addEventListener("timeupdate", () => {
-          if (!state.playlist[state.index]) return;
-          const duration = sharedAudio.duration || 0;
-          const current = sharedAudio.currentTime || 0;
-          const pct = duration ? Math.min(100, (current / duration) * 100) : 0;
-          els.current.textContent = formatTime(current);
-          els.duration.textContent = formatTime(duration);
-          els.progressBar.style.width = `${pct}%`;
-          els.progress.setAttribute("aria-valuenow", String(Math.round(pct)));
-          const now = Date.now();
-          if (activeSourceKey === state.sourceKey && now - lastTimeupdateSave > 3000) {
-            lastTimeupdateSave = now;
-            writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: current, playMode: state.playMode, wasPlaying: !sharedAudio.paused });
-          }
-        });
-        sharedAudio.addEventListener("play", () => {
-          updatePlaying();
-          if (activeSourceKey === state.sourceKey && state.playlist[state.index]) {
-            writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: true });
-          }
-        });
-        sharedAudio.addEventListener("pause", () => {
-          updatePlaying();
-          if (activeSourceKey === state.sourceKey && state.playlist[state.index]) {
-            writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: false });
-          }
-        });
-        sharedAudio.addEventListener("ended", () => {
-          if (state.playMode === "one") loadTrack(state.index, true);
-          else next();
-        });
-      };
-
-      const fetchPlaylist = async () => {
-        try {
-          if (config.mode === "local" && Array.isArray(config.localPlaylist)) {
-            state.playlist = config.localPlaylist.map(normalizeTrack).filter((track) => track.url);
-          } else {
-            const meting = config.meting || {};
-            const apis = [meting.api, ...(meting.fallbackApis || [])].filter(Boolean);
-            let data = null;
-            for (const api of apis) {
-              try {
-                const res = await fetch(fillApiUrl(api, meting), { cache: "no-store", referrerPolicy: "no-referrer" });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                data = await res.json();
-                if (Array.isArray(data) && data.length) break;
-              } catch {
-                data = null;
-              }
-            }
-            state.playlist = Array.isArray(data) ? data.map(normalizeTrack).filter((track) => track.url) : [];
-          }
-          if (!state.playlist.length) throw new Error("empty playlist");
-          const restoredIndex = persisted.sourceKey === state.sourceKey
-            ? state.playlist.findIndex((track) => getTrackKey(track) === persisted.trackKey)
-            : -1;
-          const currentAudioIndex = sharedAudio.src
-            ? state.playlist.findIndex((track) => audioHasTrack(sharedAudio, track.url))
-            : -1;
-          const shouldRestore = restoredIndex >= 0;
-          const shouldReuseCurrentAudio = currentAudioIndex >= 0 && activeSourceKey === state.sourceKey;
-          const startIndex = shouldReuseCurrentAudio
-            ? currentAudioIndex
-            : shouldRestore
-              ? restoredIndex
-              : state.randomOnLoad
-                ? Math.floor(Math.random() * state.playlist.length)
-                : 0;
-          const shouldAutoplay = !shouldReuseCurrentAudio && (state.autoplay || (shouldRestore && persisted.wasPlaying === true));
-          loadTrack(startIndex, shouldAutoplay);
-          if (shouldRestore && !shouldReuseCurrentAudio && Number(persisted.currentTime) > 0) {
-            const restoreTime = () => {
-              if (Number.isFinite(sharedAudio.duration)) {
-                sharedAudio.currentTime = Math.min(Number(persisted.currentTime), Math.max(0, sharedAudio.duration - 1));
-              }
-              sharedAudio.removeEventListener("loadedmetadata", restoreTime);
-            };
-            sharedAudio.addEventListener("loadedmetadata", restoreTime);
-          }
-          els.artist.textContent = state.playlist[startIndex].artist || "暂未播放";
-        } catch {
-          els.artist.textContent = "歌单加载失败";
-          showError("Meting 歌单加载失败，可在 hugo.toml 配置本地音乐备用。");
-        }
-      };
+      const controller = { widget, sourceKey, els };
+      engine.controllers.push(controller);
 
       els.play?.addEventListener("click", () => {
-        if (sharedAudio.paused) playCurrent();
+        if (sharedAudio.paused) engine.playCurrent();
         else sharedAudio.pause();
       });
-      els.prev?.addEventListener("click", prev);
-      els.next?.addEventListener("click", next);
-      els.mode?.addEventListener("click", () => {
-        state.playMode = state.playMode === "list" ? "one" : state.playMode === "one" ? "random" : "list";
-        els.mode.textContent = state.playMode === "one" ? "①" : state.playMode === "random" ? "⌘" : "∞";
-        els.mode.title = state.playMode === "one" ? "单曲循环" : state.playMode === "random" ? "随机播放" : "列表循环";
-        els.mode.setAttribute("aria-label", els.mode.title);
-        writeMusicState({ sourceKey: state.sourceKey, trackKey: getTrackKey(state.playlist[state.index]), index: state.index, currentTime: sharedAudio.currentTime || 0, playMode: state.playMode, wasPlaying: !sharedAudio.paused });
-      });
+      els.prev?.addEventListener("click", engine.prev);
+      els.next?.addEventListener("click", engine.next);
+      els.mode?.addEventListener("click", engine.cyclePlayMode);
       els.volume?.addEventListener("input", () => {
-        sharedAudio.volume = Number(els.volume.value);
+        engine.setVolume(els.volume.value);
       });
       els.progress?.addEventListener("click", (event) => {
         const rect = els.progress.getBoundingClientRect();
         const pct = (event.clientX - rect.left) / rect.width;
-        if (Number.isFinite(sharedAudio.duration)) sharedAudio.currentTime = Math.max(0, Math.min(1, pct)) * sharedAudio.duration;
+        if (Number.isFinite(sharedAudio.duration) && rect.width > 0) {
+          sharedAudio.currentTime = Math.max(0, Math.min(1, pct)) * sharedAudio.duration;
+        }
       });
       els.listToggle?.addEventListener("click", () => {
-        els.playlist.hidden = !els.playlist.hidden;
+        if (els.playlist) els.playlist.hidden = !els.playlist.hidden;
       });
       els.playlist?.addEventListener("click", (event) => {
         const item = event.target.closest("[data-index]");
         if (!item) return;
-        loadTrack(Number(item.dataset.index), true);
+        engine.loadTrack(Number(item.dataset.index), true);
       });
 
-      controller = { widget, sourceKey: state.sourceKey, syncFromTrack };
-      controllers.push(controller);
-
-      bindAudioEvents();
-      fetchPlaylist();
+      engine.syncController(controller);
+      ensurePlaylistLoaded(config, sourceKey);
     });
   };
 
@@ -402,7 +581,9 @@
 
       let display = new Date();
       display.setDate(1);
+      let viewMode = "days";
       const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+      const weekdays = root.querySelector(".home-calendar__weekdays");
       const grid = root.querySelector("[data-calendar-grid]");
       const current = root.querySelector("[data-calendar-current]");
       const heatmap = root.querySelector("[data-calendar-heatmap]");
@@ -411,7 +592,9 @@
       const showPosts = (dateKey) => {
         const list = map.get(dateKey) || [];
         postsBox.hidden = !list.length;
-        postsBox.innerHTML = list.map((post) => `<a href="${post.url}"><strong>${post.title}</strong><small>${post.date}</small></a>`).join("");
+        postsBox.innerHTML = list
+          .map((post) => `<a href="${escapeHtml(post.url)}"><strong>${escapeHtml(post.title)}</strong><small>${escapeHtml(post.date)}</small></a>`)
+          .join("");
       };
 
       const renderHeatmap = () => {
@@ -434,37 +617,71 @@
       const render = () => {
         const year = display.getFullYear();
         const month = display.getMonth();
-        current.textContent = `${year} ${monthNames[month]}`;
-        const firstDay = new Date(year, month, 1).getDay();
-        const days = new Date(year, month + 1, 0).getDate();
-        const todayKey = new Date().toISOString().slice(0, 10);
-        const cells = [];
-        for (let i = 0; i < firstDay; i += 1) cells.push(`<span class="is-empty"></span>`);
-        for (let day = 1; day <= days; day += 1) {
-          const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-          const count = (map.get(key) || []).length;
-          cells.push(`<button type="button" class="${key === todayKey ? "is-today" : ""} ${count ? "has-post" : ""}" data-date="${key}" title="${count ? `${count} 篇文章` : key}">${day}${count ? `<small>${count}</small>` : ""}</button>`);
+        const nowDate = new Date();
+        const todayKey = `${nowDate.getFullYear()}-${String(nowDate.getMonth() + 1).padStart(2, "0")}-${String(nowDate.getDate()).padStart(2, "0")}`;
+
+        if (viewMode === "months") {
+          current.textContent = `${year} 年`;
+          if (weekdays) weekdays.hidden = true;
+          grid.classList.add("is-months");
+          const monthCounts = Array.from({ length: 12 }, () => 0);
+          posts.forEach((post) => {
+            if (post.dateObj.getFullYear() === year) monthCounts[post.dateObj.getMonth()] += 1;
+          });
+          grid.innerHTML = monthNames.map((label, idx) => {
+            const count = monthCounts[idx];
+            const isCurrent = year === nowDate.getFullYear() && idx === nowDate.getMonth();
+            const isSelected = idx === month;
+            return `<button type="button" class="${isCurrent ? "is-today" : ""} ${count ? "has-post" : ""} ${isSelected ? "is-selected" : ""}" data-pick-month="${idx}" title="${year} 年 ${label}${count ? `：${count} 篇文章` : ""}">${label}${count ? `<small>${count}</small>` : ""}</button>`;
+          }).join("");
+        } else {
+          current.textContent = `${year} ${monthNames[month]}`;
+          if (weekdays) weekdays.hidden = false;
+          grid.classList.remove("is-months");
+          const firstDay = new Date(year, month, 1).getDay();
+          const days = new Date(year, month + 1, 0).getDate();
+          const cells = [];
+          for (let i = 0; i < firstDay; i += 1) cells.push(`<span class="is-empty"></span>`);
+          for (let day = 1; day <= days; day += 1) {
+            const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            const count = (map.get(key) || []).length;
+            cells.push(`<button type="button" class="${key === todayKey ? "is-today" : ""} ${count ? "has-post" : ""}" data-date="${key}" title="${count ? `${count} 篇文章` : key}">${day}${count ? `<small>${count}</small>` : ""}</button>`);
+          }
+          grid.innerHTML = cells.join("");
         }
-        grid.innerHTML = cells.join("");
         renderHeatmap();
         postsBox.hidden = true;
         postsBox.innerHTML = "";
       };
 
+      current?.addEventListener("click", () => {
+        viewMode = viewMode === "days" ? "months" : "days";
+        render();
+      });
       root.querySelector("[data-calendar-prev]")?.addEventListener("click", () => {
-        display.setMonth(display.getMonth() - 1);
+        if (viewMode === "months") display.setFullYear(display.getFullYear() - 1);
+        else display.setMonth(display.getMonth() - 1);
         render();
       });
       root.querySelector("[data-calendar-next]")?.addEventListener("click", () => {
-        display.setMonth(display.getMonth() + 1);
+        if (viewMode === "months") display.setFullYear(display.getFullYear() + 1);
+        else display.setMonth(display.getMonth() + 1);
         render();
       });
       root.querySelector("[data-calendar-reset]")?.addEventListener("click", () => {
         display = new Date();
         display.setDate(1);
+        viewMode = "days";
         render();
       });
       grid.addEventListener("click", (event) => {
+        const monthBtn = event.target.closest("[data-pick-month]");
+        if (monthBtn) {
+          display.setMonth(Number(monthBtn.dataset.pickMonth));
+          viewMode = "days";
+          render();
+          return;
+        }
         const day = event.target.closest("[data-date]");
         if (day) showPosts(day.dataset.date);
       });
@@ -472,6 +689,7 @@
         const cell = event.target.closest("[data-month]");
         if (!cell) return;
         display.setMonth(Number(cell.dataset.month));
+        viewMode = "days";
         render();
       });
       render();

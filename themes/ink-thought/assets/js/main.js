@@ -63,17 +63,18 @@
       if (!frame || frame.dataset.giscusThemeBound === "1") return;
       frame.dataset.giscusThemeBound = "1";
       frame.addEventListener("load", setGiscusTheme);
+      setGiscusTheme();
     };
 
     bindFrame(document.querySelector("iframe.giscus-frame"));
 
     const observer = new MutationObserver(() => {
-      const frame = document.querySelector("iframe.giscus-frame");
-      if (!frame) return;
-      bindFrame(frame);
-      observer.disconnect();
+      document.querySelectorAll("iframe.giscus-frame").forEach(bindFrame);
     });
     observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("moran:page-load", () => {
+      document.querySelectorAll("iframe.giscus-frame").forEach(bindFrame);
+    });
   };
 
   const getStoredTheme = () => {
@@ -149,7 +150,7 @@
     });
 
     window.addEventListener("resize", () => {
-      if (window.innerWidth >= 768) setOpen(false);
+      if (window.innerWidth >= 1024) setOpen(false);
     });
   }
 })();
@@ -737,11 +738,17 @@
     };
 
     if (!restoreIfRequested() && !readState(url)) save(true);
-    const onScroll = () => save(false);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    articleScrollCleanup = () => window.removeEventListener("scroll", onScroll);
-    window.addEventListener("pagehide", () => save(true));
-    window.addEventListener("beforeunload", () => save(true));
+    const trackingController = new AbortController();
+    const { signal } = trackingController;
+    const safeSave = (force = false) => {
+      if (!document.contains(prose)) return;
+      save(force);
+    };
+    const onScroll = () => safeSave(false);
+    window.addEventListener("scroll", onScroll, { passive: true, signal });
+    window.addEventListener("pagehide", () => safeSave(true), { signal });
+    window.addEventListener("beforeunload", () => safeSave(true), { signal });
+    articleScrollCleanup = () => trackingController.abort();
   };
 
   const init = () => {
@@ -833,4 +840,90 @@
     enhanceImages();
   }
   document.addEventListener("moran:page-load", enhanceImages);
+})();
+
+(() => {
+  const KATEX_BASE = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/";
+
+  const ensureStylesheet = () => {
+    if (document.querySelector('link[href*="katex@0.16.11/dist/katex.min.css"]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `${KATEX_BASE}katex.min.css`;
+    link.crossOrigin = "anonymous";
+    document.head.appendChild(link);
+  };
+
+  const loadScriptOnce = (src) => new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${src}"]`);
+    if (existing) {
+      if (existing.dataset.loaded === "1") {
+        resolve();
+        return;
+      }
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error(`Failed to load ${src}`)), { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.crossOrigin = "anonymous";
+    script.async = true;
+    script.addEventListener("load", () => {
+      script.dataset.loaded = "1";
+      resolve();
+    }, { once: true });
+    script.addEventListener("error", () => reject(new Error(`Failed to load ${src}`)), { once: true });
+    document.head.appendChild(script);
+  });
+
+  const ensureKatexReady = () => {
+    if (typeof window.renderMathInElement === "function") return Promise.resolve();
+    if (window.__moranKatexPromise) return window.__moranKatexPromise;
+    window.__moranKatexPromise = (async () => {
+      if (typeof window.katex === "undefined") {
+        await loadScriptOnce(`${KATEX_BASE}katex.min.js`);
+      }
+      if (typeof window.renderMathInElement !== "function") {
+        await loadScriptOnce(`${KATEX_BASE}contrib/auto-render.min.js`);
+      }
+    })().catch((error) => {
+      window.__moranKatexPromise = null;
+      throw error;
+    });
+    return window.__moranKatexPromise;
+  };
+
+  const renderPageMath = async () => {
+    const main = document.getElementById("main");
+    if (!main || main.dataset.math !== "1") return;
+    const target = main.querySelector(".detail-prose") || main;
+    if (!target || target.dataset.mathRendered === "1") return;
+
+    ensureStylesheet();
+    try {
+      await ensureKatexReady();
+      if (!document.contains(target) || target.dataset.mathRendered === "1") return;
+      if (typeof window.renderMathInElement !== "function") return;
+      window.renderMathInElement(target, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+          { left: "\\[", right: "\\]", display: true },
+        ],
+        throwOnError: false,
+      });
+      target.dataset.mathRendered = "1";
+    } catch {
+      // ignore CDN load failures cleanly
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", renderPageMath);
+  } else {
+    renderPageMath();
+  }
+  document.addEventListener("moran:page-load", renderPageMath);
 })();

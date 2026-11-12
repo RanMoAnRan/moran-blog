@@ -666,8 +666,12 @@
       }
 
       .post-back-to-top {
-        right: max(24px, calc((100vw - var(--detail-layout-width, 1312px)) / 2 + 252px));
+        right: max(18px, calc((100vw - var(--detail-layout-width, 1148px)) / 2 - 64px));
         bottom: 96px;
+      }
+
+      .detail-container.has-post-toc .post-back-to-top {
+        right: max(24px, calc((100vw - var(--detail-layout-width, 1312px)) / 2 + 252px));
       }
 
       .post-toc {
@@ -1441,6 +1445,11 @@
 
 	  <script>
 	    (() => {
+		      window.__moranPostPageAbort?.abort();
+		      const postPageController = new AbortController();
+		      window.__moranPostPageAbort = postPageController;
+		      const { signal } = postPageController;
+
 	      const backLink = document.querySelector("[data-back-link]");
 	      const backLabel = backLink && backLink.querySelector("[data-back-label]");
 	      const homePath = "{{ site.Home.RelPermalink }}";
@@ -1458,9 +1467,9 @@
 
 	      if (backLink) {
 	        try {
-	          const referrer = document.referrer;
+		          const referrer = window.__moranPrevUrl || document.referrer;
 	          if (referrer) {
-	            const refUrl = new URL(referrer);
+		            const refUrl = new URL(referrer, window.location.href);
 	            if (refUrl.origin === window.location.origin) {
 	              backLink.setAttribute("href", refUrl.href);
 	              if (backLabel) backLabel.textContent = labelFromPath(refUrl.pathname);
@@ -1563,13 +1572,19 @@
         if (!shareRoot || !sharePopover || sharePopover.hidden) return;
         if (shareRoot.contains(event.target)) return;
         setPopoverOpen(false);
-      });
+      }, { signal });
 
       document.addEventListener("keydown", (event) => {
         if (event.key !== "Escape") return;
         if (!sharePopover || sharePopover.hidden) return;
         setPopoverOpen(false);
-      });
+      }, { signal });
+
+      document.addEventListener("moran:page-load", () => {
+        if (!document.querySelector(".post-detail-card")) {
+          postPageController.abort();
+        }
+      }, { signal });
 
       const likeKey = `ink-like:${window.location.pathname}`;
       const readLike = () => {

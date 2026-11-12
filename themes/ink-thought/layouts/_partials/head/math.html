@@ -5,15 +5,18 @@
   <script defer>
     document.addEventListener('DOMContentLoaded', function () {
       if (typeof renderMathInElement !== 'function') return;
-      renderMathInElement(document.body, {
+      var target = document.querySelector('.detail-prose') || document.body;
+      if (!target || target.dataset.mathRendered === '1') return;
+      renderMathInElement(target, {
         delimiters: [
           {left: '$$', right: '$$', display: true},
           {left: '$', right: '$', display: false},
-          {left: '\\\\(', right: '\\\\)', display: false},
-          {left: '\\\\[', right: '\\\\]', display: true}
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
         ],
         throwOnError: false
       });
+      target.dataset.mathRendered = '1';
     });
   </script>
 {{- end -}}

@@ -1,7 +1,7 @@
 {{ define "main" }}
   <div class="container rail-layout-container rail-layout-container--two archives-container archives-rail-container">
     <div class="rail-layout rail-layout--right">
-      <main class="rail-main content post-detail-container page-narrow">
+      <div class="rail-main content post-detail-container page-narrow">
       {{ $pages := where site.RegularPages "Section" "posts" }}
       <!-- 给首屏一个默认左右布局（JS 仍可切换），避免首次渲染闪烁成单列 -->
       <div class="archives-timeline" data-layout="split">
@@ -86,7 +86,7 @@
           </div>
         {{ end }}
       </div>
-      </main>
+      </div>
       <aside class="rail-sidebar rail-sidebar--right" aria-label="归档侧栏">
         {{ partial "rail/archive-summary.html" . }}
         {{ partial "rail/archive-years.html" . }}
@@ -1046,6 +1046,11 @@
 
   <script>
     (() => {
+      window.__moranArchivesAbort?.abort();
+      const archivesController = new AbortController();
+      window.__moranArchivesAbort = archivesController;
+      const { signal } = archivesController;
+
       // 换 key 以避免旧的本地缓存把布局锁死在“单列”
       const KEY = "ink-archives-layout-v2";
       const btn = document.querySelector("[data-archive-layout-toggle]");
@@ -1124,6 +1129,7 @@
           });
 
           yearGroups.forEach((group) => observer.observe(group));
+          signal.addEventListener("abort", () => observer.disconnect(), { once: true });
         }
 
         // 默认激活首个年份
@@ -1141,7 +1147,6 @@
       };
 
       initScrollSpy();
-      window.addEventListener("pjax:success", initScrollSpy, { once: true });
 
       // 回到顶部双通道控制（浮动按钮 + 侧栏 TOP 按钮）
       const initBackToTop = () => {
@@ -1187,7 +1192,7 @@
             }
           };
 
-          window.addEventListener("scroll", onScroll, { passive: true });
+          window.addEventListener("scroll", onScroll, { passive: true, signal });
           onScroll();
 
           backToTopBtn.addEventListener("click", (e) => {
@@ -1205,7 +1210,11 @@
       };
 
       initBackToTop();
-      window.addEventListener("pjax:success", initBackToTop, { once: true });
+      document.addEventListener("moran:page-load", () => {
+        if (!document.contains(timeline)) {
+          archivesController.abort();
+        }
+      }, { signal });
     })();
   </script>
 {{ end }}

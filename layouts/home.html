@@ -85,6 +85,11 @@
 
     <script>
       (() => {
+        window.__moranHomeRippleAbort?.abort();
+        const rippleController = new AbortController();
+        window.__moranHomeRippleAbort = rippleController;
+        const { signal } = rippleController;
+
         const hero = document.querySelector('[data-home-hero]');
         const canvas = document.querySelector('[data-hero-ripple]');
         if (!hero || !canvas || !canvas.getContext) return;
@@ -316,9 +321,10 @@
         };
 
         let ambientTimer = null;
+        let visibilityObserver = null;
 
         const triggerAmbientRipple = () => {
-          if (document.hidden || !isHeroVisible) return;
+          if (signal.aborted || document.hidden || !isHeroVisible) return;
           // 仅在当前没有过多活跃水波时产生优雅微澜
           if (ripples.length < 3) {
             const x = width * (0.18 + Math.random() * 0.64);
@@ -328,6 +334,7 @@
         };
 
         const startAmbientTimer = () => {
+          if (signal.aborted) return;
           if (ambientTimer) clearInterval(ambientTimer);
           ambientTimer = setInterval(triggerAmbientRipple, 4200);
         };
@@ -340,7 +347,7 @@
         };
 
         const wakeUp = () => {
-          if (isRunning || document.hidden || !isHeroVisible) return;
+          if (signal.aborted || isRunning || document.hidden || !isHeroVisible) return;
           isRunning = true;
           raf = requestAnimationFrame(draw);
         };
@@ -354,12 +361,13 @@
         };
 
         const boot = () => {
+          if (signal.aborted) return;
           resize();
           addRipple(width * 0.5, height * 0.46, 0.7);
           startAmbientTimer();
 
           if ('IntersectionObserver' in window) {
-            const visibilityObserver = new IntersectionObserver((entries) => {
+            visibilityObserver = new IntersectionObserver((entries) => {
               const entry = entries[0];
               isHeroVisible = Boolean(entry && entry.isIntersecting);
               if (isHeroVisible) {
@@ -372,7 +380,6 @@
             }, { rootMargin: '80px 0px', threshold: 0.01 });
 
             visibilityObserver.observe(hero);
-            window.addEventListener('pagehide', () => visibilityObserver.disconnect(), { once: true });
           } else {
             isHeroVisible = true;
             wakeUp();
@@ -384,8 +391,12 @@
         hero.addEventListener('pointerleave', () => {
           pointer.active = false;
         }, { passive: true });
-        window.addEventListener('resize', resize, { passive: true });
+        window.addEventListener('resize', resize, { passive: true, signal });
         document.addEventListener('visibilitychange', () => {
+          if (!document.contains(hero)) {
+            rippleController.abort();
+            return;
+          }
           if (document.hidden) {
             stopAmbientTimer();
             stop();
@@ -393,7 +404,18 @@
             startAmbientTimer();
             if (ripples.length > 0 || pointer.active) wakeUp();
           }
-        });
+        }, { signal });
+
+        signal.addEventListener('abort', () => {
+          stopAmbientTimer();
+          stop();
+          visibilityObserver?.disconnect();
+          visibilityObserver = null;
+        }, { once: true });
+
+        document.addEventListener('moran:page-load', () => {
+          if (!document.contains(hero)) rippleController.abort();
+        }, { signal });
 
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(boot), { once: true });
@@ -402,9 +424,8 @@
         }
 
         window.addEventListener('pagehide', () => {
-          stopAmbientTimer();
-          stop();
-        }, { once: true });
+          rippleController.abort();
+        }, { once: true, signal });
       })();
     </script>
 

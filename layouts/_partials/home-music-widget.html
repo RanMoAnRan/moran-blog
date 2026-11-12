@@ -37,7 +37,7 @@
   {{- range readDir $musicStaticDir -}}
     {{- if not .IsDir -}}
       {{- $ext := lower (path.Ext .Name) -}}
-      {{- if in (slice ".mp3" ".m4a" ".ogg" ".wav" ".flac") $ext -}}
+      {{- if in (slice ".mp3" ".m4a" ".aac" ".ogg" ".wav" ".flac") $ext -}}
         {{- $base := strings.TrimSuffix $ext .Name -}}
         {{- $url := printf "%s/%s" $musicDir .Name | relURL -}}
         {{- $cover := "" -}}

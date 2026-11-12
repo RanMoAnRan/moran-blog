@@ -1,13 +1,6 @@
 [[groups]]
-name = "常用网站"
-desc = "工具、资料与灵感入口。"
-
-  [[groups.sites]]
-  name = "App Store Price"
-  url = "https://appstoreprice.org/zh/apps"
-  desc = "浏览热门 App 的全球价格对比，辅助查看订阅套餐和低价区信息。"
-  tags = ["App Store", "价格对比", "订阅"]
-  accent = "blue"
+name = "AI 模型与评测"
+desc = "模型比价、中转测活、实盘实验与 AI 工具导航。"
 
   [[groups.sites]]
   name = "PriceAI"
@@ -15,6 +8,7 @@ desc = "工具、资料与灵感入口。"
   desc = "聚合 AI 官方订阅、卡网订阅、官方 API 与中转 API 的价格、库存和来源信息。"
   tags = ["AI", "订阅比价", "API"]
   accent = "amber"
+  pinned = true
 
   [[groups.sites]]
   name = "真测 Ztest"
@@ -24,52 +18,10 @@ desc = "工具、资料与灵感入口。"
   accent = "teal"
 
   [[groups.sites]]
-  name = "Hero SMS"
-  url = "https://hero-sms.com/cn"
-  desc = "在线接收短信验证码与临时号码服务入口，覆盖多国家号码和常见平台注册验证场景。"
-  tags = ["SMS", "验证码", "临时号码"]
-  accent = "amber"
-
-  [[groups.sites]]
-  name = "Agent Skills Directory"
-  url = "https://www.skills.sh/"
-  desc = "发现和安装 AI Agent 技能的目录站，适合查找可复用的 Agent 能力扩展。"
-  tags = ["AI Agent", "Skills", "工具目录"]
-  accent = "violet"
-
-  [[groups.sites]]
-  name = "DeepWiki"
-  url = "https://deepwiki.com/"
-  desc = "为 GitHub 仓库生成可对话的 AI 文档，适合快速理解项目结构、源码和使用方式。"
-  tags = ["AI 文档", "GitHub", "代码理解"]
-  accent = "blue"
-
-  [[groups.sites]]
   name = "Nof1"
   url = "https://nof1.ai/"
   desc = "AI 模型真实市场交易表现基准与实验平台，用于观察不同模型在实盘环境中的交易行为。"
   tags = ["AI", "交易实验", "Benchmark"]
-  accent = "teal"
-
-  [[groups.sites]]
-  name = "SkillsMP"
-  url = "https://skillsmp.com/zh"
-  desc = "Agent Skills 市场，浏览兼容 Claude Code、Codex CLI 和 ChatGPT 的 SKILL.md 技能。"
-  tags = ["AI Agent", "Skills", "市场"]
-  accent = "violet"
-
-  [[groups.sites]]
-  name = "tools.video"
-  url = "https://tools.video/zh-CN"
-  desc = "免费在线音视频工具集合，支持压缩、转换、裁剪、合并等操作，本地处理更保护隐私。"
-  tags = ["视频工具", "音频工具", "本地处理"]
-  accent = "amber"
-
-  [[groups.sites]]
-  name = "站联"
-  url = "https://www.zhanlian.net/"
-  desc = "跨境电商和独立站服务平台，关注行业动态、优秀品牌、建站与运营推广。"
-  tags = ["跨境电商", "独立站", "外贸"]
   accent = "teal"
 
   [[groups.sites]]
@@ -80,14 +32,298 @@ desc = "工具、资料与灵感入口。"
   accent = "violet"
 
   [[groups.sites]]
+  name = "Artificial Analysis"
+  url = "https://artificialanalysis.ai/"
+  desc = "独立大模型与 API 供应商性能基准站，对比各家模型的智能评分、吞吐速度与延迟单价。"
+  tags = ["AI", "Benchmark", "订阅比价"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "OpenRouter"
+  url = "https://openrouter.ai/"
+  desc = "主流大模型统一 API 聚合路由与模型目录，支持实时查看各家调用价格、上下文与可用性。"
+  tags = ["AI", "API", "订阅比价"]
+  accent = "violet"
+
+  [[groups.sites]]
+  name = "硅基流动 SiliconFlow"
+  url = "https://www.siliconflow.cn/"
+  desc = "国内常用的大模型推理与开源模型 API 聚合平台，提供高性价比云端推理与测活对比。"
+  tags = ["AI", "API", "大模型"]
+  accent = "emerald"
+
+  [[groups.sites]]
+  name = "LMArena (Arena)"
+  url = "https://arena.ai/"
+  desc = "原 LMSYS 大模型匿名盲测竞技场，基于真实人类双盲投票的权威模型 Elo 排行榜。"
+  tags = ["AI", "Benchmark", "模型验证"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "LiveBench"
+  url = "https://livebench.ai/"
+  desc = "持续更新题库的抗污染大模型基准榜单，覆盖推理、编程、数学与指令遵循能力评测。"
+  tags = ["AI", "Benchmark", "模型验证"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "AI工具集 AI-Bot"
+  url = "https://ai-bot.cn/"
+  desc = "国内收录齐全的 AI 工具集合导航与资讯站，覆盖写作、绘图、编程、视频等常见分类。"
+  tags = ["AI 导航", "AIGC", "工具集合"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "AIBase"
+  url = "https://www.aibase.com/zh"
+  desc = "中文 AI 产品库与日报聚合平台，方便追踪国内外最新 AI 工具上架、模型动态与案例。"
+  tags = ["AI 导航", "AIGC", "大模型"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "WaytoAGI"
+  url = "https://www.waytoagi.com/"
+  desc = "开源共创型中文 AI 知识库与工具导航站，系统整理 AI 入门路径、提示词与实战案例。"
+  tags = ["AI 导航", "工具集合", "知识库"]
+  accent = "emerald"
+
+  [[groups.sites]]
+  name = "Hugging Face Spaces"
+  url = "https://huggingface.co/spaces"
+  desc = "开源 AI 模型与交互式 Demo 在线体验广场，第一时间试玩社区最新模型与开源应用。"
+  tags = ["AI", "开源", "大模型"]
+  accent = "amber"
+
+[[groups]]
+name = "Agent 与开发生态"
+desc = "Skills 市场、MCP 协议目录与 GitHub 代码理解。"
+
+  [[groups.sites]]
+  name = "Agent Skills Directory"
+  url = "https://www.skills.sh/"
+  desc = "发现和安装 AI Agent 技能的目录站，适合查找可复用的 Agent 能力扩展。"
+  tags = ["AI Agent", "Skills", "工具目录"]
+  accent = "violet"
+  pinned = true
+
+  [[groups.sites]]
+  name = "SkillsMP"
+  url = "https://skillsmp.com/zh"
+  desc = "Agent Skills 市场，浏览兼容 Claude Code、Codex CLI 和 ChatGPT 的 SKILL.md 技能。"
+  tags = ["AI Agent", "Skills", "市场"]
+  accent = "violet"
+
+  [[groups.sites]]
   name = "MCP Servers"
   url = "https://mcp.so/"
   desc = "MCP Server 聚合目录，用于搜索和发现可增强 AI 能力的 Model Context Protocol 服务。"
   tags = ["MCP", "AI Agent", "工具目录"]
   accent = "blue"
+
+  [[groups.sites]]
+  name = "DeepWiki"
+  url = "https://deepwiki.com/"
+  desc = "为 GitHub 仓库生成可对话的 AI 文档，适合快速理解项目结构、源码和使用方式。"
+  tags = ["AI 文档", "GitHub", "代码理解"]
+  accent = "blue"
+  pinned = true
+
+  [[groups.sites]]
+  name = "Smithery"
+  url = "https://www.smithery.ai/"
+  desc = "主流 MCP Server 分发与托管市场，支持按客户端生成一键安装与接入配置命令。"
+  tags = ["MCP", "AI Agent", "市场"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "Glama MCP"
+  url = "https://glama.ai/mcp/servers"
+  desc = "体量庞大的开源 MCP 注册表，提供协议工具清单、质量评级与安全检查详情。"
+  tags = ["MCP", "开源", "工具目录"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "PulseMCP"
+  url = "https://www.pulsemcp.com/"
+  desc = "聚焦 MCP 生态动态的发现目录与周报站点，持续追踪新上架的服务端与客户端支持。"
+  tags = ["MCP", "AI Agent", "工具目录"]
+  accent = "emerald"
+
+  [[groups.sites]]
+  name = "MCP 官方文档"
+  url = "https://modelcontextprotocol.io/"
+  desc = "Model Context Protocol 官方规范文档，包含架构概念、协议标准与多语言 SDK 指南。"
+  tags = ["MCP", "AI 文档", "开发规范"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "ClawHub"
+  url = "https://clawhub.ai/"
+  desc = "面向 OpenClaw 等 Agent 运行时的公开 Skills 技能市场，可检索并安装各类可复用技能包。"
+  tags = ["AI Agent", "Skills", "市场"]
+  accent = "violet"
+
+  [[groups.sites]]
+  name = "Cursor Directory"
+  url = "https://cursor.directory/"
+  desc = "开发者规则与配置目录，汇总主流语言和框架的 Rules 约束模板、Prompt 与 MCP 配置。"
+  tags = ["AI Agent", "Skills", "开发规则"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "Context7"
+  url = "https://context7.com/"
+  desc = "为 AI Coding Agent 按具体库版本实时注入最新官方文档上下文，减少幻觉与过时 API。"
+  tags = ["AI 文档", "MCP", "代码理解"]
+  accent = "emerald"
+
+  [[groups.sites]]
+  name = "Zread"
+  url = "https://zread.ai/"
+  desc = "智谱推出的 GitHub 仓库 AI 深度阅读与架构解构平台，中文源码梳理体验顺滑。"
+  tags = ["AI 文档", "GitHub", "代码理解"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "Gitingest"
+  url = "https://gitingest.com/"
+  desc = "将任意 GitHub 仓库一键转为结构化纯文本摘要，方便直接粘贴给大模型分析项目。"
+  tags = ["GitHub", "代码理解", "开源"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "Repomix"
+  url = "https://repomix.com/"
+  desc = "把本地或远程仓库打包成 AI 友好的单文件上下文，支持过滤规则与 Token 占用统计。"
+  tags = ["GitHub", "代码理解", "开源"]
+  accent = "violet"
+
+[[groups]]
+name = "效率工具与业务"
+desc = "全球比价、音视频处理、临时接码与常用业务站点。"
+
+  [[groups.sites]]
+  name = "App Store Price"
+  url = "https://appstoreprice.org/zh/apps"
+  desc = "浏览热门 App 的全球价格对比，辅助查看订阅套餐和低价区信息。"
+  tags = ["App Store", "价格对比", "订阅"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "tools.video"
+  url = "https://tools.video/zh-CN"
+  desc = "免费在线音视频工具集合，支持压缩、转换、裁剪、合并等操作，本地处理更保护隐私。"
+  tags = ["视频工具", "音频工具", "本地处理"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "Hero SMS"
+  url = "https://hero-sms.com/cn"
+  desc = "在线接收短信验证码与临时号码服务入口，覆盖多国家号码和常见平台注册验证场景。"
+  tags = ["SMS", "验证码", "临时号码"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "站联"
+  url = "https://www.zhanlian.net/"
+  desc = "跨境电商和独立站服务平台，关注行业动态、优秀品牌、建站与运营推广。"
+  tags = ["跨境电商", "独立站", "外贸"]
+  accent = "teal"
+
   [[groups.sites]]
   name = "幼博连读"
   url = "https://youboliandu.com/"
   desc = "面向幼儿教育与亲子阅读的内容项目，提供阅读启蒙与学习相关内容。"
   tags = ["教育", "阅读", "项目"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "IT Tools"
+  url = "https://it-tools.tech/"
+  desc = "开源极客在线工具箱，集成 JSON 格式化、正则调试、编解码、Token 解析等 80+ 工具。"
+  tags = ["开发工具", "开源", "本地处理"]
+  accent = "emerald"
+
+  [[groups.sites]]
+  name = "VERT.sh"
+  url = "https://vert.sh/"
+  desc = "开源无广告文件格式转换器，图片、音频与文档优先在浏览器本地安全转换。"
+  tags = ["视频工具", "音频工具", "本地处理"]
+  accent = "violet"
+
+  [[groups.sites]]
+  name = "Squoosh"
+  url = "https://squoosh.app/"
+  desc = "Google 开源纯前端图像压缩工具，支持 WebP/AVIF 转码与拖动分屏画质对比。"
+  tags = ["图像工具", "本地处理", "开源"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "Cobalt"
+  url = "https://cobalt.tools/"
+  desc = "简洁无广告的多平台音视频解析与保存工具，专注纯下载体验而无繁杂弹窗。"
+  tags = ["视频工具", "音频工具", "开源"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "iLoveIMG"
+  url = "https://www.iloveimg.com/zh-cn"
+  desc = "一站式中文在线图片批处理套件，支持批量压缩、调整尺寸、裁剪、去背与格式转换。"
+  tags = ["图像工具", "在线处理", "效率工具"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "iLovePDF"
+  url = "https://www.ilovepdf.com/zh-cn"
+  desc = "常用中文在线 PDF 工具集，提供 PDF 合并、拆分、压缩、OCR 与 Office 互转。"
+  tags = ["文档工具", "在线处理", "效率工具"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "Excalidraw"
+  url = "https://excalidraw.com/"
+  desc = "手绘风开源在线白板，适合随手绘制系统架构草图、流程图与技术配图。"
+  tags = ["白板绘图", "本地处理", "开源"]
+  accent = "violet"
+
+  [[groups.sites]]
+  name = "PairDrop"
+  url = "https://pairdrop.net/"
+  desc = "基于 WebRTC 的跨平台网页端局域网与公网文件快传工具，免注册即开即传。"
+  tags = ["文件传输", "本地处理", "开源"]
+  accent = "teal"
+
+  [[groups.sites]]
+  name = "Ray.so"
+  url = "https://ray.so/"
+  desc = "Raycast 出品的高颜值代码片段截图与极简图标生成工具，适合写文章做配图。"
+  tags = ["开发工具", "效率工具", "配图"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "SteamDB"
+  url = "https://steamdb.info/"
+  desc = "Steam 全球低价区价格对比与历史最低价查询数据库，跨区比价必备参考站点。"
+  tags = ["价格对比", "订阅", "数据库"]
+  accent = "blue"
+
+  [[groups.sites]]
+  name = "5SIM"
+  url = "https://5sim.net/"
+  desc = "覆盖多国号码与主流平台的在线虚拟短信接码备选站，适合注册验证与测试场景。"
+  tags = ["SMS", "验证码", "临时号码"]
+  accent = "amber"
+
+  [[groups.sites]]
+  name = "AMZ123"
+  url = "https://www.amz123.com/"
+  desc = "跨境电商与独立站卖家导航门户，聚合选品工具、收款物流、建站与行业快讯。"
+  tags = ["跨境电商", "独立站", "外贸"]
+  accent = "emerald"
+
+  [[groups.sites]]
+  name = "PING0.CC"
+  url = "https://ping0.cc/"
+  desc = "高精度 IP 归属地、风控纯净度、原生住宅属性检测与服务器网络监控查询工具。"
+  tags = ["网络检测", "IP 查询", "工具"]
   accent = "teal"

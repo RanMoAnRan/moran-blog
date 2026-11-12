@@ -55,7 +55,7 @@
 
 <meta property="og:title" content="{{ $pageTitle }}">
 {{ with $descPlain }}<meta property="og:description" content="{{ . }}">{{ end }}
-<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:type" content="{{ if and .IsPage (or (eq .Section "posts") (not .Date.IsZero)) }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:site_name" content="{{ site.Title }}">
 <meta property="og:locale" content="{{ site.Language.LanguageCode }}">
@@ -69,7 +69,7 @@
 {{ with $descPlain }}<meta name="twitter:description" content="{{ . }}">{{ end }}
 {{ with $image }}<meta name="twitter:image" content="{{ . }}">{{ end }}
 
-{{- if .IsPage -}}
+{{- if and .IsPage (or (eq .Section "posts") (not .Date.IsZero)) -}}
   <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05-07:00" }}">
   {{- with .Lastmod -}}
     <meta property="article:modified_time" content="{{ .Format "2006-01-02T15:04:05-07:00" }}">
@@ -92,11 +92,11 @@
 {{- if $image -}}
   {{- $schema = merge $schema (dict "image" (slice $image)) -}}
 {{- end -}}
-{{- if .IsPage -}}
+{{- if and .IsPage (not .Date.IsZero) -}}
   {{- $schema = merge $schema (dict "datePublished" (.Date.Format "2006-01-02T15:04:05-07:00")) -}}
 {{- end -}}
-{{- with .Lastmod -}}
-  {{- $schema = merge $schema (dict "dateModified" (.Format "2006-01-02T15:04:05-07:00")) -}}
+{{- if and .IsPage (not .Lastmod.IsZero) -}}
+  {{- $schema = merge $schema (dict "dateModified" (.Lastmod.Format "2006-01-02T15:04:05-07:00")) -}}
 {{- end -}}
 {{- $schema = merge $schema (dict "author" (dict "@type" "Person" "name" $authorName)) -}}
 {{- if eq $schemaType "BlogPosting" -}}
@@ -107,7 +107,7 @@
   {{- end -}}
 {{- end -}}
 <script type="application/ld+json">
-{{- $schema | jsonify -}}
+{{- $schema | jsonify | safeJS -}}
 </script>
 
 {{ partialCached "head/css.html" . }}

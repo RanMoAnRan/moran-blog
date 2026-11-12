@@ -3,6 +3,16 @@
   const mainSelector = "#main";
   const cache = new Map();
   let navigating = false;
+  let currentDocUrl = `${window.location.pathname}${window.location.search}`;
+
+  if (!history.state || !history.state.pjax) {
+    try {
+      history.replaceState({ pjax: true, prevUrl: document.referrer || "" }, "", window.location.href);
+    } catch {
+      // ignore history errors
+    }
+  }
+  window.__moranPrevUrl = history.state?.prevUrl || document.referrer || "";
 
   const sameOrigin = (url) => url.origin === window.location.origin;
 
@@ -28,6 +38,7 @@
       bodyClass: doc.body?.className || "",
       mainHTML: nextMain.innerHTML,
       mainClass: nextMain.className || "site-main",
+      mainMath: nextMain.dataset?.math || "",
     };
   };
 
@@ -52,6 +63,10 @@
       try {
         const script = document.createElement("script");
         Array.from(oldScript.attributes).forEach((attr) => script.setAttribute(attr.name, attr.value));
+        if (src.includes("giscus.app/client.js")) {
+          const giscusTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark_dimmed" : "light";
+          script.setAttribute("data-theme", giscusTheme);
+        }
         script.textContent = oldScript.textContent;
         oldScript.replaceWith(script);
       } catch (error) {
@@ -123,6 +138,8 @@
     document.title = page.title;
     document.body.className = page.bodyClass;
     main.className = page.mainClass;
+    if (page.mainMath) main.dataset.math = page.mainMath;
+    else delete main.dataset.math;
     main.innerHTML = page.mainHTML;
 
     try { runMainScripts(main); } catch (error) { console.warn("[moran-pjax] page scripts failed", error); }
@@ -163,7 +180,14 @@
     }
 
     try {
-      if (!options.replace) history.pushState({ pjax: true }, "", url.href);
+      const prevUrl = window.location.href;
+      if (!options.replace) {
+        history.pushState({ pjax: true, prevUrl }, "", url.href);
+        window.__moranPrevUrl = prevUrl;
+      } else {
+        window.__moranPrevUrl = history.state?.prevUrl || "";
+      }
+      currentDocUrl = `${url.pathname}${url.search}`;
       applyPage(page, url, options);
       window.__moranPjaxLast = { url: url.href, status: "applied" };
     } catch (error) {
@@ -180,14 +204,51 @@
     if (event.defaultPrevented || isModifiedClick(event)) return;
     const link = event.target.closest?.("a[href]");
     if (!link) return;
+    if (link.dataset.historyBack === "1") {
+      const prev = window.__moranPrevUrl || "";
+      let hasPrevInSite = false;
+      if (prev) {
+        try { hasPrevInSite = new URL(prev, window.location.href).origin === window.location.origin; } catch {}
+      } else if (window.history.length > 1 && document.referrer) {
+        try { hasPrevInSite = new URL(document.referrer).origin === window.location.origin; } catch {}
+      }
+      if (hasPrevInSite) {
+        event.preventDefault();
+        window.history.back();
+        return;
+      }
+    }
     const url = new URL(link.getAttribute("href"), window.location.href);
     if (shouldSkipLink(link, url)) return;
     event.preventDefault();
     visit(url);
   }, true);
 
+  document.addEventListener("submit", (event) => {
+    if (event.defaultPrevented) return;
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    if (form.dataset.noPjax === "1") return;
+    if ((form.method || "get").toLowerCase() !== "get") return;
+    if (form.target && form.target !== "_self") return;
+
+    const action = new URL(form.getAttribute("action") || window.location.pathname, window.location.href);
+    if (!sameOrigin(action)) return;
+
+    const params = new URLSearchParams(new FormData(form));
+    action.search = params.toString();
+    event.preventDefault();
+    visit(action);
+  });
+
   window.addEventListener("popstate", () => {
-    visit(new URL(window.location.href), { replace: true, preserveScroll: false });
+    const nextUrl = new URL(window.location.href);
+    const nextDocUrl = `${nextUrl.pathname}${nextUrl.search}`;
+    if (nextDocUrl === currentDocUrl) {
+      window.__moranPrevUrl = history.state?.prevUrl || window.__moranPrevUrl || "";
+      return;
+    }
+    visit(nextUrl, { replace: true, preserveScroll: false });
   });
 
   window.moranPjax = { visit };

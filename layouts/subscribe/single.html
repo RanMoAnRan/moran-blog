@@ -5,7 +5,7 @@
         {{ partial "home-profile-widget.html" . }}
         {{ partial "rail/subscribe-guide.html" . }}
       </aside>
-      <main class="rail-main content post-detail-container subscribe-page posts-page">
+      <div class="rail-main content post-detail-container subscribe-page posts-page">
       {{- $feeds := site.Data.subscriptions.feeds | default (slice) -}}
       {{- $accents := slice "violet" "teal" "pink" "amber" -}}
       {{- if eq (len $feeds) 0 -}}
@@ -40,52 +40,75 @@
                 {{- $accent := index $accents (mod $i (len $accents)) -}}
                 {{- $itemsRaw := slice -}}
                 {{- $items := slice -}}
-                {{- $remote := try (resources.GetRemote .url (dict "headers" (dict "User-Agent" "Mozilla/5.0" "Accept" "application/rss+xml,application/atom+xml,application/xml,text/xml,*/*"))) -}}
-                {{- $remoteErr := $remote.Err -}}
+                {{- $candidateUrls := slice -}}
+                {{- with .url -}}{{- $candidateUrls = $candidateUrls | append . -}}{{- end -}}
+                {{- with .fallbackUrl -}}{{- $candidateUrls = $candidateUrls | append . -}}{{- end -}}
+                {{- with .fallbackUrls -}}
+                  {{- range . -}}{{- $candidateUrls = $candidateUrls | append . -}}{{- end -}}
+                {{- end -}}
+                {{- $remoteErr := "" -}}
                 {{- $parseErr := "" -}}
-                {{- if not $remoteErr -}}
-                  {{- with $remote.Value -}}
-                    {{- $xml := .Content | replaceRE "[[:cntrl:]]" "" -}}
-                    {{- $parsed := try (transform.Unmarshal (dict "format" "xml") $xml) -}}
-                    {{- $parseErr = $parsed.Err -}}
-                    {{- if not $parseErr -}}
-                      {{- $data := $parsed.Value -}}
-                      {{- $feed := or $data.feed (index $data "atom:feed") -}}
-                      {{- if $feed -}}
-                        {{- if reflect.IsSlice $feed -}}
-                          {{- $feed = index $feed 0 -}}
-                        {{- end -}}
-                        {{- with $feed.entry -}}
-                          {{- $itemsRaw = . -}}
-                        {{- end -}}
-                      {{- end -}}
-                      {{- if not $itemsRaw -}}
-                        {{- $rss := or $data.rss (index $data "rss") -}}
-                        {{- if $rss -}}
-                          {{- $channel := $rss.channel -}}
-                          {{- if reflect.IsSlice $channel -}}
-                            {{- $channel = index $channel 0 -}}
+                {{- $htmlBlocked := false -}}
+                {{- range $candidateUrls -}}
+                  {{- if eq (len $itemsRaw) 0 -}}
+                    {{- $remoteErr = "" -}}
+                    {{- $parseErr = "" -}}
+                    {{- $remote := try (resources.GetRemote . (dict "headers" (dict "User-Agent" "Mozilla/5.0" "Accept" "application/rss+xml,application/atom+xml,application/xml,text/xml,*/*"))) -}}
+                    {{- $remoteErr = $remote.Err -}}
+                    {{- if not $remoteErr -}}
+                      {{- with $remote.Value -}}
+                        {{- $raw := .Content -}}
+                        {{- $subType := lower (.MediaType.SubType | default "") -}}
+                        {{- $looksHtml := or (eq $subType "html") (gt (len (findRE `(?is)^\s*(?:<!doctype\s+html|<html[\s>])` $raw)) 0) -}}
+                        {{- if $looksHtml -}}
+                          {{- $htmlBlocked = true -}}
+                          {{- $parseErr = "上游返回了网页或验证页（非 RSS XML）" -}}
+                        {{- else -}}
+                          {{- $htmlBlocked = false -}}
+                          {{- $xml := $raw | replaceRE `[\x00-\x08\x0B\x0C\x0E-\x1F]` "" -}}
+                          {{- $parsed := try (transform.Unmarshal (dict "format" "xml") $xml) -}}
+                          {{- $parseErr = $parsed.Err -}}
+                          {{- if not $parseErr -}}
+                            {{- $data := $parsed.Value -}}
+                            {{- $atom := or $data.feed (index $data "atom:feed") -}}
+                            {{- if $atom -}}
+                              {{- if reflect.IsSlice $atom -}}
+                                {{- $atom = index $atom 0 -}}
+                              {{- end -}}
+                              {{- with $atom.entry -}}
+                                {{- $itemsRaw = . -}}
+                              {{- end -}}
+                            {{- end -}}
+                            {{- if not $itemsRaw -}}
+                              {{- $rss := or $data.rss (index $data "rss") -}}
+                              {{- if $rss -}}
+                                {{- $channel := $rss.channel -}}
+                                {{- if reflect.IsSlice $channel -}}
+                                  {{- $channel = index $channel 0 -}}
+                                {{- end -}}
+                                {{- with $channel.item -}}
+                                  {{- $itemsRaw = . -}}
+                                {{- end -}}
+                              {{- end -}}
+                            {{- end -}}
+                            {{- if not $itemsRaw -}}
+                              {{- $channel := $data.channel -}}
+                              {{- if $channel -}}
+                                {{- if reflect.IsSlice $channel -}}
+                                  {{- $channel = index $channel 0 -}}
+                                {{- end -}}
+                                {{- with $channel.item -}}
+                                  {{- $itemsRaw = . -}}
+                                {{- end -}}
+                              {{- end -}}
+                            {{- end -}}
+                            {{- if not $itemsRaw -}}
+                              {{- $rdf := or (index $data "rdf:RDF") (index $data "rdf") -}}
+                              {{- with $rdf.item -}}
+                                {{- $itemsRaw = . -}}
+                              {{- end -}}
+                            {{- end -}}
                           {{- end -}}
-                          {{- with $channel.item -}}
-                            {{- $itemsRaw = . -}}
-                          {{- end -}}
-                        {{- end -}}
-                      {{- end -}}
-                      {{- if not $itemsRaw -}}
-                        {{- $channel := $data.channel -}}
-                        {{- if $channel -}}
-                          {{- if reflect.IsSlice $channel -}}
-                            {{- $channel = index $channel 0 -}}
-                          {{- end -}}
-                          {{- with $channel.item -}}
-                            {{- $itemsRaw = . -}}
-                          {{- end -}}
-                        {{- end -}}
-                      {{- end -}}
-                      {{- if not $itemsRaw -}}
-                        {{- $rdf := or (index $data "rdf:RDF") (index $data "rdf") -}}
-                        {{- with $rdf.item -}}
-                          {{- $itemsRaw = . -}}
                         {{- end -}}
                       {{- end -}}
                     {{- end -}}
@@ -160,13 +183,24 @@
                     </ul>
                   {{ else }}
                     <div class="feed-empty">
+                      <div class="feed-empty__row">
+                        <span>
+                          {{- if $htmlBlocked -}}
+                            当前订阅源上游启用了网页验证，暂无法自动抓取文章列表。
+                          {{- else if or $remoteErr $parseErr -}}
+                            读取失败，请稍后再试。
+                          {{- else -}}
+                            暂时无法解析该源内容。
+                          {{- end -}}
+                        </span>
+                        {{ with .site }}
+                          <a class="feed-empty__link" href="{{ . }}" target="_blank" rel="noopener noreferrer">前往原站查看 ↗</a>
+                        {{ end }}
+                      </div>
                       {{- if or $remoteErr $parseErr -}}
-                        读取失败，请稍后再试。
                         {{- if hugo.IsDevelopment -}}
                           <span class="feed-empty__err">{{ $remoteErr | default $parseErr }}</span>
                         {{- end -}}
-                      {{- else -}}
-                        暂时无法解析该源内容。
                       {{- end -}}
                     </div>
                   {{ end }}
@@ -176,7 +210,7 @@
           </section>
         </div>
       {{- end -}}
-      </main>
+      </div>
       <aside class="rail-sidebar rail-sidebar--right" aria-label="订阅侧栏">
         {{ partial "rail/recent-posts.html" (dict "limit" 4) }}
       </aside>
@@ -462,6 +496,34 @@
       border-radius: var(--radius);
       background: var(--panel-muted);
       padding: 14px 16px;
+    }
+
+    .feed-empty__row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .feed-empty__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text-main);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .feed-empty__link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
     .feed-empty__err {

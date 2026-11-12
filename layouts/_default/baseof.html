@@ -8,7 +8,7 @@
 
   {{ partial "header.html" . }}
 
-  <main id="main" class="site-main">
+  <main id="main" class="site-main"{{ if or .Params.math site.Params.math }} data-math="1"{{ end }}>
     {{ block "main" . }}{{ end }}
   </main>
 

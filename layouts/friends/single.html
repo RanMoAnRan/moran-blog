@@ -1,7 +1,7 @@
 {{ define "main" }}
   {{- $friends := site.Data.friends.friends | default (slice) -}}
   <div class="container friends-container">
-    <main class="content post-detail-container friends-page" aria-labelledby="friends-title">
+    <div class="content post-detail-container friends-page" aria-labelledby="friends-title">
       <header class="friends-header">
         <h1 id="friends-title">友链</h1>
         <p>这里是我的朋友们，欢迎互相访问交流</p>
@@ -45,7 +45,7 @@
       {{ end }}
       {{- $siteName := site.Params.profile.name | default "墨然" -}}
       {{- $siteDesc := site.Params.description | default "记录代码与生活的间隙" -}}
-      {{- $siteURL := "https://moran.cc.cd" -}}
+      {{- $siteURL := site.BaseURL | strings.TrimSuffix "/" -}}
       {{- $avatarRaw := partial "avatar-path.html" . -}}
       {{- $avatarSrc := $avatarRaw -}}
       {{- if not (hasPrefix $avatarSrc "http") -}}{{- $avatarSrc = ($avatarSrc | relURL) -}}{{- end -}}
@@ -170,7 +170,7 @@
       <div id="friend-comments" class="friends-comments-anchor">
         {{ partial "giscus.html" . }}
       </div>
-    </main>
+    </div>
   </div>
 
   <style>
@@ -959,7 +959,9 @@
         document.body.appendChild(textarea);
         textarea.select();
         try {
-          document.execCommand('copy');
+          return !!document.execCommand('copy');
+        } catch {
+          return false;
         } finally {
           textarea.remove();
         }
@@ -968,16 +970,20 @@
       buttons.forEach((button) => {
         button.addEventListener('click', async () => {
           const text = button.getAttribute('data-copy') || '';
+          let copied = false;
           try {
             if (navigator.clipboard && window.isSecureContext) {
               await navigator.clipboard.writeText(text);
+              copied = true;
             } else {
-              fallbackCopy(text);
+              copied = fallbackCopy(text);
             }
+          } catch (error) {
+            copied = fallbackCopy(text);
+          }
+          if (copied) {
             button.classList.add('is-copied');
             window.setTimeout(() => button.classList.remove('is-copied'), 1100);
-          } catch (error) {
-            fallbackCopy(text);
           }
         });
       });
