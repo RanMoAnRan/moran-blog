@@ -6257,9 +6257,9 @@ body.is-home .home-sidebar {
   }
 }
 
-/* Archives should keep the same main reading width as the about page. */
+/* Archives uses a balanced three-rail width so dual-column timeline cards have room without leaving a blank left rail. */
 .archives-rail-container {
-  --rail-main-width: 1080px;
+  --rail-main-width: 940px;
 }
 
 /* Stats page rail content map */

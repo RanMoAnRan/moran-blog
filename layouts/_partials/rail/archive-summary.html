@@ -1,5 +1,18 @@
 {{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $postsDesc := $posts.ByDate.Reverse -}}
 {{- $groups := sort ($posts.GroupByDate "2006") "Key" "desc" -}}
+{{- $totalWords := 0 -}}
+{{- range $posts -}}
+  {{- $totalWords = add $totalWords .WordCount -}}
+{{- end -}}
+{{- $wordsLabel := printf "%d" $totalWords -}}
+{{- if ge $totalWords 10000 -}}
+  {{- $wordsLabel = printf "%.1fw" (div (float $totalWords) 10000.0) -}}
+{{- else if ge $totalWords 1000 -}}
+  {{- $wordsLabel = printf "%.1fk" (div (float $totalWords) 1000.0) -}}
+{{- end -}}
+{{- $latestPost := index $postsDesc 0 -}}
+{{- $oldestPost := index $postsDesc (sub (len $postsDesc) 1) -}}
 <section class="rail-card rail-page-context rail-archive-summary" aria-label="归档概览">
   <div class="rail-archive-summary__head">
     <div class="rail-archive-summary__badge">
@@ -9,15 +22,38 @@
   </div>
   <h2>时光足迹</h2>
   <p>按时间脉络记录思考与沉淀，回望每一段写作轨迹。</p>
-  <div class="rail-archive-stats">
+  <div class="rail-archive-stats rail-archive-stats--quad">
     <div class="rail-stat-item">
       <strong>{{ len $posts }}</strong>
       <span>篇记录</span>
     </div>
-    <div class="rail-stat-divider" aria-hidden="true"></div>
+    <div class="rail-stat-item">
+      <strong>{{ $wordsLabel }}</strong>
+      <span>累计字数</span>
+    </div>
     <div class="rail-stat-item">
       <strong>{{ len $groups }}</strong>
       <span>个年度</span>
     </div>
+    <div class="rail-stat-item">
+      <strong>{{ len site.Taxonomies.tags }}</strong>
+      <span>个标签</span>
+    </div>
   </div>
+  {{- if gt (len $postsDesc) 0 -}}
+    <div class="rail-archive-milestones">
+      {{- with $latestPost -}}
+        <a class="rail-archive-milestone" href="{{ .RelPermalink }}">
+          <span class="rail-archive-milestone__kicker">最新收录 · {{ .Date.Format "2006.01.02" }}</span>
+          <strong class="rail-archive-milestone__title">{{ .LinkTitle }}</strong>
+        </a>
+      {{- end -}}
+      {{- if and $oldestPost (ne $oldestPost.RelPermalink $latestPost.RelPermalink) -}}
+        <a class="rail-archive-milestone" href="{{ $oldestPost.RelPermalink }}">
+          <span class="rail-archive-milestone__kicker">最初起点 · {{ $oldestPost.Date.Format "2006.01.02" }}</span>
+          <strong class="rail-archive-milestone__title">{{ $oldestPost.LinkTitle }}</strong>
+        </a>
+      {{- end -}}
+    </div>
+  {{- end -}}
 </section>

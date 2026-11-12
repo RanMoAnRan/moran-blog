@@ -10,10 +10,27 @@
   </div>
   <div class="rail-year-list" data-archive-year-list>
     {{- range $groups -}}
-      <a href="#archive-year-{{ .Key }}" class="rail-year-link" data-year-link="{{ .Key }}">
-        <span class="rail-year-link__name">{{ .Key }}</span>
-        <em class="rail-year-link__count">{{ len .Pages }}</em>
-      </a>
+      {{- $yearKey := .Key -}}
+      {{- $monthGroups := sort (.Pages.GroupByDate "01") "Key" "desc" -}}
+      <div class="rail-year-group">
+        <a href="#archive-year-{{ $yearKey }}" class="rail-year-link" data-year-link="{{ $yearKey }}">
+          <span class="rail-year-link__name">{{ $yearKey }}</span>
+          <em class="rail-year-link__count">{{ len .Pages }}</em>
+        </a>
+        <div class="rail-year-months" aria-label="{{ $yearKey }} 年月份快速跳转">
+          {{- range $monthGroups -}}
+            <a
+              href="#archive-month-{{ $yearKey }}-{{ .Key }}"
+              class="rail-month-chip"
+              data-month-link="{{ $yearKey }}-{{ .Key }}"
+              title="{{ $yearKey }} 年 {{ .Key }} 月 · {{ len .Pages }} 篇"
+            >
+              <span>{{ (index .Pages 0).Date.Format "1月" }}</span>
+              <em>{{ len .Pages }}</em>
+            </a>
+          {{- end -}}
+        </div>
+      </div>
     {{- end -}}
   </div>
 </section>
