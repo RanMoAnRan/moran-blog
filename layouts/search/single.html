@@ -7,14 +7,19 @@
         {{ partial "rail/search-hints.html" . }}
       </aside>
       <div class="rail-main content search-page">
-      <header class="page-header search-compact-header">
-        <div>
-          <h1 class="page-title">{{ .Title }}</h1>
-          {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+      <header class="crystal-mini-head">
+        <div class="crystal-mini-head__left">
+          <div class="crystal-mini-head__title-row">
+            <span class="crystal-mini-head__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <h1 class="crystal-mini-head__title">{{ .Title }}</h1>
+            <span class="crystal-mini-head__pill">Instant Search</span>
+          </div>
+          {{ with .Description }}<p class="crystal-mini-head__subtitle">{{ . }}</p>{{ else }}<p class="crystal-mini-head__subtitle">支持按标题、标签、分类或正文内容实时加权高亮检索</p>{{ end }}
         </div>
-        <div class="search-compact-header__badge" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <span>Search</span>
+        <div class="crystal-mini-head__actions">
+          <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ "tags" | relURL }}">按标签探索</a>
         </div>
       </header>
 
@@ -34,6 +39,14 @@
           >
           <button class="btn btn-primary search-page-form__btn" type="submit">搜索</button>
         </form>
+        {{ with site.Taxonomies.tags.ByCount }}
+          <div class="search-hot-bar" aria-label="热门关键词">
+            <span class="search-hot-bar__label">热门探索</span>
+            {{ range first 7 . }}
+              <button type="button" class="crystal-quick-pill" data-search-hot="{{ .Page.Title }}">#{{ .Page.Title }}</button>
+            {{ end }}
+          </div>
+        {{ end }}
         <p id="search-status" class="search-status" aria-live="polite">正在加载索引…</p>
         <div id="search-results" class="search-results" aria-live="polite"></div>
       </div>
@@ -50,22 +63,24 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 6px 6px 6px 14px;
-      border-radius: 18px;
+      padding: 6px 8px 6px 18px;
+      border-radius: 9999px;
       border: 1px solid var(--border);
-      background: var(--panel);
-      box-shadow: var(--shadow-sm);
+      background: color-mix(in srgb, var(--panel) 84%, transparent);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 10px 26px -16px rgba(15, 23, 42, 0.16), var(--shadow-sm);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     .search-page-form:focus-within {
-      border-color: rgba(124, 58, 237, 0.4);
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+      border-color: var(--theme-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 16%, transparent);
     }
 
     .search-page-form__icon {
       flex: 0 0 auto;
-      color: var(--text-muted);
+      color: var(--theme-primary);
     }
 
     .search-page-form__input {
@@ -85,8 +100,23 @@
 
     .search-page-form__btn {
       flex: 0 0 auto;
-      border-radius: 12px;
+      border-radius: 9999px;
       padding: 9px 18px;
+    }
+
+    .search-hot-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .search-hot-bar__label {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-right: 2px;
     }
 
     [data-theme='dark'] .search-page-form {
@@ -94,6 +124,22 @@
       background: rgba(15, 23, 42, 0.65);
     }
   </style>
+
+  <script>
+    (() => {
+      const page = document.querySelector(".search-page");
+      if (!page) return;
+      page.addEventListener("click", (event) => {
+        const hot = event.target.closest("[data-search-hot]");
+        if (!hot) return;
+        const input = document.getElementById("search-input");
+        if (!input) return;
+        input.value = hot.getAttribute("data-search-hot") || "";
+        input.focus();
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    })();
+  </script>
 
   {{- $js := resources.Get "js/search.js" | minify | fingerprint -}}
   <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>

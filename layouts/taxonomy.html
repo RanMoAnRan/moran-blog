@@ -2,6 +2,10 @@
   {{- $postCount := len (where site.RegularPages "Section" "posts") -}}
   {{- $catCount := len site.Taxonomies.categories -}}
   {{- $tagCount := len site.Taxonomies.tags -}}
+  {{- $maxCatCount := 1 -}}
+  {{- range site.Taxonomies.categories -}}
+    {{- if gt .Count $maxCatCount -}}{{- $maxCatCount = .Count -}}{{- end -}}
+  {{- end -}}
 
   <div class="container rail-layout-container rail-layout-container--three discovery-container">
     <div class="rail-layout rail-layout--three">
@@ -10,85 +14,87 @@
         {{ partial "rail/site-pulse.html" . }}
       </aside>
       <div class="rail-main content post-detail-container discovery-page">
-      <header class="discovery-header">
-        <div class="discovery-orbit" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <div class="discovery-header__top">
-          <div class="discovery-header__main">
-            <p class="discovery-kicker">Moran Blog Index</p>
-            <p class="discovery-subtitle">分类像主题岛屿，标签像漂浮星尘。从这里重新进入文章。</p>
+      <header class="crystal-mini-head">
+        <div class="crystal-mini-head__left">
+          <div class="crystal-mini-head__title-row">
+            <span class="crystal-mini-head__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            </span>
+            <h1 class="crystal-mini-head__title">分类与标签</h1>
+            <span class="crystal-mini-head__pill crystal-mini-head__pill--cat">{{ $catCount }} 个分类</span>
+            <span class="crystal-mini-head__pill crystal-mini-head__pill--tag">{{ $tagCount }} 个标签</span>
+            <span class="crystal-mini-head__pill">{{ $postCount }} 篇文章</span>
           </div>
-
-          <div class="discovery-stats" aria-label="内容统计">
-            <span><strong>{{ $postCount }}</strong><small>文章</small></span>
-            <span><strong>{{ $catCount }}</strong><small>分类</small></span>
-            <span><strong>{{ $tagCount }}</strong><small>标签</small></span>
-          </div>
+          <p class="crystal-mini-head__subtitle">分类像主题岛屿，标签像漂浮星尘。输入关键词即可快速定位。</p>
         </div>
 
-        <div class="discovery-search" aria-label="探索工具">
-          <svg class="discovery-search__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input
-            class="discovery-search__input"
-            type="search"
-            placeholder="搜索分类或标签…"
-            autocomplete="off"
-            spellcheck="false"
-            data-discovery-filter
-          >
-          <span class="discovery-filter-status" data-discovery-status aria-live="polite"></span>
+        <div class="crystal-mini-head__actions">
+          <div class="crystal-search-pill" aria-label="探索工具">
+            <svg class="crystal-search-pill__icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input
+              class="crystal-search-pill__input"
+              type="search"
+              placeholder="筛选分类或标签…"
+              autocomplete="off"
+              spellcheck="false"
+              data-discovery-filter
+            >
+          </div>
         </div>
       </header>
+      <p class="discovery-filter-status" data-discovery-status aria-live="polite" style="margin: -8px 0 14px; padding-left: 2px;"></p>
 
-      <div class="discovery-layout">
-        <section class="discovery-section discovery-section--categories" aria-label="分类">
-          <header class="discovery-section__head">
-            <h2 class="discovery-section__title">分类</h2>
-            <span class="discovery-section__meta">{{ $catCount }} 个</span>
-          </header>
+      <section aria-label="分类">
+        <div class="crystal-section-head">
+          <h2>主题分类</h2>
+          <span>{{ $catCount }} 个分区 · 按篇目排序</span>
+        </div>
 
-          <div class="discovery-category-list">
-            {{ range $category := site.Taxonomies.categories.ByCount }}
-              {{- $title := $category.Page.Title -}}
-              <a
-                class="discovery-category-row"
-                href="{{ $category.Page.RelPermalink }}"
-                data-discovery-item
-                data-label="{{ $title }}"
-              >
-                <span class="discovery-category-row__name">{{ $title }}</span>
-                <span class="discovery-category-row__count">{{ $category.Count }} 篇</span>
-              </a>
-            {{ end }}
-          </div>
-        </section>
+        <div class="crystal-cat-grid">
+          {{ range $category := site.Taxonomies.categories.ByCount }}
+            {{- $title := $category.Page.Title -}}
+            {{- $pct := div (mul $category.Count 100.0) $maxCatCount -}}
+            <a
+              class="crystal-cat-card"
+              href="{{ $category.Page.RelPermalink }}"
+              data-discovery-item
+              data-label="{{ $title }}"
+            >
+              <div class="crystal-cat-card__top">
+                <span class="crystal-cat-card__name">{{ $title }}</span>
+                <span class="crystal-cat-card__count">{{ $category.Count }} 篇</span>
+              </div>
+              <div class="crystal-cat-card__track"><span style="width: {{ printf "%.2f" $pct }}%"></span></div>
+              {{ with index $category.Pages.ByDate.Reverse 0 }}
+                <p class="crystal-cat-card__latest">最近：{{ .Title }}</p>
+              {{ end }}
+            </a>
+          {{ end }}
+        </div>
+      </section>
 
-        <section class="discovery-section discovery-section--tags" aria-label="标签">
-          <header class="discovery-section__head">
-            <h2 class="discovery-section__title">标签</h2>
-            <span class="discovery-section__meta">{{ $tagCount }} 个</span>
-          </header>
+      <section aria-label="标签">
+        <div class="crystal-section-head">
+          <h2>主题标签</h2>
+          <span>{{ $tagCount }} 个标签</span>
+        </div>
 
-          <div class="discovery-tag-list">
-            {{ range $tag := site.Taxonomies.tags.ByCount }}
-              {{- $title := $tag.Page.Title -}}
-              <a
-                class="discovery-tag tag-chip"
-                href="{{ $tag.Page.RelPermalink }}"
-                data-discovery-item
-                data-label="{{ $title }}"
-                title="{{ $title }}（{{ $tag.Count }} 篇）"
-              >
-                <span>#{{ $title }}</span>
-                <em>{{ $tag.Count }}</em>
-              </a>
-            {{ end }}
-          </div>
-        </section>
-      </div>
+        <div class="crystal-tag-cloud">
+          {{ range $tag := site.Taxonomies.tags.ByCount }}
+            {{- $title := $tag.Page.Title -}}
+            <a
+              class="crystal-tag-chip{{ if ge $tag.Count 4 }} is-hot{{ end }}"
+              href="{{ $tag.Page.RelPermalink }}"
+              data-discovery-item
+              data-label="{{ $title }}"
+              title="{{ $title }}（{{ $tag.Count }} 篇）"
+            >
+              <span>#{{ $title }}</span>
+              <em>{{ $tag.Count }}</em>
+            </a>
+          {{ end }}
+        </div>
+      </section>
       </div>
       <aside class="rail-sidebar rail-sidebar--right" aria-label="探索侧栏">
         {{ partial "rail/section-note.html" (dict "title" "Index note" "body" "分类和标签不是目录树，更像重新进入文章的线索。先从高频主题开始，再顺着标签横向探索。" "link" "posts" "linkText" "查看文章") }}

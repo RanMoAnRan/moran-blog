@@ -40,27 +40,47 @@
     }
 
     .not-found-card {
+      position: relative;
+      overflow: hidden;
       width: min(880px, 100%);
       text-align: center;
       padding: 48px 40px;
       border-radius: var(--radius-xl);
       border: 1px solid var(--border);
-      background: var(--panel);
-      box-shadow: var(--shadow-sm);
+      background:
+        radial-gradient(420px 180px at 50% 0%, color-mix(in srgb, var(--theme-primary) 14%, transparent), transparent 72%),
+        color-mix(in srgb, var(--panel) 84%, transparent);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 22px 54px -30px rgba(15, 23, 42, 0.28), var(--shadow-sm);
       display: grid;
       gap: 16px;
     }
 
+    .not-found-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--theme-primary), color-mix(in srgb, var(--theme-primary) 55%, #38bdf8));
+    }
+
     .not-found-code {
-      font-size: clamp(3rem, 8vw, 5rem);
-      font-weight: 800;
+      font-size: clamp(3.4rem, 8.5vw, 5.4rem);
+      font-weight: 950;
       letter-spacing: -0.06em;
-      color: var(--violet-600);
+      line-height: 1;
+      background: linear-gradient(135deg, var(--theme-primary-strong), color-mix(in srgb, var(--theme-primary) 58%, #38bdf8));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .not-found-title {
       margin: 0;
       font-size: clamp(1.75rem, 3vw, 2.25rem);
+      color: var(--text-heading);
     }
 
     .not-found-desc {
@@ -82,11 +102,18 @@
       min-width: 220px;
       max-width: 360px;
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
+      border-radius: 9999px;
+      padding: 10px 16px;
       background: var(--panel-muted);
       color: var(--text-main);
       font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .not-found-input:focus {
+      border-color: var(--theme-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 16%, transparent);
     }
 
     .not-found-actions {

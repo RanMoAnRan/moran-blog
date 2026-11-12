@@ -18,34 +18,15 @@
     {{- $yearScratch.Add $year 1 -}}
   {{- end -}}
   {{- $yearPostCount := default 0 ($yearScratch.Get $currentYear) -}}
-  {{- $totalWords := 0 -}}
-  {{- $totalMinutes := 0 -}}
-  {{- $longestWords := 0 -}}
-  {{- $longestPost := false -}}
   {{- $postsPayload := slice -}}
   {{- range $postsByDate -}}
     {{- $wc := .WordCount -}}
     {{- $rt := .ReadingTime -}}
-    {{- $totalWords = add $totalWords $wc -}}
-    {{- $totalMinutes = add $totalMinutes $rt -}}
-    {{- if gt $wc $longestWords -}}
-      {{- $longestWords = $wc -}}
-      {{- $longestPost = . -}}
-    {{- end -}}
     {{- $cat := "" -}}
     {{- with .Params.categories -}}
       {{- $cat = index . 0 -}}
     {{- end -}}
     {{- $postsPayload = $postsPayload | append (dict "title" .Title "url" .RelPermalink "date" (.Date.Format "2006-01-02") "words" $wc "minutes" $rt "cat" $cat) -}}
-  {{- end -}}
-  {{- $postCount := len $postPages -}}
-  {{- $avgWords := 0 -}}
-  {{- if gt $postCount 0 -}}
-    {{- $avgWords = div $totalWords $postCount -}}
-  {{- end -}}
-  {{- $totalWordsDisplay := printf "%d" $totalWords -}}
-  {{- if ge $totalWords 10000 -}}
-    {{- $totalWordsDisplay = printf "%.1f 万" (div (float $totalWords) 10000.0) -}}
   {{- end -}}
   <div class="container rail-layout-container rail-layout-container--three stats-page-container stats-rail-container">
     <div class="rail-layout rail-layout--three">
@@ -55,9 +36,24 @@
       </aside>
 
       <div class="rail-main content post-detail-container stats-page">
+      <header class="crystal-mini-head crystal-mini-head--compact">
+        <div class="crystal-mini-head__left">
+          <div class="crystal-mini-head__title-row">
+            <span class="crystal-mini-head__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 5-6"/></svg>
+            </span>
+            <h1 class="crystal-mini-head__title">{{ .Title | default "统计" }}</h1>
+            <span class="crystal-mini-head__pill crystal-mini-head__pill--accent">{{ len $postPages }} 篇文章</span>
+          </div>
+          {{ with .Description }}<p class="crystal-mini-head__subtitle">{{ . }}</p>{{ end }}
+        </div>
+        <div class="crystal-mini-head__actions">
+          <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ "archives" | relURL }}">时间轴归档</a>
+        </div>
+      </header>
       {{ with .Content }}<div class="prose stats-intro">{{ . }}</div>{{ end }}
 
-      <section class="stats-section" aria-labelledby="site-overview-title">
+      <section class="stats-section stats-overview-section" aria-labelledby="site-overview-title">
         <div class="stats-section__head">
           <div>
             <p class="stats-kicker">Site Overview</p>
@@ -197,76 +193,12 @@
         <div class="stats-trend-drawer" data-trend-drawer hidden></div>
       </section>
 
-      <section class="stats-section stats-reading-section" data-reading-pulse data-total-posts="{{ len $postPages }}" aria-labelledby="reading-overview-title">
-        <div class="stats-section__head">
-          <div>
-            <p class="stats-kicker">Reading Pulse</p>
-            <h2 id="reading-overview-title">阅读概览</h2>
-            <p class="stats-section__desc">本地阅读记录只保存在当前浏览器，用来帮你继续看长文。</p>
-          </div>
-          <span class="stats-section__note">本地统计</span>
-        </div>
-
-        <div class="stats-reading-grid">
-          <div class="stats-reading-summary" aria-label="阅读数字">
-            <div class="reading-pulse__tile" title="全站正文累计约 {{ $totalWords }} 字">
-              <span class="reading-pulse__label">全站总字数</span>
-              <strong>{{ $totalWordsDisplay }}</strong>
-              <small class="reading-pulse__hint">字数积累</small>
-            </div>
-            <div class="reading-pulse__tile">
-              <span class="reading-pulse__label">累计阅读</span>
-              <strong>{{ $totalMinutes }}<small class="reading-pulse__unit"> 分</small></strong>
-              <small class="reading-pulse__hint">通读全站</small>
-            </div>
-            <div class="reading-pulse__tile">
-              <span class="reading-pulse__label">篇均长度</span>
-              <strong>{{ $avgWords }}</strong>
-              <small class="reading-pulse__hint">平均每篇字数</small>
-            </div>
-            <div class="reading-pulse__tile is-local">
-              <span class="reading-pulse__label">已读</span>
-              <strong data-read-count>0</strong>
-              <small class="reading-pulse__hint">进度 ≥ 90%</small>
-            </div>
-            <div class="reading-pulse__tile is-local">
-              <span class="reading-pulse__label">继续阅读</span>
-              <strong data-progress-count>0</strong>
-              <small class="reading-pulse__hint">半途未完</small>
-            </div>
-            <div class="reading-pulse__tile is-local">
-              <span class="reading-pulse__label">完成率</span>
-              <strong data-completion-rate>--</strong>
-              <small class="reading-pulse__hint">占全站篇目</small>
-            </div>
-          </div>
-
-          <div class="reading-pulse__recent stats-reading-recent">
-            <div class="reading-pulse__recent-head">
-              <h3>最近阅读</h3>
-              <button class="reading-pulse__clear" type="button" data-reading-clear hidden>清除记录</button>
-            </div>
-            <div class="reading-pulse__empty" data-reading-empty>
-              还没有阅读记录。读几篇长文后，这里会显示你的继续阅读入口。
-            </div>
-            <div class="reading-pulse__list" data-reading-recent hidden></div>
-            {{ with $longestPost }}
-              <a class="stats-longest-pill" href="{{ .RelPermalink }}" title="最长单篇：{{ .Title }}">
-                <span class="stats-longest-pill__badge">镇站长文</span>
-                <span class="stats-longest-pill__title">{{ .Title }}</span>
-                <em>{{ .WordCount }} 字 · {{ .ReadingTime }}m</em>
-              </a>
-            {{ end }}
-          </div>
-        </div>
-      </section>
-
       <div class="stats-content-map-mobile">
         {{ partial "rail/stats-category-map.html" . }}
         {{ partial "rail/stats-content-map.html" . }}
       </div>
 
-      <section class="stats-section" aria-labelledby="latest-updates-title">
+      <section class="stats-section stats-latest-section" aria-labelledby="latest-updates-title">
         <div class="stats-section__head">
           <div>
             <p class="stats-kicker">Recently Published</p>
@@ -284,7 +216,16 @@
               <div class="stats-latest-item__main">
                 <strong class="stats-latest-item__title">{{ .Title }}</strong>
                 {{ with .Params.categories }}
-                  <span class="stats-latest-item__cat">{{ index . 0 }}</span>
+                  {{- $catName := index . 0 -}}
+                  {{- $catTone := "blue" -}}
+                  {{- if or (eq $catName "AI") (eq $catName "AI 技术") (eq $catName "AI 趋势分析") -}}{{- $catTone = "teal" -}}
+                  {{- else if or (eq $catName "开源") (eq $catName "工具") (eq $catName "Tools") -}}{{- $catTone = "emerald" -}}
+                  {{- else if or (eq $catName "大模型") (eq $catName "技术深度") -}}{{- $catTone = "amber" -}}
+                  {{- else if or (eq $catName "Software Architecture") (eq $catName "效率工具") (eq $catName "知识管理") -}}{{- $catTone = "indigo" -}}
+                  {{- else if eq $catName "视觉与审美" -}}{{- $catTone = "rose" -}}
+                  {{- else if eq $catName "AI Tools" -}}{{- $catTone = "blue" -}}
+                  {{- end -}}
+                  <span class="stats-latest-item__cat" data-cat-tone="{{ $catTone }}">{{ $catName }}</span>
                 {{ end }}
               </div>
               <div class="stats-latest-item__meta">

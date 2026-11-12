@@ -11,19 +11,25 @@
       </aside>
       <div class="rail-main content post-detail-container term-page">
 
-      <header class="page-header term-compact-header" data-taxonomy="{{ $taxonomyPlural }}">
-        <a class="term-back-btn" href="{{ printf "%s" $taxonomyPlural | relURL }}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-          返回{{ $taxonomyLabel }}
-        </a>
-        <div class="term-compact-header__main">
-          <div>
-            <p class="term-kicker">{{ $taxonomyLabel }}</p>
-            <h1 class="page-title term-title">{{ .Title }}</h1>
-            <p class="page-desc term-desc">按{{ $taxonomyLabel }}归档的文章集合</p>
-            {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+      <header class="crystal-mini-head" data-taxonomy="{{ $taxonomyPlural }}">
+        <div class="crystal-mini-head__left">
+          <a class="crystal-mini-head__back" href="{{ printf "%s" $taxonomyPlural | relURL }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            返回{{ $taxonomyLabel }}
+          </a>
+          <div class="crystal-mini-head__title-row">
+            <span class="crystal-mini-head__icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>
+            </span>
+            <h1 class="crystal-mini-head__title">{{ .Title }}</h1>
+            <span class="crystal-mini-head__pill">{{ $taxonomyLabel }}</span>
+            <span class="crystal-mini-head__pill crystal-mini-head__pill--accent">{{ len .Pages }} 篇文章</span>
           </div>
-          <p class="page-meta term-meta"><strong>{{ len .Pages }}</strong><span>篇文章</span></p>
+          <p class="crystal-mini-head__subtitle">按{{ $taxonomyLabel }}「{{ .Title }}」汇集的文章目录</p>
+          {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+        </div>
+        <div class="crystal-mini-head__actions">
+          <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ "posts" | relURL }}">全部文章</a>
         </div>
       </header>
 

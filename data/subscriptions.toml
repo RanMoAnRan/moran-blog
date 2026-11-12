@@ -1,17 +1,53 @@
 [[feeds]]
-name = "CSDN 资讯"
-url = "https://plink.anyfeeder.com/weixin/CSDNnews"
-site = "https://mp.weixin.qq.com/"
-desc = "CSDN 资讯精选"
+name = "宝玉的分享"
+url = "https://s.baoyu.io/feed.xml"
+site = "https://baoyu.io/"
+desc = "AI 工程实践、Prompt 技巧与高质量译文"
 
 [[feeds]]
-name = "36氪"
-url = "https://plink.anyfeeder.com/36kr"
-site = "https://36kr.com/"
-desc = "创业与科技资讯"
+name = "科学空间"
+url = "https://kexue.fm/feed"
+site = "https://kexue.fm/"
+desc = "苏剑林的大模型底层原理、算法与数学推导"
 
 [[feeds]]
-name = "虎嗅"
-url = "https://plink.anyfeeder.com/huxiu"
-site = "https://www.huxiu.com/"
-desc = "科技与商业"
+name = "量子位"
+url = "https://www.qbitai.com/feed"
+site = "https://www.qbitai.com/"
+desc = "中文 AI 前沿动态、开源项目与行业观察"
+
+[[feeds]]
+name = "InfoQ 中文"
+url = "https://www.infoq.cn/feed"
+site = "https://www.infoq.cn/"
+desc = "AI 工程架构、大模型基础设施与技术深度报道"
+
+[[feeds]]
+name = "美团技术团队"
+url = "https://tech.meituan.com/rss.xml"
+site = "https://tech.meituan.com/"
+desc = "大厂一线工程架构、开源大模型与算法实践"
+
+[[feeds]]
+name = "阮一峰的网络日志"
+url = "https://www.ruanyifeng.com/blog/atom.xml"
+site = "https://www.ruanyifeng.com/blog/"
+desc = "科技爱好者周刊、AI 工具与编程生态观察"
+
+[[feeds]]
+name = "HelloGitHub"
+url = "https://hellogithub.com/rss"
+site = "https://hellogithub.com/"
+desc = "开源项目月刊与实用 AI / 开发工具精选"
+
+[[feeds]]
+name = "极客公园"
+url = "https://www.geekpark.net/rss"
+site = "https://www.geekpark.net/"
+desc = "科技产品、AI 应用落地与前沿行业动态"
+
+[[feeds]]
+name = "少数派"
+url = "https://sspai.com/feed"
+site = "https://sspai.com/"
+desc = "数字工作流、AI 工具实战与效率方法论"
