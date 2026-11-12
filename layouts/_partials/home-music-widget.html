@@ -10,11 +10,19 @@
 {{- $local := $music.local | default dict -}}
 {{- $mode := $music.mode | default "meting" -}}
 {{- $meting := $music.meting | default dict -}}
-{{- $api := $meting.api | default "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r" -}}
+{{- $api := $meting.api | default "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id" -}}
 {{- $server := $meting.server | default "netease" -}}
 {{- $type := $meting.type | default "playlist" -}}
-{{- $id := $meting.id | default "17462462467" -}}
-{{- $fallbackApis := $meting.fallbackApis | default (slice "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id" "https://api.moeyao.cn/meting/?server=:server&type=:type&id=:id") -}}
+{{- $id := $meting.id | default "3778678" -}}
+{{- $fallbackApis := $meting.fallbackApis | default (slice "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r") -}}
+{{- $extraIds := $meting.extraIds | default (slice "19723756" "3779629" "10520166") -}}
+{{- $tencent := $meting.tencent | default dict -}}
+{{- $tencentApi := $tencent.api | default "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id" -}}
+{{- $tencentServer := $tencent.server | default "tencent" -}}
+{{- $tencentType := $tencent.type | default "playlist" -}}
+{{- $tencentId := $tencent.id | default "8812138953" -}}
+{{- $tencentFallbacks := $tencent.fallbackApis | default (slice "https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r") -}}
+{{- $tencentExtraIds := $tencent.extraIds | default (slice "8087643038" "2040362185" "7798507537" "1147906982") -}}
 {{- $volume := $music.volume | default 0.7 -}}
 {{- $playMode := $music.playMode | default "list" -}}
 {{- $autoplay := $music.autoplay | default true -}}
@@ -50,7 +58,7 @@
         {{- $lrcDir := $local.lrcDir | default (printf "%s/lrc" $musicDir) -}}
         {{- $lrcCandidate := printf "static/%s/%s.lrc" $lrcDir $base -}}
         {{- if fileExists $lrcCandidate -}}{{- $lrc = (printf "%s/%s.lrc" $lrcDir $base | relURL) -}}{{- end -}}
-        {{- $localPlaylist = $localPlaylist | append (dict "name" $base "artist" "本地音乐" "url" $url "cover" $cover "lrc" $lrc) -}}
+        {{- $localPlaylist = $localPlaylist | append (dict "name" $base "artist" "内置音乐" "url" $url "cover" $cover "lrc" $lrc) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -61,14 +69,39 @@
 {{- else if eq $effectiveMode "local" -}}
   {{- $effectiveMode = "meting" -}}
 {{- end -}}
+{{- $defaultSource := "netease" -}}
+{{- if eq $effectiveMode "local" -}}
+  {{- $defaultSource = "local" -}}
+{{- else if eq $server "tencent" -}}
+  {{- $defaultSource = "tencent" -}}
+{{- end -}}
+{{- $sources := slice -}}
+{{- if gt (len $localPlaylist) 0 -}}
+  {{- $sources = $sources | append (dict "id" "local" "label" "内置" "mode" "local") -}}
+{{- end -}}
+{{- $sources = $sources | append (dict "id" "tencent" "label" "QQ" "mode" "meting" "meting" (dict "api" $tencentApi "server" $tencentServer "type" $tencentType "id" $tencentId "extraIds" $tencentExtraIds "fallbackApis" $tencentFallbacks)) -}}
+{{- $sources = $sources | append (dict "id" "netease" "label" "网易云" "mode" "meting" "meting" (dict "api" $api "server" "netease" "type" $type "id" $id "extraIds" $extraIds "fallbackApis" $fallbackApis)) -}}
 <section class="home-widget home-music-widget {{ $musicClass }}" {{ with $musicId }}id="{{ . }}"{{ end }} data-home-music aria-label="音乐播放器">
-  <div class="home-widget__title"><span>音乐</span></div>
+  <div class="home-widget__title">
+    <span>音乐</span>
+    <div class="home-music__sources" data-music-sources role="group" aria-label="切换音源">
+      {{- range $sources -}}
+        <button
+          type="button"
+          class="home-music__source-btn{{ if eq .id $defaultSource }} is-active{{ end }}"
+          data-music-source="{{ .id }}"
+          aria-pressed="{{ if eq .id $defaultSource }}true{{ else }}false{{ end }}"
+          title="切换到{{ .label }}音乐"
+        >{{ .label }}</button>
+      {{- end -}}
+    </div>
+  </div>
   <div class="home-music" data-music-player>
     <div class="home-music__top">
-      <div class="home-music__cover-wrap">
-        <div class="home-music__cover-fallback" aria-hidden="true"><img src="{{ $defaultCover }}" alt="" loading="eager" fetchpriority="low" decoding="async"></div>
+      <button type="button" class="home-music__cover-wrap" data-music-locate aria-label="定位当前歌曲" title="定位当前歌曲">
+        <span class="home-music__cover-fallback" aria-hidden="true"><img src="{{ $defaultCover }}" alt="" loading="eager" fetchpriority="low" decoding="async"></span>
         <img class="home-music__cover" data-music-cover alt="音乐封面" loading="lazy" decoding="async">
-      </div>
+      </button>
       <div class="home-music__info">
         <div class="home-music__line">
           <strong class="home-music__title" data-music-title>音乐</strong>
@@ -89,5 +122,5 @@
     <div class="home-music__playlist" data-music-playlist hidden></div>
     <p class="home-music__error" data-music-error hidden></p>
   </div>
-  <script type="application/json" data-home-music-config>{{ dict "mode" $effectiveMode "volume" $volume "playMode" $playMode "autoplay" $autoplay "randomOnLoad" $randomOnLoad "meting" (dict "api" $api "server" $server "type" $type "id" $id "fallbackApis" $fallbackApis) "localPlaylist" $localPlaylist "defaultCover" $defaultCover | jsonify }}</script>
+  <script type="application/json" data-home-music-config>{{ dict "mode" $effectiveMode "defaultSource" $defaultSource "sources" $sources "volume" $volume "playMode" $playMode "autoplay" $autoplay "randomOnLoad" $randomOnLoad "meting" (dict "api" $api "server" $server "type" $type "id" $id "fallbackApis" $fallbackApis) "localPlaylist" $localPlaylist "defaultCover" $defaultCover | jsonify }}</script>
 </section>

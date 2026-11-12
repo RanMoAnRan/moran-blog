@@ -1,6 +1,5 @@
 # 音乐播放器配置。
-# 当前使用 Meting API 拉取网易云抖音排行榜，自动更新热门音乐。
-# 如需改回本地音乐：把 mode 改为 'local'，并把音频文件放到 static/music/ 下。
+# 默认当 static/music/ 下存在音频文件时优先播放内置音乐；同时支持在播放器右上角切换「内置 / QQ / 网易云」。
 
 mode = 'meting'
 volume = 0.7
@@ -9,13 +8,23 @@ autoplay = true
 randomOnLoad = true
 
 [meting]
-api = 'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r'
+api = 'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id'
 server = 'netease'
 type = 'playlist'
-id = '10520166' # 网易云音乐抖音排行榜
+id = '3778678' # 网易云音乐热歌榜（200首）
+extraIds = ['19723756', '3779629', '10520166'] # 飙升榜 / 新歌榜 / 抖音榜，滑到底部自动续加载
 fallbackApis = [
-  'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id',
-  'https://api.moeyao.cn/meting/?server=:server&type=:type&id=:id'
+  'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r'
+]
+
+[meting.tencent]
+api = 'https://api.injahow.cn/meting/?server=:server&type=:type&id=:id'
+server = 'tencent'
+type = 'playlist'
+id = '8812138953' # QQ 音乐热歌歌单
+extraIds = ['8087643038', '2040362185', '7798507537', '1147906982']
+fallbackApis = [
+  'https://api.i-meto.com/meting/api?server=:server&type=:type&id=:id&r=:r'
 ]
 
 [local]

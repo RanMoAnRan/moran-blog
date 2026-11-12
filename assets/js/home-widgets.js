@@ -42,6 +42,13 @@
     lrc: item.lrc || "",
   });
 
+  const isValidTrack = (track) => {
+    if (!track || !track.url) return false;
+    if (/[?&]id=undefined(?:&|$)/i.test(track.url)) return false;
+    if (track.title === "未知歌曲" && !track.artist) return false;
+    return true;
+  };
+
   const formatTime = (seconds) => {
     if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
     const m = Math.floor(seconds / 60);
@@ -58,6 +65,11 @@
   const MUSIC_STATE_KEY = "moran-home-music-state";
 
   const getTrackKey = (track) => [track?.url || "", track?.title || "", track?.artist || ""].join("|");
+  const getTrackDedupKey = (track) => [
+    String(track?.title || "").trim().toLowerCase(),
+    String(track?.artist || "").trim().toLowerCase(),
+  ].join("|");
+  const PLAYLIST_BATCH_SIZE = 20;
 
   const readMusicState = () => {
     try {
@@ -135,13 +147,22 @@
     const engine = {
       audio,
       playlist: [],
+      playlistCache: new Map(),
       index: 0,
+      renderedCount: 0,
       playMode: "list",
       volume: 0.7,
       sourceKey: "",
+      activeSourceId: "",
+      sources: new Map(),
+      config: {},
       loaded: false,
       loadingPromise: null,
       loadingSourceKey: "",
+      loadToken: 0,
+      consecutiveErrors: 0,
+      autoAdvanceOnError: false,
+      errorSkipTimer: 0,
       errorMessage: "",
       controllers: [],
       lastTimeupdateSave: 0,
@@ -154,15 +175,25 @@
 
     const persistState = (wasPlaying = !audio.paused) => {
       const currentTrack = engine.playlist[engine.index];
-      if (!currentTrack) return;
       writeMusicState({
+        activeSourceId: engine.activeSourceId,
         sourceKey: engine.sourceKey,
-        trackKey: getTrackKey(currentTrack),
+        trackKey: currentTrack ? getTrackKey(currentTrack) : "",
         index: engine.index,
         currentTime: audio.currentTime || 0,
         playMode: engine.playMode,
         volume: engine.volume,
         wasPlaying,
+      });
+    };
+
+    const syncSourceUI = () => {
+      activeControllers().forEach((ctrl) => {
+        ctrl.widget.querySelectorAll("[data-music-source]").forEach((btn) => {
+          const active = btn.getAttribute("data-music-source") === engine.activeSourceId;
+          btn.classList.toggle("is-active", active);
+          btn.setAttribute("aria-pressed", active ? "true" : "false");
+        });
       });
     };
 
@@ -217,6 +248,67 @@
       });
     };
 
+    const buildTrackItemHTML = (item, idx) => {
+      const cover = sanitizeMediaUrl(item.cover);
+      return `
+        <button type="button" class="home-music__playlist-item${idx === engine.index ? " is-active" : ""}" data-index="${idx}">
+          ${cover ? `<img src="${escapeHtml(cover)}" alt="" loading="lazy">` : `<span class="home-music__playlist-initial" aria-hidden="true">${escapeHtml(getTrackInitial(item))}</span>`}
+          <span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.artist || "未知歌手")}</small></span>
+        </button>
+      `;
+    };
+
+    const buildPlaylistFooterHTML = () => {
+      const total = engine.playlist.length;
+      if (!total) return "";
+      const meta = engine.playlistCache.get(engine.sourceKey);
+      const hasMoreLocal = engine.renderedCount < total;
+      const hasMoreQueue = Boolean(meta && meta.extraQueue.length > 0);
+      if (meta?.loadingMore) {
+        return '<span class="home-music__playlist-status">正在加载更多歌曲…</span>';
+      }
+      if (hasMoreLocal || hasMoreQueue) {
+        return `<button type="button" class="home-music__playlist-more" data-playlist-more>滑动或点击加载更多（${engine.renderedCount}/${total}${hasMoreQueue ? "+" : ""}）</button>`;
+      }
+      return `<span class="home-music__playlist-status">已加载全部 ${total} 首</span>`;
+    };
+
+    const syncPlaylistFooter = (ctrl) => {
+      const footer = ctrl.els.playlist?.querySelector("[data-playlist-footer]");
+      if (footer) footer.innerHTML = buildPlaylistFooterHTML();
+    };
+
+    const syncPlaylistActiveItem = (ctrl) => {
+      if (!ctrl.els.playlist) return;
+      ctrl.els.playlist.querySelectorAll("[data-index]").forEach((btn) => {
+        btn.classList.toggle("is-active", Number(btn.dataset.index) === engine.index);
+      });
+    };
+
+    const syncPlaylistDOM = (ctrl) => {
+      if (!ctrl.els.playlist) return;
+      const targetCount = Math.min(engine.playlist.length, Math.max(engine.renderedCount, 0));
+      if (ctrl.renderedSourceKey !== engine.sourceKey || ctrl.renderedCount > targetCount) {
+        const itemsHtml = engine.playlist.slice(0, targetCount).map((item, idx) => buildTrackItemHTML(item, idx)).join("");
+        ctrl.els.playlist.innerHTML = `${itemsHtml}<div class="home-music__playlist-footer" data-playlist-footer>${buildPlaylistFooterHTML()}</div>`;
+        ctrl.renderedSourceKey = engine.sourceKey;
+        ctrl.renderedCount = targetCount;
+        return;
+      }
+
+      if (ctrl.renderedCount < targetCount) {
+        const footer = ctrl.els.playlist.querySelector("[data-playlist-footer]");
+        const html = engine.playlist.slice(ctrl.renderedCount, targetCount)
+          .map((item, offset) => buildTrackItemHTML(item, ctrl.renderedCount + offset))
+          .join("");
+        if (footer) footer.insertAdjacentHTML("beforebegin", html);
+        else ctrl.els.playlist.insertAdjacentHTML("beforeend", html);
+        ctrl.renderedCount = targetCount;
+      }
+      syncPlaylistActiveItem(ctrl);
+      syncPlaylistFooter(ctrl);
+    };
+
     const syncTrackToController = (ctrl) => {
       const track = engine.playlist[engine.index];
       if (!track) return;
@@ -242,20 +334,19 @@
         }
       }
       if (ctrl.els.playlist) {
-        ctrl.els.playlist.innerHTML = engine.playlist.map((item, idx) => {
-          const cover = sanitizeMediaUrl(item.cover);
-          return `
-            <button type="button" class="home-music__playlist-item${idx === engine.index ? " is-active" : ""}" data-index="${idx}">
-              ${cover ? `<img src="${escapeHtml(cover)}" alt="" loading="lazy">` : `<span class="home-music__playlist-initial" aria-hidden="true">${escapeHtml(getTrackInitial(item))}</span>`}
-              <span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.artist || "未知歌手")}</small></span>
-            </button>
-          `;
-        }).join("");
+        syncPlaylistDOM(ctrl);
       }
     };
 
     const syncAllUI = () => {
+      if (engine.playlist.length && engine.index >= engine.renderedCount) {
+        engine.renderedCount = Math.min(
+          engine.playlist.length,
+          Math.ceil((engine.index + 1) / PLAYLIST_BATCH_SIZE) * PLAYLIST_BATCH_SIZE,
+        );
+      }
       activeControllers().forEach((ctrl) => syncTrackToController(ctrl));
+      syncSourceUI();
       syncModeUI();
       syncVolumeUI();
       syncPlayingUI();
@@ -263,24 +354,68 @@
       syncErrorUI();
     };
 
+    engine.syncPlaylistFooters = () => activeControllers().forEach(syncPlaylistFooter);
+    engine.syncAllPlaylistDOM = () => activeControllers().forEach(syncPlaylistDOM);
+
+    engine.locateWidgetTrack = (widgetEl, { openList = true } = {}) => {
+      const ctrl = activeControllers().find((item) => item.widget === widgetEl);
+      const playlistEl = ctrl?.els?.playlist;
+      if (!ctrl || !playlistEl) return;
+      if (openList) playlistEl.hidden = false;
+      if (playlistEl.hidden || !engine.playlist.length) return;
+      if (engine.index >= engine.renderedCount) {
+        engine.renderedCount = Math.min(
+          engine.playlist.length,
+          Math.ceil((engine.index + 1) / PLAYLIST_BATCH_SIZE) * PLAYLIST_BATCH_SIZE,
+        );
+      }
+      syncPlaylistDOM(ctrl);
+      const activeItem = playlistEl.querySelector(`[data-index="${engine.index}"]`);
+      if (!activeItem) return;
+      window.requestAnimationFrame(() => {
+        const listRect = playlistEl.getBoundingClientRect();
+        const itemRect = activeItem.getBoundingClientRect();
+        const targetTop = playlistEl.scrollTop + (itemRect.top - listRect.top) - (playlistEl.clientHeight - itemRect.height) / 2;
+        const maxTop = Math.max(0, playlistEl.scrollHeight - playlistEl.clientHeight);
+        const clampedTop = Math.min(maxTop, Math.max(0, targetTop));
+        if (typeof playlistEl.scrollTo === "function") {
+          playlistEl.scrollTo({ top: clampedTop, behavior: "smooth" });
+        } else {
+          playlistEl.scrollTop = clampedTop;
+        }
+        activeItem.classList.remove("is-located");
+        void activeItem.offsetWidth;
+        activeItem.classList.add("is-located");
+        if (ctrl.locateTimer) window.clearTimeout(ctrl.locateTimer);
+        ctrl.locateTimer = window.setTimeout(() => {
+          activeItem.classList.remove("is-located");
+        }, 1400);
+      });
+    };
+
     const setError = (message) => {
       engine.errorMessage = message || "";
       syncErrorUI();
     };
 
-    const loadTrack = (index, autoplay = false) => {
+    const loadTrack = (index, autoplay = false, { keepError = false, resetErrors = true } = {}) => {
       if (!engine.playlist.length) return;
+      if (engine.errorSkipTimer) {
+        window.clearTimeout(engine.errorSkipTimer);
+        engine.errorSkipTimer = 0;
+      }
+      if (resetErrors) engine.consecutiveErrors = 0;
+      engine.autoAdvanceOnError = Boolean(autoplay);
       engine.index = (index + engine.playlist.length) % engine.playlist.length;
       const track = engine.playlist[engine.index];
       window.__moranHomeMusicSourceKey = engine.sourceKey;
-      setError("");
+      if (!keepError) setError("");
       audio.volume = engine.volume;
       if (!audioHasTrack(audio, track.url)) audio.src = track.url;
       syncAllUI();
       persistState(autoplay ? true : !audio.paused);
       if (autoplay) {
         audio.play().then(() => {
-          setError("");
           syncPlayingUI();
           persistState(true);
         }).catch(() => {
@@ -291,6 +426,12 @@
 
     const playCurrent = () => {
       if (!engine.playlist.length) return;
+      if (engine.errorSkipTimer) {
+        window.clearTimeout(engine.errorSkipTimer);
+        engine.errorSkipTimer = 0;
+      }
+      engine.consecutiveErrors = 0;
+      engine.autoAdvanceOnError = true;
       const track = engine.playlist[engine.index];
       window.__moranHomeMusicSourceKey = engine.sourceKey;
       setError("");
@@ -302,20 +443,22 @@
         setError("");
         syncPlayingUI();
         persistState(true);
-      }).catch(() => {
-        setError("当前歌曲无法播放，可能是音源限制。");
+      }).catch((err) => {
+        if (err?.name !== "NotAllowedError" && !audio.error && !engine.errorMessage) {
+          setError("当前歌曲无法播放（可能为版权/VIP 限制），请切歌或切换音源。");
+        }
         syncPlayingUI();
       });
     };
 
-    const next = () => {
+    const next = (options = {}) => {
       if (!engine.playlist.length) return;
       if (engine.playMode === "random" && engine.playlist.length > 1) {
         let candidate = Math.floor(Math.random() * engine.playlist.length);
         if (candidate === engine.index) candidate = (engine.index + 1) % engine.playlist.length;
-        loadTrack(candidate, true);
+        loadTrack(candidate, true, options);
       } else {
-        loadTrack(engine.index + 1, true);
+        loadTrack(engine.index + 1, true, options);
       }
     };
 
@@ -352,9 +495,18 @@
     });
 
     audio.addEventListener("play", () => {
-      setError("");
       syncPlayingUI();
       persistState(true);
+    });
+
+    audio.addEventListener("playing", () => {
+      engine.consecutiveErrors = 0;
+      setError("");
+    });
+
+    audio.addEventListener("canplay", () => {
+      engine.consecutiveErrors = 0;
+      setError("");
     });
 
     audio.addEventListener("pause", () => {
@@ -364,13 +516,28 @@
 
     audio.addEventListener("ended", () => {
       if (!engine.playlist.length) return;
-      if (engine.playMode === "one") loadTrack(engine.index, true);
+      if (engine.playMode === "one") loadTrack(engine.index, true, { resetErrors: false });
       else next();
     });
 
     audio.addEventListener("error", () => {
       if (!audio.getAttribute("src")) return;
-      setError("当前歌曲无法播放，可能是音源限制。");
+      engine.consecutiveErrors += 1;
+      const failedTitle = engine.playlist[engine.index]?.title || "当前歌曲";
+      const maxAutoSkip = Math.min(5, Math.max(0, engine.playlist.length - 1));
+      if (engine.autoAdvanceOnError && engine.consecutiveErrors <= maxAutoSkip) {
+        const skipSourceKey = engine.sourceKey;
+        setError(`《${failedTitle}》暂不可用，已自动切至下一首…`);
+        if (engine.errorSkipTimer) window.clearTimeout(engine.errorSkipTimer);
+        engine.errorSkipTimer = window.setTimeout(() => {
+          engine.errorSkipTimer = 0;
+          if (!engine.autoAdvanceOnError || engine.sourceKey !== skipSourceKey) return;
+          next({ keepError: true, resetErrors: false });
+        }, 260);
+      } else {
+        engine.autoAdvanceOnError = false;
+        setError("当前歌曲无法播放（可能为版权/VIP 限制），请手动切歌或切换音源。");
+      }
       syncPlayingUI();
     });
 
@@ -378,6 +545,7 @@
       if (engine.playlist.length) {
         syncTrackToController(ctrl);
       }
+      syncSourceUI();
       syncModeUI();
       syncVolumeUI();
       syncPlayingUI();
@@ -391,6 +559,7 @@
     engine.cyclePlayMode = cyclePlayMode;
     engine.setVolume = setVolume;
     engine.setError = setError;
+    engine.syncSourceUI = syncSourceUI;
     engine.syncAllUI = syncAllUI;
 
     window.__moranMusicEngine = engine;
@@ -405,87 +574,190 @@
     const sharedAudio = engine.audio;
     const persisted = readMusicState();
 
-    const ensurePlaylistLoaded = async (config, sourceKey) => {
-      if (engine.loaded && engine.sourceKey === sourceKey && engine.playlist.length) {
+    const buildSourcesMap = (config) => {
+      const map = new Map();
+      const list = Array.isArray(config.sources) ? config.sources : [];
+      list.forEach((src) => {
+        if (src && src.id) map.set(src.id, src);
+      });
+      if (!map.size) {
+        if (Array.isArray(config.localPlaylist) && config.localPlaylist.length) {
+          map.set("local", { id: "local", label: "内置", mode: "local" });
+        }
+        if (config.meting) {
+          map.set(config.meting.server || "netease", {
+            id: config.meting.server || "netease",
+            label: config.meting.server === "tencent" ? "QQ" : "网易云",
+            mode: "meting",
+            meting: config.meting,
+          });
+        }
+      }
+      return map;
+    };
+
+    const getSourceSignature = (sourceId, srcConfig, config) => JSON.stringify({
+      sourceId,
+      mode: srcConfig?.mode || config.mode || "meting",
+      meting: srcConfig?.meting || config.meting || {},
+      local: srcConfig?.mode === "local" ? (config.localPlaylist || []).map(getTrackKey) : [],
+    });
+
+    const fetchSourceTracks = async (sourceConfig, config) => {
+      const localTracks = Array.isArray(config.localPlaylist)
+        ? config.localPlaylist.map(normalizeTrack).filter(isValidTrack)
+        : [];
+
+      if (sourceConfig?.mode === "local") {
+        return localTracks;
+      }
+
+      const meting = sourceConfig?.meting || config.meting || {};
+      const apis = [meting.api, ...(meting.fallbackApis || [])].filter(Boolean);
+      for (const api of apis) {
+        try {
+          const res = await fetch(fillApiUrl(api, meting), { cache: "no-store", referrerPolicy: "no-referrer" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const tracks = Array.isArray(data) ? data.map(normalizeTrack).filter(isValidTrack) : [];
+          if (tracks.length) return tracks;
+        } catch {
+          // try next fallback api
+        }
+      }
+      return [];
+    };
+
+    const loadSource = async (sourceId, config, { userTriggered = false } = {}) => {
+      const sourcesMap = buildSourcesMap(config);
+      engine.sources = sourcesMap;
+      engine.config = config;
+
+      const resolvedId = sourcesMap.has(sourceId)
+        ? sourceId
+        : (sourcesMap.has(config.defaultSource) ? config.defaultSource : Array.from(sourcesMap.keys())[0]);
+      if (!resolvedId) return;
+
+      const sourceConfig = sourcesMap.get(resolvedId);
+      const sourceKey = getSourceSignature(resolvedId, sourceConfig, config);
+
+      if (!userTriggered && engine.loaded && engine.sourceKey === sourceKey && engine.playlist.length) {
+        engine.activeSourceId = resolvedId;
         engine.syncAllUI();
         return;
       }
-      if (engine.loadingPromise && engine.loadingSourceKey === sourceKey) {
+
+      if (!userTriggered && engine.loadingPromise && engine.loadingSourceKey === sourceKey) {
         await engine.loadingPromise;
         engine.syncAllUI();
         return;
       }
 
-      engine.loadingSourceKey = sourceKey;
-      engine.loadingPromise = (async () => {
-        const localTracks = Array.isArray(config.localPlaylist)
-          ? config.localPlaylist.map(normalizeTrack).filter((track) => track.url)
-          : [];
+      engine.activeSourceId = resolvedId;
+      engine.syncSourceUI();
+      engine.setError("");
 
-        let playlist = [];
-        if (config.mode === "local") {
-          playlist = localTracks;
-        } else {
-          const meting = config.meting || {};
-          const apis = [meting.api, ...(meting.fallbackApis || [])].filter(Boolean);
-          let data = null;
-          for (const api of apis) {
-            try {
-              const res = await fetch(fillApiUrl(api, meting), { cache: "no-store", referrerPolicy: "no-referrer" });
-              if (!res.ok) throw new Error(`HTTP ${res.status}`);
-              data = await res.json();
-              if (Array.isArray(data) && data.length) break;
-            } catch {
-              data = null;
-            }
+      if (userTriggered) {
+        engine.autoAdvanceOnError = false;
+        engine.consecutiveErrors = 0;
+        if (engine.errorSkipTimer) {
+          window.clearTimeout(engine.errorSkipTimer);
+          engine.errorSkipTimer = 0;
+        }
+        engine.controllers.forEach((ctrl) => {
+          if (!ctrl?.widget || !document.contains(ctrl.widget)) return;
+          if (ctrl.els.title) ctrl.els.title.textContent = sourceConfig.label || "音乐";
+          if (ctrl.els.artist) ctrl.els.artist.textContent = "正在加载歌单…";
+          if (ctrl.els.playlist) {
+            ctrl.els.playlist.innerHTML = "";
+            ctrl.renderedSourceKey = "";
+            ctrl.renderedCount = 0;
           }
-          playlist = Array.isArray(data) ? data.map(normalizeTrack).filter((track) => track.url) : [];
-          if (!playlist.length && localTracks.length) {
-            playlist = localTracks;
+        });
+      }
+
+      const token = ++engine.loadToken;
+      engine.loadingSourceKey = sourceKey;
+      const currentPersisted = readMusicState();
+
+      engine.loadingPromise = (async () => {
+        let cacheEntry = engine.playlistCache.get(sourceKey);
+        if (!cacheEntry) {
+          const initialTracks = await fetchSourceTracks(sourceConfig, config);
+          if (initialTracks.length) {
+            const trackKeys = new Set();
+            const dedupKeys = new Set();
+            const uniqueTracks = [];
+            initialTracks.forEach((track) => {
+              const tk = getTrackKey(track);
+              const dk = getTrackDedupKey(track);
+              if (trackKeys.has(tk) || dedupKeys.has(dk)) return;
+              trackKeys.add(tk);
+              dedupKeys.add(dk);
+              uniqueTracks.push(track);
+            });
+            const extraQueue = Array.isArray(sourceConfig?.meting?.extraIds)
+              ? sourceConfig.meting.extraIds.map((id) => String(id)).filter((id) => id && id !== String(sourceConfig?.meting?.id || ""))
+              : [];
+            cacheEntry = {
+              tracks: uniqueTracks,
+              trackKeys,
+              dedupKeys,
+              extraQueue,
+              loadingMore: false,
+              sourceConfig,
+              config,
+            };
+            engine.playlistCache.set(sourceKey, cacheEntry);
           }
         }
+        if (token !== engine.loadToken) return;
 
-        if (!playlist.length) throw new Error("empty playlist");
+        const playlist = cacheEntry?.tracks || [];
+        if (!playlist.length) {
+          throw new Error(`empty playlist for ${resolvedId}`);
+        }
 
         engine.playlist = playlist;
         engine.sourceKey = sourceKey;
+        engine.renderedCount = Math.min(playlist.length, PLAYLIST_BATCH_SIZE);
         engine.loaded = true;
-        engine.playMode = validPlayModes.has(persisted.playMode)
-          ? persisted.playMode
+        engine.playMode = validPlayModes.has(currentPersisted.playMode)
+          ? currentPersisted.playMode
           : (validPlayModes.has(config.playMode) ? config.playMode : "list");
-        engine.volume = persisted.sourceKey === sourceKey && Number.isFinite(Number(persisted.volume))
-          ? clampVolume(persisted.volume, clampVolume(config.volume, 0.7))
+        engine.volume = Number.isFinite(Number(currentPersisted.volume))
+          ? clampVolume(currentPersisted.volume, clampVolume(config.volume, 0.7))
           : clampVolume(config.volume, 0.7);
         sharedAudio.volume = engine.volume;
 
-        const restoredIndex = persisted.sourceKey === sourceKey
-          ? playlist.findIndex((track) => getTrackKey(track) === persisted.trackKey)
+        const restoredIndex = currentPersisted.sourceKey === sourceKey
+          ? playlist.findIndex((track) => getTrackKey(track) === currentPersisted.trackKey)
           : -1;
         const currentAudioIndex = sharedAudio.src
           ? playlist.findIndex((track) => audioHasTrack(sharedAudio, track.url))
           : -1;
-        const shouldRestore = restoredIndex >= 0;
-        const shouldReuseCurrentAudio = currentAudioIndex >= 0 && window.__moranHomeMusicSourceKey === sourceKey;
+        const shouldRestore = !userTriggered && restoredIndex >= 0;
+        const shouldReuseCurrentAudio = !userTriggered && currentAudioIndex >= 0 && window.__moranHomeMusicSourceKey === sourceKey;
         const startIndex = shouldReuseCurrentAudio
           ? currentAudioIndex
           : shouldRestore
             ? restoredIndex
             : (config.randomOnLoad !== false ? Math.floor(Math.random() * playlist.length) : 0);
 
-        const hasSavedPlayingState = shouldRestore && typeof persisted.wasPlaying === "boolean";
-        const shouldAutoplay = !shouldReuseCurrentAudio && (
-          hasSavedPlayingState ? persisted.wasPlaying : config.autoplay !== false
-        );
+        const hasSavedPlayingState = shouldRestore && typeof currentPersisted.wasPlaying === "boolean";
+        const shouldAutoplay = userTriggered
+          ? true
+          : (!shouldReuseCurrentAudio && (hasSavedPlayingState ? currentPersisted.wasPlaying : config.autoplay !== false));
 
         if (shouldReuseCurrentAudio) {
           engine.index = startIndex;
           engine.syncAllUI();
         } else {
           engine.loadTrack(startIndex, shouldAutoplay);
-          if (shouldRestore && Number(persisted.currentTime) > 0) {
+          if (shouldRestore && Number(currentPersisted.currentTime) > 0) {
             const applySavedTime = () => {
               if (Number.isFinite(sharedAudio.duration) && sharedAudio.duration > 1) {
-                sharedAudio.currentTime = Math.min(Number(persisted.currentTime), Math.max(0, sharedAudio.duration - 1));
+                sharedAudio.currentTime = Math.min(Number(currentPersisted.currentTime), Math.max(0, sharedAudio.duration - 1));
               }
             };
             if (sharedAudio.readyState >= 1) applySavedTime();
@@ -497,13 +769,79 @@
       try {
         await engine.loadingPromise;
       } catch {
+        if (token !== engine.loadToken) return;
         engine.loadingSourceKey = "";
+        engine.loaded = false;
+        engine.playlist = [];
+        engine.renderedCount = 0;
+        sharedAudio.pause();
+        sharedAudio.removeAttribute("src");
+        sharedAudio.load();
+        writeMusicState({ activeSourceId: resolvedId, wasPlaying: false });
         engine.controllers.forEach((ctrl) => {
-          if (ctrl.els.artist && !engine.playlist.length) ctrl.els.artist.textContent = "歌单加载失败";
+          if (!ctrl?.widget || !document.contains(ctrl.widget)) return;
+          if (ctrl.els.artist) ctrl.els.artist.textContent = "歌单加载失败";
+          if (ctrl.els.playlist) ctrl.els.playlist.innerHTML = "";
         });
-        engine.setError("Meting 歌单加载失败，可在 data/music.toml 或 hugo.toml 配置本地音乐备用。");
+        engine.syncAllUI();
+        engine.setError(`${sourceConfig.label || resolvedId} 歌单加载失败，请切换其他音源或稍后重试。`);
       } finally {
-        engine.loadingPromise = null;
+        if (token === engine.loadToken) engine.loadingPromise = null;
+      }
+    };
+
+    engine.switchSource = (sourceId) => loadSource(sourceId, engine.config, { userTriggered: true });
+
+    const loadMoreTracks = async () => {
+      const targetSourceKey = engine.sourceKey;
+      const targetToken = engine.loadToken;
+      const meta = engine.playlistCache.get(targetSourceKey);
+      if (!engine.loaded || !engine.playlist.length) return;
+
+      if (engine.renderedCount < engine.playlist.length) {
+        engine.renderedCount = Math.min(engine.playlist.length, engine.renderedCount + PLAYLIST_BATCH_SIZE);
+        engine.syncAllPlaylistDOM();
+        return;
+      }
+
+      if (!meta || meta.loadingMore || !meta.extraQueue.length) return;
+
+      meta.loadingMore = true;
+      engine.syncPlaylistFooters();
+
+      try {
+        let added = 0;
+        while (meta.extraQueue.length > 0 && added === 0) {
+          const nextId = meta.extraQueue.shift();
+          if (!nextId) continue;
+          const nextConfig = {
+            ...meta.sourceConfig,
+            meting: {
+              ...(meta.sourceConfig?.meting || {}),
+              id: nextId,
+            },
+          };
+          const fetched = await fetchSourceTracks(nextConfig, meta.config);
+          if (targetToken !== engine.loadToken || engine.sourceKey !== targetSourceKey) return;
+
+          fetched.forEach((track) => {
+            const tk = getTrackKey(track);
+            const dk = getTrackDedupKey(track);
+            if (meta.trackKeys.has(tk) || meta.dedupKeys.has(dk)) return;
+            meta.trackKeys.add(tk);
+            meta.dedupKeys.add(dk);
+            meta.tracks.push(track);
+            added += 1;
+          });
+        }
+        if (added > 0) {
+          engine.renderedCount = Math.min(engine.playlist.length, engine.renderedCount + PLAYLIST_BATCH_SIZE);
+        }
+      } finally {
+        meta.loadingMore = false;
+        if (targetToken === engine.loadToken && engine.sourceKey === targetSourceKey) {
+          engine.syncAllPlaylistDOM();
+        }
       }
     };
 
@@ -512,8 +850,12 @@
       widget.dataset.musicReady = "1";
 
       const config = parseJson(widget.querySelector("[data-home-music-config]"), {});
-      const sourceKey = JSON.stringify({ mode: config.mode || "meting", meting: config.meting || {}, local: (config.localPlaylist || []).map(getTrackKey) });
+      const sourcesMap = buildSourcesMap(config);
+      const initialSourceId = (persisted.activeSourceId && sourcesMap.has(persisted.activeSourceId))
+        ? persisted.activeSourceId
+        : (config.defaultSource && sourcesMap.has(config.defaultSource) ? config.defaultSource : Array.from(sourcesMap.keys())[0]);
       const els = {
+        locate: widget.querySelector("[data-music-locate]"),
         cover: widget.querySelector("[data-music-cover]"),
         title: widget.querySelector("[data-music-title]"),
         artist: widget.querySelector("[data-music-artist]"),
@@ -531,15 +873,33 @@
         error: widget.querySelector("[data-music-error]"),
       };
 
-      const controller = { widget, sourceKey, els };
+      const controller = { widget, sourceKey: initialSourceId, els };
       engine.controllers.push(controller);
+
+      widget.querySelectorAll("[data-music-source]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const nextId = btn.getAttribute("data-music-source");
+          if (!nextId) return;
+          loadSource(nextId, config, { userTriggered: true });
+        });
+      });
 
       els.play?.addEventListener("click", () => {
         if (sharedAudio.paused) engine.playCurrent();
-        else sharedAudio.pause();
+        else {
+          engine.autoAdvanceOnError = false;
+          if (engine.errorSkipTimer) {
+            window.clearTimeout(engine.errorSkipTimer);
+            engine.errorSkipTimer = 0;
+          }
+          sharedAudio.pause();
+        }
       });
-      els.prev?.addEventListener("click", engine.prev);
-      els.next?.addEventListener("click", engine.next);
+      els.locate?.addEventListener("click", () => {
+        engine.locateWidgetTrack(widget, { openList: true });
+      });
+      els.prev?.addEventListener("click", () => engine.prev());
+      els.next?.addEventListener("click", () => engine.next());
       els.mode?.addEventListener("click", engine.cyclePlayMode);
       els.volume?.addEventListener("input", () => {
         engine.setVolume(els.volume.value);
@@ -552,16 +912,32 @@
         }
       });
       els.listToggle?.addEventListener("click", () => {
-        if (els.playlist) els.playlist.hidden = !els.playlist.hidden;
+        if (!els.playlist) return;
+        els.playlist.hidden = !els.playlist.hidden;
+        if (!els.playlist.hidden) {
+          engine.locateWidgetTrack(widget, { openList: false });
+        }
       });
       els.playlist?.addEventListener("click", (event) => {
+        const moreBtn = event.target.closest("[data-playlist-more]");
+        if (moreBtn) {
+          loadMoreTracks();
+          return;
+        }
         const item = event.target.closest("[data-index]");
         if (!item) return;
         engine.loadTrack(Number(item.dataset.index), true);
       });
+      els.playlist?.addEventListener("scroll", () => {
+        if (!els.playlist || els.playlist.hidden) return;
+        const remaining = els.playlist.scrollHeight - els.playlist.scrollTop - els.playlist.clientHeight;
+        if (remaining <= 28) {
+          loadMoreTracks();
+        }
+      }, { passive: true });
 
       engine.syncController(controller);
-      ensurePlaylistLoaded(config, sourceKey);
+      loadSource(engine.activeSourceId || initialSourceId, config, { userTriggered: false });
     });
   };
 
@@ -757,7 +1133,7 @@
       });
     });
 
-    const bindPanel = (buttonSelector, panelSelector) => {
+    const bindPanel = (buttonSelector, panelSelector, onOpen) => {
       const button = document.querySelector(buttonSelector);
       const panel = document.querySelector(panelSelector);
       if (!button || !panel) return;
@@ -774,6 +1150,7 @@
         });
         panel.hidden = false;
         button.setAttribute("aria-expanded", "true");
+        onOpen?.(panel);
       };
       button.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -786,7 +1163,10 @@
       });
     };
 
-    bindPanel("[data-header-music-toggle]", "[data-header-music-panel]");
+    bindPanel("[data-header-music-toggle]", "[data-header-music-panel]", (panel) => {
+      const widget = panel.querySelector("[data-home-music]");
+      if (widget) window.__moranMusicEngine?.locateWidgetTrack?.(widget, { openList: true });
+    });
     bindPanel("[data-hue-toggle]", "[data-hue-panel]");
   };
 
