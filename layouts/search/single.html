@@ -74,13 +74,22 @@
     }
 
     .search-page-form:focus-within {
-      border-color: var(--theme-primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 16%, transparent);
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
     }
 
     .search-page-form__icon {
       flex: 0 0 auto;
-      color: var(--theme-primary);
+      color: #6366f1;
+    }
+
+    .search-page-form__btn {
+      background: linear-gradient(135deg, #6366f1, #0ea5e9);
+      border-color: transparent;
+    }
+
+    [data-theme='dark'] .search-page-form__icon {
+      color: #818cf8;
     }
 
     .search-page-form__input {

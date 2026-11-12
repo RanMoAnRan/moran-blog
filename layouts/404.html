@@ -48,7 +48,7 @@
       border-radius: var(--radius-xl);
       border: 1px solid var(--border);
       background:
-        radial-gradient(420px 180px at 50% 0%, color-mix(in srgb, var(--theme-primary) 14%, transparent), transparent 72%),
+        radial-gradient(420px 180px at 50% 0%, rgba(99, 102, 241, 0.14), transparent 72%),
         color-mix(in srgb, var(--panel) 84%, transparent);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -64,7 +64,7 @@
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, var(--theme-primary), color-mix(in srgb, var(--theme-primary) 55%, #38bdf8));
+      background: linear-gradient(90deg, #8b5cf6, #0ea5e9 52%, #10b981);
     }
 
     .not-found-code {
@@ -72,7 +72,7 @@
       font-weight: 950;
       letter-spacing: -0.06em;
       line-height: 1;
-      background: linear-gradient(135deg, var(--theme-primary-strong), color-mix(in srgb, var(--theme-primary) 58%, #38bdf8));
+      background: linear-gradient(135deg, #6366f1, #0ea5e9);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -112,8 +112,8 @@
     }
 
     .not-found-input:focus {
-      border-color: var(--theme-primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 16%, transparent);
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
     }
 
     .not-found-actions {

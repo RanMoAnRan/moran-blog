@@ -297,8 +297,13 @@
       width: 30px;
       height: 30px;
       border-radius: 10px;
-      background: color-mix(in srgb, var(--theme-primary) 12%, transparent);
-      color: var(--theme-primary-strong);
+      background: rgba(14, 165, 233, 0.13);
+      color: #0284c7;
+    }
+
+    [data-theme='dark'] .sites-mini-head__icon {
+      background: rgba(56, 189, 248, 0.16);
+      color: #38bdf8;
     }
 
     .sites-mini-head__title {
@@ -423,15 +428,15 @@
 
     .site-tab-pill:hover {
       color: var(--text-heading);
-      border-color: color-mix(in srgb, var(--theme-primary) 42%, transparent);
-      background: color-mix(in srgb, var(--theme-primary) 7%, var(--panel));
+      border-color: rgba(99, 102, 241, 0.42);
+      background: rgba(99, 102, 241, 0.08);
     }
 
     .site-tab-pill.is-active {
       color: #fff;
-      background: var(--theme-primary);
-      border-color: var(--theme-primary);
-      box-shadow: 0 6px 14px -4px color-mix(in srgb, var(--theme-primary) 52%, transparent);
+      background: linear-gradient(135deg, #6366f1, #0ea5e9);
+      border-color: transparent;
+      box-shadow: 0 6px 14px -4px rgba(99, 102, 241, 0.50);
     }
 
     .site-tab-pill__count {
@@ -505,16 +510,28 @@
     }
 
     .site-tag-pill:hover {
-      color: var(--theme-primary-strong);
-      border-color: color-mix(in srgb, var(--theme-primary) 38%, transparent);
-      background: color-mix(in srgb, var(--theme-primary) 7%, transparent);
+      color: #4f46e5;
+      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(99, 102, 241, 0.09);
     }
 
     .site-tag-pill.is-active {
-      color: var(--theme-primary-strong);
-      background: color-mix(in srgb, var(--theme-primary) 13%, transparent);
-      border-color: color-mix(in srgb, var(--theme-primary) 45%, transparent);
+      color: #4338ca;
+      background: #eef2ff;
+      border-color: #818cf8;
       font-weight: 800;
+    }
+
+    [data-theme='dark'] .site-tag-pill:hover {
+      color: #a5b4fc;
+      border-color: rgba(129, 140, 248, 0.44);
+      background: rgba(99, 102, 241, 0.16);
+    }
+
+    [data-theme='dark'] .site-tag-pill.is-active {
+      color: #a5b4fc;
+      background: rgba(99, 102, 241, 0.22);
+      border-color: rgba(129, 140, 248, 0.5);
     }
 
     .site-tag-pill--more {
@@ -570,14 +587,18 @@
       background: none;
       font-size: 0.76rem;
       font-weight: 750;
-      color: var(--theme-primary-strong);
+      color: #4f46e5;
       cursor: pointer;
       padding: 2px 8px;
       border-radius: 6px;
     }
 
     .sites-tags-drawer__close:hover {
-      background: color-mix(in srgb, var(--theme-primary) 12%, transparent);
+      background: rgba(99, 102, 241, 0.12);
+    }
+
+    [data-theme='dark'] .sites-tags-drawer__close {
+      color: #a5b4fc;
     }
 
     .sites-tags-drawer__list {
@@ -632,9 +653,9 @@
     }
 
     .sites-search-box__input:focus {
-      border-color: var(--theme-primary);
+      border-color: #6366f1;
       background: var(--panel);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 16%, transparent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
     }
 
     .sites-search-box__kbd {
@@ -683,17 +704,17 @@
       gap: 12px;
       padding: 8px 14px;
       border-radius: 12px;
-      border: 1px solid color-mix(in srgb, var(--theme-primary) 22%, var(--border));
-      background: color-mix(in srgb, var(--theme-primary) 7%, transparent);
+      border: 1px solid rgba(99, 102, 241, 0.24);
+      background: rgba(99, 102, 241, 0.08);
       font-size: 0.8rem;
       font-weight: 700;
-      color: var(--theme-primary-strong);
+      color: #4338ca;
     }
 
     .sites-reset-btn {
-      border: 1px solid color-mix(in srgb, var(--theme-primary) 28%, var(--border));
+      border: 1px solid rgba(99, 102, 241, 0.30);
       background: var(--panel);
-      color: var(--theme-primary-strong);
+      color: #4338ca;
       border-radius: 999px;
       padding: 4px 12px;
       font-size: 0.76rem;
@@ -703,9 +724,20 @@
     }
 
     .sites-reset-btn:hover {
-      background: var(--theme-primary);
-      border-color: var(--theme-primary);
+      background: #6366f1;
+      border-color: #6366f1;
       color: #fff;
+    }
+
+    [data-theme='dark'] .sites-filter-feedback {
+      border-color: rgba(129, 140, 248, 0.28);
+      background: rgba(99, 102, 241, 0.14);
+      color: #a5b4fc;
+    }
+
+    [data-theme='dark'] .sites-reset-btn {
+      border-color: rgba(129, 140, 248, 0.34);
+      color: #a5b4fc;
     }
 
     /* === 分组区块 === */
@@ -756,8 +788,15 @@
       font-family: var(--font-mono);
       font-size: 0.72rem;
       font-weight: 800;
-      color: var(--theme-primary-strong);
-      background: color-mix(in srgb, var(--theme-primary) 10%, transparent);
+      color: #0284c7;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+    }
+
+    [data-theme='dark'] .sites-group__count {
+      color: #7dd3fc;
+      background: rgba(14, 165, 233, 0.16);
+      border-color: rgba(56, 189, 248, 0.30);
     }
 
     .sites-group__desc {
@@ -783,7 +822,7 @@
 
     /* 单个卡片 */
     .site-card {
-      --card-accent: var(--theme-primary);
+      --card-accent: #8b5cf6;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -841,11 +880,17 @@
       height: 4px;
     }
 
-    .site-card[data-accent='blue'] { --card-accent: #2563eb; }
-    .site-card[data-accent='amber'] { --card-accent: #d97706; }
-    .site-card[data-accent='teal'] { --card-accent: #0d9488; }
-    .site-card[data-accent='violet'] { --card-accent: var(--theme-primary); }
+    .site-card[data-accent='blue'] { --card-accent: #0ea5e9; }
+    .site-card[data-accent='amber'] { --card-accent: #f59e0b; }
+    .site-card[data-accent='teal'] { --card-accent: #14b8a6; }
+    .site-card[data-accent='violet'] { --card-accent: #8b5cf6; }
     .site-card[data-accent='emerald'] { --card-accent: #10b981; }
+
+    [data-theme='dark'] .site-card[data-accent='blue'] { --card-accent: #38bdf8; }
+    [data-theme='dark'] .site-card[data-accent='amber'] { --card-accent: #fbbf24; }
+    [data-theme='dark'] .site-card[data-accent='teal'] { --card-accent: #2dd4bf; }
+    [data-theme='dark'] .site-card[data-accent='violet'] { --card-accent: #a78bfa; }
+    [data-theme='dark'] .site-card[data-accent='emerald'] { --card-accent: #34d399; }
 
     .site-card__header {
       display: flex;

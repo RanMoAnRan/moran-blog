@@ -228,10 +228,14 @@
     }
 
     .about-tagline {
-      color: var(--violet-600);
+      color: #7c3aed;
       font-weight: 500;
       font-size: 1rem;
       margin: 0;
+    }
+
+    [data-theme='dark'] .about-tagline {
+      color: #a78bfa;
     }
     
     .about-socials {
@@ -366,7 +370,7 @@
       width: 3px;
       height: 1.1em;
       border-radius: 9999px;
-      background: var(--primary-gradient);
+      background: linear-gradient(180deg, #8b5cf6, #0ea5e9);
     }
 
     .about-prose ul,
@@ -380,14 +384,19 @@
     }
 
     .about-prose li::marker {
-      color: var(--violet-600);
+      color: #8b5cf6;
       font-weight: 800;
     }
 
     .about-prose a {
-      color: var(--violet-600);
+      color: #7c3aed;
       text-decoration: none;
       border-bottom: 1px solid rgba(124, 58, 237, 0.28);
+    }
+
+    [data-theme='dark'] .about-prose li::marker,
+    [data-theme='dark'] .about-prose a {
+      color: #a78bfa;
     }
 
     .about-prose a:hover {
@@ -482,6 +491,12 @@
     .skill-color-2 { background: #f0fdfa; color: #0d9488; border-color: #ccfbf1; }
     .skill-color-3 { background: #fffbeb; color: #d97706; border-color: #fef3c7; }
     .skill-color-4 { background: #f5f3ff; color: #7c3aed; border-color: #ede9fe; }
+
+    [data-theme='dark'] .skill-color-0 { background: rgba(244, 63, 94, 0.16); color: #fda4af; border-color: rgba(251, 113, 133, 0.32); }
+    [data-theme='dark'] .skill-color-1 { background: rgba(99, 102, 241, 0.16); color: #a5b4fc; border-color: rgba(129, 140, 248, 0.32); }
+    [data-theme='dark'] .skill-color-2 { background: rgba(20, 184, 166, 0.16); color: #5eead4; border-color: rgba(45, 212, 191, 0.32); }
+    [data-theme='dark'] .skill-color-3 { background: rgba(245, 158, 11, 0.16); color: #fcd34d; border-color: rgba(251, 191, 36, 0.32); }
+    [data-theme='dark'] .skill-color-4 { background: rgba(139, 92, 246, 0.16); color: #c4b5fd; border-color: rgba(167, 139, 250, 0.32); }
 
     .about-now-box {
       background: var(--panel-muted);
@@ -643,8 +658,13 @@
       height: 22px;
       border-radius: 9999px;
       background: rgba(139, 92, 246, 0.10);
-      color: var(--violet-600);
+      color: #8b5cf6;
       font-size: 0.78rem;
+    }
+
+    [data-theme='dark'] .about-quote-card__spark {
+      background: rgba(167, 139, 250, 0.16);
+      color: #a78bfa;
     }
 
     .about-quote {
@@ -706,7 +726,11 @@
       transform: translateY(-2px);
       border-color: rgba(139, 92, 246, 0.48);
       background: rgba(139, 92, 246, 0.10);
-      color: var(--violet-600);
+      color: #7c3aed;
+    }
+
+    [data-theme='dark'] .about-quote-action:hover {
+      color: #c4b5fd;
     }
 
     .about-quote-action:focus-visible {
