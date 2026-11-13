@@ -1,17 +1,21 @@
-{{- $img := "img/sidebar/home.jpg" -}}
+{{- $img := "img/sidebar/home.png" -}}
 {{- $url := "" -}}
 {{- if . -}}
   {{- with .RelPermalink -}}{{- $url = . -}}{{- end -}}
   {{- if or .IsHome (eq $url "/") -}}
-    {{- $img = "img/sidebar/home.jpg" -}}
+    {{- $img = "img/sidebar/home.png" -}}
   {{- else if or (eq .Kind "taxonomy") (eq .Kind "term") (strings.Contains $url "/categories/") (strings.Contains $url "/tags/") (in (slice "categories" "tags") .Section) -}}
-    {{- $img = "img/sidebar/taxonomy.jpg" -}}
+    {{- $img = "img/sidebar/taxonomy.png" -}}
   {{- else if or (eq .Section "subscribe") (strings.Contains $url "/subscribe/") -}}
-    {{- $img = "img/sidebar/subscribe.jpg" -}}
+    {{- $img = "img/sidebar/subscribe.png" -}}
+  {{- else if or (eq .Section "sites") (strings.Contains $url "/sites/") -}}
+    {{- $img = "img/sidebar/sites.png" -}}
+  {{- else if or (eq .Section "archives") (strings.Contains $url "/archives/") -}}
+    {{- $img = "img/sidebar/archives.png" -}}
   {{- else if or (eq .Section "stats") (strings.Contains $url "/stats/") -}}
     {{- $img = "img/sidebar/stats.jpg" -}}
   {{- else -}}
-    {{- $img = "img/sidebar/home.jpg" -}}
+    {{- $img = "img/sidebar/home.png" -}}
   {{- end -}}
 {{- end -}}
 
