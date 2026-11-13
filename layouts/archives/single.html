@@ -1187,7 +1187,7 @@
 
       /* 单篇月份在左右布局下居中跨越中轴线，避免半屏留白 */
       .archives-timeline[data-layout="split"] .timeline-items--single {
-        grid-template-columns: minmax(0, 560px);
+        grid-template-columns: minmax(0, 680px);
         justify-content: center;
       }
 
@@ -1315,6 +1315,28 @@
     @media (min-width: 1240px) {
       .archives-rail-container .rail-sidebar--right {
         max-height: calc(100vh - var(--header-height) - 108px);
+      }
+
+      .archives-rail-container .rail-archive-summary {
+        flex-shrink: 0;
+      }
+
+      .archives-rail-container .rail-archive-years {
+        display: flex;
+        flex-direction: column;
+        /* Keep the list usable on short screens; the outer rail can still scroll. */
+        min-height: 120px;
+      }
+
+      .archives-rail-container .rail-archive-years .rail-card__head {
+        flex-shrink: 0;
+      }
+
+      .archives-rail-container .rail-year-list {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
       }
 
       .archive-back-to-top {

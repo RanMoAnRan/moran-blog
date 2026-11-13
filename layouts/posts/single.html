@@ -247,7 +247,7 @@
       }
 
       .detail-container.has-post-left.has-post-toc {
-        --detail-content-width: 860px;
+        --detail-content-width: var(--three-column-main-width);
         --detail-layout-width: calc(260px + var(--detail-column-gap) + var(--detail-content-width) + var(--detail-column-gap) + 240px);
         --container: calc(var(--detail-layout-width) + 48px);
         grid-template-columns: 260px minmax(0, var(--detail-content-width)) 240px;
@@ -531,12 +531,28 @@
       max-height: inherit;
       overflow: auto;
       overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--text-muted) 42%, transparent) transparent;
       padding: 18px;
       border-radius: 20px;
       border: 1px solid rgba(139, 92, 246, 0.18);
       background: color-mix(in srgb, var(--panel) 92%, transparent);
       box-shadow: var(--shadow-xl);
       backdrop-filter: blur(18px);
+    }
+
+    .post-toc__inner::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    .post-toc__inner::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--text-muted) 42%, transparent);
+    }
+
+    .post-toc__inner::-webkit-scrollbar-track {
+      background: transparent;
     }
 
     [data-theme='dark'] .post-toc__inner {
@@ -687,6 +703,18 @@
         z-index: 45;
       }
 
+      .detail-container.has-post-left.has-post-toc .post-toc {
+        left: max(24px, calc((100vw - var(--detail-layout-width)) / 2));
+        right: auto;
+        width: 260px;
+      }
+
+      .detail-container.has-post-left.has-post-toc .post-left-sidebar {
+        left: auto;
+        right: max(24px, calc((100vw - var(--detail-layout-width)) / 2));
+        width: 240px;
+      }
+
       .post-toc__inner {
         box-shadow: var(--shadow-sm);
       }
@@ -788,7 +816,7 @@
       top: 16px;
       bottom: 16px;
       left: 0;
-      width: 5px;
+      width: 3px;
       border-radius: 0 999px 999px 0;
       background: linear-gradient(180deg, #f0abfc, var(--theme-primary), #93c5fd);
       box-shadow: 0 0 18px color-mix(in srgb, var(--theme-primary) 38%, transparent);
