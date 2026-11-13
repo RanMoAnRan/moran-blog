@@ -52,13 +52,8 @@
                 <span class="crystal-mini-head__pill">{{ $oldestDate }} – {{ $latestDate }}</span>
               {{- end -}}
             </div>
-            {{ with .Description }}
-              <p class="crystal-mini-head__subtitle">{{ . }} · 共跨越 {{ len $groups }} 个年度与 {{ len $allMonthGroups }} 个创作月份</p>
-            {{ else }}
-              <p class="crystal-mini-head__subtitle">按时间脉络梳理全部创作沉淀，记录每一次技术追问与思考折返。</p>
-            {{ end }}
           </div>
-          <div class="crystal-mini-head__actions">
+          <div class="crystal-mini-head__actions archives-head-actions">
             <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ "stats" | relURL }}">创作统计</a>
             <button
               class="archive-layout-toggle"
@@ -269,7 +264,19 @@
     }
 
     .archives-page .crystal-mini-head {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
       margin-bottom: 14px;
+    }
+
+    .archives-page .archives-head-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 2px;
     }
 
     .archive-layout-toggle {
@@ -311,13 +318,13 @@
       color: var(--theme-primary-strong);
     }
 
-    [data-theme='dark'] .archive-layout-toggle {
+    [data-mode='dark'] .archive-layout-toggle {
       background: color-mix(in srgb, var(--panel) 78%, transparent);
       border-color: rgba(255, 255, 255, 0.1);
       color: var(--text-muted);
     }
 
-    [data-theme='dark'] .archive-layout-toggle[aria-pressed="true"] {
+    [data-mode='dark'] .archive-layout-toggle[aria-pressed="true"] {
       background: color-mix(in srgb, var(--theme-soft) 36%, var(--panel));
       border-color: color-mix(in srgb, var(--theme-primary) 42%, transparent);
     }
@@ -338,7 +345,7 @@
       -webkit-backdrop-filter: blur(14px);
     }
 
-    [data-theme='dark'] .archive-overview-panel {
+    [data-mode='dark'] .archive-overview-panel {
       border-color: rgba(148, 163, 184, 0.16);
       background:
         radial-gradient(360px 120px at 0% 0%, color-mix(in srgb, var(--theme-primary) 14%, transparent), transparent 68%),
@@ -592,8 +599,8 @@
       font-variant-numeric: tabular-nums;
     }
 
-    [data-theme='dark'] .timeline-now-marker span,
-    [data-theme='dark'] .timeline-origin-marker span {
+    [data-mode='dark'] .timeline-now-marker span,
+    [data-mode='dark'] .timeline-origin-marker span {
       border-color: color-mix(in srgb, var(--theme-primary) 28%, transparent);
       background: rgba(15, 23, 42, 0.85);
       color: var(--theme-primary-strong);
@@ -629,16 +636,16 @@
       --year-line: rgba(245, 158, 11, 0.36);
     }
 
-    [data-theme='dark'] .timeline-year-group {
+    [data-mode='dark'] .timeline-year-group {
       --year-accent: #a78bfa;
     }
-    [data-theme='dark'] .timeline-year-group[data-accent="teal"] {
+    [data-mode='dark'] .timeline-year-group[data-accent="teal"] {
       --year-accent: #38bdf8;
     }
-    [data-theme='dark'] .timeline-year-group[data-accent="indigo"] {
+    [data-mode='dark'] .timeline-year-group[data-accent="indigo"] {
       --year-accent: #818cf8;
     }
-    [data-theme='dark'] .timeline-year-group[data-accent="amber"] {
+    [data-mode='dark'] .timeline-year-group[data-accent="amber"] {
       --year-accent: #fbbf24;
     }
 
@@ -762,7 +769,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    [data-theme='dark'] .timeline-month-label {
+    [data-mode='dark'] .timeline-month-label {
       background: rgba(15, 23, 42, 0.88);
       color: var(--month-accent-dark, var(--month-accent));
       border-color: color-mix(in srgb, var(--month-accent) 42%, rgba(255, 255, 255, 0.08));
@@ -831,22 +838,22 @@
       --item-line: rgba(236, 72, 153, 0.36);
     }
 
-    [data-theme='dark'] .timeline-item {
+    [data-mode='dark'] .timeline-item {
       --item-accent: #a78bfa;
     }
-    [data-theme='dark'] .timeline-item[data-accent="sky"] {
+    [data-mode='dark'] .timeline-item[data-accent="sky"] {
       --item-accent: #38bdf8;
     }
-    [data-theme='dark'] .timeline-item[data-accent="indigo"] {
+    [data-mode='dark'] .timeline-item[data-accent="indigo"] {
       --item-accent: #818cf8;
     }
-    [data-theme='dark'] .timeline-item[data-accent="emerald"] {
+    [data-mode='dark'] .timeline-item[data-accent="emerald"] {
       --item-accent: #34d399;
     }
-    [data-theme='dark'] .timeline-item[data-accent="amber"] {
+    [data-mode='dark'] .timeline-item[data-accent="amber"] {
       --item-accent: #fbbf24;
     }
-    [data-theme='dark'] .timeline-item[data-accent="pink"] {
+    [data-mode='dark'] .timeline-item[data-accent="pink"] {
       --item-accent: #f472b6;
     }
 
@@ -858,7 +865,7 @@
       transform: translateY(-2px);
     }
 
-    [data-theme='dark'] .timeline-item {
+    [data-mode='dark'] .timeline-item {
       background:
         radial-gradient(220px 90px at 100% 0%, color-mix(in srgb, var(--item-accent) 11%, transparent), transparent 68%),
         rgba(15, 23, 42, 0.72);
@@ -866,7 +873,7 @@
       box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.45);
     }
 
-    [data-theme='dark'] .timeline-item:hover {
+    [data-mode='dark'] .timeline-item:hover {
       border-color: color-mix(in srgb, var(--item-accent) 56%, rgba(255, 255, 255, 0.16));
       box-shadow:
         0 18px 36px -18px color-mix(in srgb, var(--item-accent) 44%, transparent),
@@ -916,7 +923,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    [data-theme='dark'] .timeline-date__day {
+    [data-mode='dark'] .timeline-date__day {
       background: rgba(15, 23, 42, 0.9);
       color: color-mix(in srgb, var(--item-accent) 85%, #fff);
     }
@@ -1006,7 +1013,7 @@
       line-height: 1.35;
     }
 
-    [data-theme='dark'] .timeline-tag {
+    [data-mode='dark'] .timeline-tag {
       background: rgba(255, 255, 255, 0.04);
       border-color: rgba(255, 255, 255, 0.1);
       color: rgba(241, 245, 249, 0.84);
@@ -1115,7 +1122,7 @@
         border-left-color: rgba(255, 255, 255, 0.36);
       }
 
-      [data-theme='dark'] .archives-timeline[data-layout="split"] .timeline-month-label {
+      [data-mode='dark'] .archives-timeline[data-layout="split"] .timeline-month-label {
         background: linear-gradient(135deg, var(--month-accent), color-mix(in srgb, var(--month-accent) 82%, #000));
         border-color: rgba(255, 255, 255, 0.18);
         color: #fff;
@@ -1285,7 +1292,7 @@
       transform: translateY(-2px) scale(1.03);
     }
 
-    [data-theme='dark'] .archive-back-to-top {
+    [data-mode='dark'] .archive-back-to-top {
       border-color: color-mix(in srgb, var(--theme-primary) 32%, rgba(148, 163, 184, 0.16));
       background:
         radial-gradient(circle at 32% 18%, rgba(255, 255, 255, 0.13), transparent 40%),
@@ -1479,12 +1486,12 @@
       color: var(--text-heading);
     }
 
-    [data-theme='dark'] .rail-archive-stats--quad {
+    [data-mode='dark'] .rail-archive-stats--quad {
       background: rgba(15, 23, 42, 0.55);
       border-color: rgba(148, 163, 184, 0.16);
     }
 
-    [data-theme='dark'] .rail-stat-item {
+    [data-mode='dark'] .rail-stat-item {
       background: rgba(30, 41, 59, 0.45);
     }
 
@@ -1598,12 +1605,12 @@
       opacity: 1;
     }
 
-    [data-theme='dark'] .rail-year-link.is-active {
+    [data-mode='dark'] .rail-year-link.is-active {
       background: color-mix(in srgb, var(--theme-soft) 42%, rgba(15, 23, 42, 0.7));
       border-color: color-mix(in srgb, var(--theme-primary) 32%, rgba(148, 163, 184, 0.16));
     }
 
-    [data-theme='dark'] .rail-year-list .rail-month-chip {
+    [data-mode='dark'] .rail-year-list .rail-month-chip {
       background: rgba(15, 23, 42, 0.52);
       border-color: rgba(148, 163, 184, 0.16);
     }
@@ -1617,11 +1624,11 @@
       const { signal } = archivesController;
 
       const KEY = "ink-archives-layout-v2";
-      const btn = document.querySelector("[data-archive-layout-toggle]");
-      const label = document.querySelector("[data-archive-layout-label]");
+      const toggleButtons = document.querySelectorAll("[data-archive-layout-toggle]");
+      const toggleLabels = document.querySelectorAll("[data-archive-layout-label]");
       const timeline = document.querySelector(".archives-timeline");
 
-      if (btn && label && timeline) {
+      if (toggleButtons.length && timeline) {
         const normalize = (v) => (v === "classic" ? "classic" : "split");
 
         const read = () => {
@@ -1644,18 +1651,24 @@
           const v = normalize(layout);
           document.documentElement.dataset.archivesLayout = v;
           timeline.dataset.layout = v;
-          btn.setAttribute("aria-pressed", v === "split" ? "true" : "false");
-          label.textContent = v === "split" ? "布局：左右" : "布局：单列";
+          toggleButtons.forEach((btn) => {
+            btn.setAttribute("aria-pressed", v === "split" ? "true" : "false");
+          });
+          toggleLabels.forEach((lbl) => {
+            lbl.textContent = v === "split" ? "布局：左右" : "布局：单列";
+          });
         };
 
         let current = read();
         apply(current);
 
-        btn.addEventListener("click", () => {
-          current = current === "split" ? "classic" : "split";
-          write(current);
-          apply(current);
-        }, { signal });
+        toggleButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            current = current === "split" ? "classic" : "split";
+            write(current);
+            apply(current);
+          }, { signal });
+        });
       }
 
       // 分类筛选与双栏自适应重排

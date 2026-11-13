@@ -1,5 +1,11 @@
 {{- $main := resources.Get "css/main.css" -}}
-{{- $styles := slice $main -}}
+{{- $styles := slice -}}
+{{- range site.Data.site_themes -}}
+  {{- $path := printf "vendor/daisyui/%s.css" .id -}}
+  {{- if .custom -}}{{- $path = printf "css/palettes/%s.css" .id -}}{{- end -}}
+  {{- $styles = $styles | append (resources.Get $path) -}}
+{{- end -}}
+{{- $styles = $styles | append $main -}}
 {{- if not (eq site.Params.petCat false) -}}
   {{- with resources.Get "css/pet-cat-fishing.css" -}}
     {{- $styles = $styles | append . -}}
@@ -9,3 +15,6 @@
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
 {{ with site.Params.accent }}<style>:root{--accent: {{ . }};}</style>{{ end }}
 
+
+{{- $themes := resources.Get "css/themes.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $themes.RelPermalink }}" integrity="{{ $themes.Data.Integrity }}" crossorigin="anonymous">

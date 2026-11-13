@@ -9,19 +9,14 @@
       {{- $feeds := site.Data.subscriptions.feeds | default (slice) -}}
       {{- $accents := slice "violet" "sky" "emerald" "pink" "amber" "indigo" -}}
       <header class="crystal-mini-head crystal-mini-head--compact">
-        <div class="crystal-mini-head__left">
-          <div class="crystal-mini-head__title-row">
-            <span class="crystal-mini-head__icon" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-            </span>
-            <h1 class="crystal-mini-head__title">{{ .Title | default "订阅" }}</h1>
-            <span class="crystal-mini-head__pill crystal-mini-head__pill--accent">{{ len $feeds }} 个订阅源</span>
-          </div>
-          {{ with .Description }}<p class="crystal-mini-head__subtitle">{{ . }}</p>{{ else }}<p class="crystal-mini-head__subtitle">站外长期关注的科技资讯与技术博客聚合</p>{{ end }}
-        </div>
-        <div class="crystal-mini-head__actions">
+        <div class="crystal-mini-head__title-row">
+          <span class="crystal-mini-head__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+          </span>
+          <h1 class="crystal-mini-head__title">{{ .Title | default "订阅" }}</h1>
+          <span class="crystal-mini-head__pill crystal-mini-head__pill--accent">{{ len $feeds }} 个订阅源</span>
           {{ with site.Home.OutputFormats.Get "RSS" }}
-            <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ .RelPermalink }}">订阅本站 RSS</a>
+            <a class="crystal-mini-head__pill crystal-mini-head__pill--accent subscribe-rss-link" href="{{ .RelPermalink }}">订阅本站 RSS</a>
           {{ end }}
         </div>
       </header>
@@ -275,7 +270,24 @@
       padding-top: 16px;
     }
 
+    .subscribe-page .crystal-mini-head {
+      align-items: baseline;
+      gap: 10px 16px;
+    }
+
+    .subscribe-page .crystal-mini-head__title-row {
+      flex: 1;
+      flex-wrap: nowrap;
+      align-items: baseline;
+    }
+
+    .subscribe-page .subscribe-rss-link {
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
     .subscribe-page .crystal-mini-head__icon {
+      align-self: center;
       background: rgba(14, 165, 233, 0.13);
       color: #0284c7;
     }
@@ -291,18 +303,18 @@
       border-color: #7dd3fc;
     }
 
-    [data-theme='dark'] .subscribe-page .crystal-mini-head__icon {
+    [data-mode='dark'] .subscribe-page .crystal-mini-head__icon {
       background: rgba(56, 189, 248, 0.16);
       color: #38bdf8;
     }
 
-    [data-theme='dark'] .subscribe-page .crystal-mini-head__pill--accent {
+    [data-mode='dark'] .subscribe-page .crystal-mini-head__pill--accent {
       color: #7dd3fc;
       border-color: rgba(56, 189, 248, 0.30);
       background: rgba(14, 165, 233, 0.16);
     }
 
-    [data-theme='dark'] .subscribe-page .crystal-mini-head__pill--accent:hover {
+    [data-mode='dark'] .subscribe-page .crystal-mini-head__pill--accent:hover {
       background: rgba(14, 165, 233, 0.24);
       border-color: rgba(56, 189, 248, 0.48);
     }
@@ -443,48 +455,48 @@
       --accent-glow: rgba(99, 102, 241, 0.24);
     }
 
-    [data-theme='dark'] .subscribe-filter-pill[data-accent="violet"],
-    [data-theme='dark'] .feed-block[data-accent="violet"] {
+    [data-mode='dark'] .subscribe-filter-pill[data-accent="violet"],
+    [data-mode='dark'] .feed-block[data-accent="violet"] {
       --accent: #a78bfa;
       --accent-strong: #c4b5fd;
       --accent-bg: rgba(167, 139, 250, 0.14);
       --accent-bg-strong: rgba(167, 139, 250, 0.22);
     }
 
-    [data-theme='dark'] .subscribe-filter-pill[data-accent="sky"],
-    [data-theme='dark'] .feed-block[data-accent="sky"] {
+    [data-mode='dark'] .subscribe-filter-pill[data-accent="sky"],
+    [data-mode='dark'] .feed-block[data-accent="sky"] {
       --accent: #38bdf8;
       --accent-strong: #7dd3fc;
       --accent-bg: rgba(56, 189, 248, 0.14);
       --accent-bg-strong: rgba(56, 189, 248, 0.22);
     }
 
-    [data-theme='dark'] .subscribe-filter-pill[data-accent="emerald"],
-    [data-theme='dark'] .feed-block[data-accent="emerald"] {
+    [data-mode='dark'] .subscribe-filter-pill[data-accent="emerald"],
+    [data-mode='dark'] .feed-block[data-accent="emerald"] {
       --accent: #34d399;
       --accent-strong: #6ee7b7;
       --accent-bg: rgba(52, 211, 153, 0.14);
       --accent-bg-strong: rgba(52, 211, 153, 0.22);
     }
 
-    [data-theme='dark'] .subscribe-filter-pill[data-accent="pink"],
-    [data-theme='dark'] .feed-block[data-accent="pink"] {
+    [data-mode='dark'] .subscribe-filter-pill[data-accent="pink"],
+    [data-mode='dark'] .feed-block[data-accent="pink"] {
       --accent: #f472b6;
       --accent-strong: #f9a8d4;
       --accent-bg: rgba(244, 114, 182, 0.14);
       --accent-bg-strong: rgba(244, 114, 182, 0.22);
     }
 
-    [data-theme='dark'] .subscribe-filter-pill[data-accent="amber"],
-    [data-theme='dark'] .feed-block[data-accent="amber"] {
+    [data-mode='dark'] .subscribe-filter-pill[data-accent="amber"],
+    [data-mode='dark'] .feed-block[data-accent="amber"] {
       --accent: #fbbf24;
       --accent-strong: #fde68a;
       --accent-bg: rgba(251, 191, 36, 0.14);
       --accent-bg-strong: rgba(251, 191, 36, 0.22);
     }
 
-    [data-theme='dark'] .subscribe-filter-pill[data-accent="indigo"],
-    [data-theme='dark'] .feed-block[data-accent="indigo"] {
+    [data-mode='dark'] .subscribe-filter-pill[data-accent="indigo"],
+    [data-mode='dark'] .feed-block[data-accent="indigo"] {
       --accent: #818cf8;
       --accent-strong: #a5b4fc;
       --accent-bg: rgba(129, 140, 248, 0.14);
@@ -522,12 +534,12 @@
       display: none;
     }
 
-    [data-theme='dark'] .subscribe-filter-bar,
-    [data-theme='dark'] .feed-block {
+    [data-mode='dark'] .subscribe-filter-bar,
+    [data-mode='dark'] .feed-block {
       border-color: rgba(148, 163, 184, 0.18);
     }
 
-    [data-theme='dark'] .feed-block {
+    [data-mode='dark'] .feed-block {
       background:
         radial-gradient(240px 100px at 0% 0%, var(--accent-bg), transparent 70%),
         rgba(15, 23, 42, 0.72);

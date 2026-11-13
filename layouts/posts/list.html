@@ -20,7 +20,6 @@
               <h1 class="crystal-mini-head__title">{{ .Title }}</h1>
               <span class="crystal-mini-head__pill crystal-mini-head__pill--accent">{{ len .Pages }} 篇文章</span>
             </div>
-            {{ with .Description }}<p class="crystal-mini-head__subtitle">{{ . }}</p>{{ else }}<p class="crystal-mini-head__subtitle">按时间倒序排列的全部归档文章，可按分类快捷跳转</p>{{ end }}
             {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
           </div>
           <div class="crystal-mini-head__actions">

@@ -1090,49 +1090,7 @@
     window.__moranHomeSidebarsCleanup = reset;
   };
 
-  const initHueAndPanels = () => {
-    const root = document.documentElement;
-    const defaultHue = Number.parseInt(getComputedStyle(root).getPropertyValue("--hue"), 10) || 262;
-    const normalizeHue = (value) => {
-      let hue = Number.parseInt(value, 10);
-      if (!Number.isFinite(hue)) hue = defaultHue;
-      return ((hue % 360) + 360) % 360;
-    };
-    const applyHue = (value, persist = true) => {
-      const hue = normalizeHue(value);
-      root.style.setProperty("--hue", String(hue));
-      document.querySelectorAll("[data-hue-range]").forEach((range) => {
-        range.value = String(hue);
-      });
-      document.querySelectorAll("[data-hue-preset]").forEach((btn) => {
-        btn.classList.toggle("is-active", normalizeHue(btn.dataset.huePreset) === hue);
-      });
-      if (persist) {
-        try { localStorage.setItem("ink-hue", String(hue)); } catch {}
-      }
-    };
-
-    try {
-      const stored = localStorage.getItem("ink-hue");
-      if (stored !== null) applyHue(stored, false);
-      else applyHue(defaultHue, false);
-    } catch {
-      applyHue(defaultHue, false);
-    }
-
-    document.querySelectorAll("[data-hue-range]").forEach((range) => {
-      range.addEventListener("input", () => applyHue(range.value));
-    });
-    document.querySelectorAll("[data-hue-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => applyHue(btn.dataset.huePreset));
-    });
-    document.querySelectorAll("[data-hue-reset]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        try { localStorage.removeItem("ink-hue"); } catch {}
-        applyHue(defaultHue, false);
-      });
-    });
-
+  const initHeaderPanels = () => {
     const bindPanel = (buttonSelector, panelSelector, onOpen) => {
       const button = document.querySelector(buttonSelector);
       const panel = document.querySelector(panelSelector);
@@ -1145,7 +1103,7 @@
         document.querySelectorAll(".header-floating-panel").forEach((other) => {
           if (other !== panel) other.hidden = true;
         });
-        document.querySelectorAll("[data-header-music-toggle], [data-hue-toggle]").forEach((other) => {
+        document.querySelectorAll("[data-header-music-toggle], [data-theme-panel-toggle]").forEach((other) => {
           if (other !== button) other.setAttribute("aria-expanded", "false");
         });
         panel.hidden = false;
@@ -1159,7 +1117,7 @@
       panel.addEventListener("click", (event) => event.stopPropagation());
       document.addEventListener("click", close);
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") close();
+        if (event.key === "Escape" && !panel.hidden) { close(); button.focus(); }
       });
     };
 
@@ -1167,7 +1125,7 @@
       const widget = panel.querySelector("[data-home-music]");
       if (widget) window.__moranMusicEngine?.locateWidgetTrack?.(widget, { openList: true });
     });
-    bindPanel("[data-hue-toggle]", "[data-hue-panel]");
+    bindPanel("[data-theme-panel-toggle]", "[data-theme-panel]");
   };
 
   const initPage = () => {
@@ -1179,7 +1137,7 @@
 
   const initOnce = () => {
     initPage();
-    initHueAndPanels();
+    initHeaderPanels();
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initOnce);

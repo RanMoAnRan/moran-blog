@@ -6,7 +6,7 @@
   --cat-belly-bottom: #fbbf24;
 }
 
-[data-theme='dark'] {
+[data-mode='dark'] {
   --cat-ink: rgba(226,232,240,0.90);
   --cat-fur-top: rgba(245, 158, 11, 0.92);
   --cat-fur-bottom: rgba(180, 83, 9, 0.88);
@@ -147,7 +147,7 @@ html[data-pet-cat='on'] .pet-cat-fishing__fish {
     background-color 180ms ease;
 }
 
-[data-theme='dark'] .pet-cat-fishing__toggle {
+[data-mode='dark'] .pet-cat-fishing__toggle {
   border-color: rgba(148, 163, 184, 0.18);
   background: rgba(15, 23, 42, 0.70);
   color: rgba(226, 232, 240, 0.92);

@@ -64,7 +64,7 @@
         const script = document.createElement("script");
         Array.from(oldScript.attributes).forEach((attr) => script.setAttribute(attr.name, attr.value));
         if (src.includes("giscus.app/client.js")) {
-          const giscusTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark_dimmed" : "light";
+          const giscusTheme = document.documentElement.getAttribute("data-mode") === "dark" ? "dark_dimmed" : "light";
           script.setAttribute("data-theme", giscusTheme);
         }
         script.textContent = oldScript.textContent;
@@ -122,7 +122,7 @@
       button.setAttribute("aria-expanded", "false");
     });
     document.querySelectorAll(".header-floating-panel").forEach((panel) => { panel.hidden = true; });
-    document.querySelectorAll("[data-header-music-toggle], [data-hue-toggle]").forEach((button) => { button.setAttribute("aria-expanded", "false"); });
+    document.querySelectorAll("[data-header-music-toggle], [data-theme-panel-toggle]").forEach((button) => { button.setAttribute("aria-expanded", "false"); });
     document.querySelectorAll(".nav-dropdown").forEach((dropdown) => {
       dropdown.classList.remove("is-open");
       dropdown.classList.add("is-suppressed");

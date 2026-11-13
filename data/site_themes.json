@@ -1,0 +1,115 @@
+[
+  {
+    "id": "moran",
+    "name": "原版渐变",
+    "label": "紫粉流光",
+    "description": "紫粉 · 冰蓝 · 原版氛围",
+    "mode": "light",
+    "background": "#f1f5f9",
+    "custom": true
+  },
+  {
+    "id": "cupcake",
+    "name": "Cupcake",
+    "label": "奶油甜点",
+    "description": "薄荷 · 樱粉",
+    "mode": "light",
+    "background": "#faf7f5"
+  },
+  {
+    "id": "pastel",
+    "name": "Pastel",
+    "label": "柔彩花园",
+    "description": "薰衣草 · 奶油",
+    "mode": "light",
+    "background": "#f7f5f1"
+  },
+  {
+    "id": "winter",
+    "name": "Winter",
+    "label": "晴空冬日",
+    "description": "晴蓝 · 冰白",
+    "mode": "light",
+    "background": "#f2f7ff"
+  },
+  {
+    "id": "emerald",
+    "name": "Emerald",
+    "label": "翡翠微光",
+    "description": "翡翠 · 湖蓝",
+    "mode": "light",
+    "background": "#f0f4f3"
+  },
+  {
+    "id": "nord",
+    "name": "Nord",
+    "label": "北境清风",
+    "description": "雾灰 · 冰蓝",
+    "mode": "light",
+    "background": "#e5e9f0"
+  },
+  {
+    "id": "silk",
+    "name": "Silk",
+    "label": "柔和丝绸",
+    "description": "暖白 · 墨色",
+    "mode": "light",
+    "background": "#f5f3f0"
+  },
+  {
+    "id": "caramellatte",
+    "name": "Caramellatte",
+    "label": "焦糖拿铁",
+    "description": "奶油 · 焦糖",
+    "mode": "light",
+    "background": "#fff7ed"
+  },
+  {
+    "id": "corporate",
+    "name": "Corporate",
+    "label": "清透商务",
+    "description": "钴蓝 · 雾白",
+    "mode": "light",
+    "background": "#f0f3f6"
+  },
+  {
+    "id": "dim",
+    "name": "Dim",
+    "label": "静谧夜色",
+    "description": "蓝灰 · 草绿",
+    "mode": "dark",
+    "background": "#2a303c"
+  },
+  {
+    "id": "night",
+    "name": "Night",
+    "label": "深海星夜",
+    "description": "深蓝 · 青光",
+    "mode": "dark",
+    "background": "#0f172a"
+  },
+  {
+    "id": "dracula",
+    "name": "Dracula",
+    "label": "紫夜霓光",
+    "description": "暗紫 · 樱粉",
+    "mode": "dark",
+    "background": "#242531"
+  },
+  {
+    "id": "sunset",
+    "name": "Sunset",
+    "label": "日落余晖",
+    "description": "靛蓝 · 珊瑚",
+    "mode": "dark",
+    "background": "#151b30"
+  },
+  {
+    "id": "coffee",
+    "name": "Coffee",
+    "label": "午夜咖啡",
+    "description": "浓咖 · 琥珀",
+    "mode": "dark",
+    "background": "#1c1615"
+  }
+]

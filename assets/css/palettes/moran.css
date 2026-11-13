@@ -1,0 +1,16 @@
+/* The blog's original violet / pink / sky palette in daisyUI token format. */
+[data-theme="moran"] {
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #f1f5f9;
+  --color-base-300: #e2e8f0;
+  --color-base-content: #1e293b;
+  --color-primary: oklch(0.64 0.16 292);
+  --color-primary-content: #ffffff;
+  --color-secondary: #4f6ce8;
+  --color-secondary-content: #ffffff;
+  --color-accent: #d946ef;
+  --color-accent-content: #ffffff;
+  --color-neutral: #334155;
+  --color-neutral-content: #f8fafc;
+}

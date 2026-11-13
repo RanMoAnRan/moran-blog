@@ -1,0 +1,31 @@
+<script>
+  (() => {
+    const themes = {{ site.Data.site_themes | jsonify | safeJS }};
+    const key = "moran-theme";
+    const root = document.documentElement;
+    const system = () => matchMedia("(prefers-color-scheme: dark)").matches ? "dim" : "moran";
+    const valid = value => themes.some(theme => theme.id === value);
+    const apply = value => {
+      const theme = themes.find(theme => theme.id === value) || themes.find(theme => theme.id === system());
+      if (root.dataset.theme !== theme.id) root.dataset.theme = theme.id;
+      root.dataset.mode = theme.mode;
+      root.style.colorScheme = theme.mode;
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme.background);
+      return theme;
+    };
+    let selected;
+    try {
+      selected = localStorage.getItem(key);
+      if (!valid(selected)) {
+        localStorage.removeItem(key);
+        const legacy = localStorage.getItem("ink-theme");
+        if (legacy === "dark" || legacy === "light") {
+          selected = legacy === "dark" ? "dim" : "moran";
+          localStorage.setItem(key, selected);
+        }
+      }
+    } catch {}
+    apply(valid(selected) ? selected : system());
+    window.MoranTheme = { themes, key, system, valid, apply };
+  })();
+</script>

@@ -25,7 +25,6 @@
             <span class="crystal-mini-head__pill">{{ $taxonomyLabel }}</span>
             <span class="crystal-mini-head__pill crystal-mini-head__pill--accent">{{ len .Pages }} 篇文章</span>
           </div>
-          <p class="crystal-mini-head__subtitle">按{{ $taxonomyLabel }}「{{ .Title }}」汇集的文章目录</p>
           {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
         </div>
         <div class="crystal-mini-head__actions">
@@ -71,7 +70,7 @@
       box-shadow: 0 14px 34px -30px rgba(15, 23, 42, 0.32), var(--shadow-sm);
     }
 
-    [data-theme='dark'] .term-page .term-compact-header {
+    [data-mode='dark'] .term-page .term-compact-header {
       border-color: rgba(148, 163, 184, 0.16);
       background:
         linear-gradient(120deg, rgba(15, 23, 42, 0.70), rgba(30, 41, 59, 0.52)),
@@ -115,7 +114,7 @@
       outline-offset: 2px;
     }
 
-    [data-theme='dark'] .term-page .term-back-btn {
+    [data-mode='dark'] .term-page .term-back-btn {
       color: rgba(248, 250, 252, 0.92);
       background: rgba(15, 23, 42, 0.55);
       border-color: rgba(148, 163, 184, 0.18);
@@ -177,7 +176,7 @@
       font-weight: 800;
     }
 
-    [data-theme='dark'] .term-page .term-meta {
+    [data-mode='dark'] .term-page .term-meta {
       border-color: rgba(139, 92, 246, 0.22);
       background: rgba(15, 23, 42, 0.42);
     }

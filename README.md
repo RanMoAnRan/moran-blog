@@ -80,3 +80,27 @@ The main configuration file is `hugo.toml`:
 - `params.profile`: homepage profile information
 - `params.social`: social links
 - `params.giscus`: Giscus comments. Fill in `repo`, `repoId`, and `categoryId`, then set `enabled = true`.
+
+## Theme palettes
+
+The header palette button offers **14 palettes**: the original Moran gradient,
+Cupcake, Pastel, Winter, Emerald, Nord, Silk, Caramellatte, Corporate, Dim,
+Night, Dracula, Sunset, and Coffee, with light/dark filters.
+The selection is remembered on the current browser. **Follow system** uses the original Moran gradient
+for light mode and Dim for dark mode; the sun button switches between the
+most recently selected light and dark palettes in the current page session.
+
+Theme switching uses `theme-change` 3.0.4 with thirteen original daisyUI 5.7.50
+theme stylesheets and a custom Moran palette. These MIT-licensed assets and their licenses are vendored in
+`assets/vendor/`, so building and deploying still only requires Hugo, without a
+Node package installation or a theme CDN at runtime.
+
+- Palette labels and modes: `data/site_themes.json`.
+- Blog color mapping and theme picker styles: `assets/css/themes.css`.
+- Switching, system preference, and accessibility: `assets/js/theme-picker.js`.
+- First-paint selection and migration from `ink-theme`: `layouts/_partials/head/theme-init.html`.
+
+`data-theme` holds the daisyUI palette name; `data-mode` holds `light` or `dark`
+for mode-specific components and Giscus. New surfaces should use the blog's
+semantic variables (`--panel`, `--text-main`, `--border`, `--theme-primary`),
+with `--color-primary-content` for text on solid primary backgrounds.

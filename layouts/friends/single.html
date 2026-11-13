@@ -4,7 +4,6 @@
     <div class="content post-detail-container friends-page" aria-labelledby="friends-title">
       <header class="friends-header">
         <h1 id="friends-title">友链</h1>
-        <p>这里是我的朋友们，欢迎互相访问交流</p>
       </header>
 
       {{ if gt (len $friends) 0 }}
@@ -202,14 +201,6 @@
       letter-spacing: -0.055em;
     }
 
-    .friends-header p {
-      max-width: 620px;
-      margin: 0;
-      color: var(--text-muted);
-      font-size: 0.98rem;
-      line-height: 1.8;
-    }
-
     .friends-list-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -251,12 +242,12 @@
     .firefly-friend-card:nth-child(6n+5) { --friend-accent: #f59e0b; --friend-accent-strong: #d97706; --friend-soft: rgba(245, 158, 11, 0.14); --friend-border: rgba(245, 158, 11, 0.32); --friend-avatar-to: #fef3c7; }
     .firefly-friend-card:nth-child(6n)   { --friend-accent: #6366f1; --friend-accent-strong: #4f46e5; --friend-soft: rgba(99, 102, 241, 0.14); --friend-border: rgba(99, 102, 241, 0.32); --friend-avatar-to: #e0e7ff; }
 
-    [data-theme='dark'] .firefly-friend-card:nth-child(6n+1) { --friend-accent: #a78bfa; --friend-accent-strong: #c4b5fd; --friend-soft: rgba(167, 139, 250, 0.16); --friend-border: rgba(167, 139, 250, 0.34); }
-    [data-theme='dark'] .firefly-friend-card:nth-child(6n+2) { --friend-accent: #38bdf8; --friend-accent-strong: #7dd3fc; --friend-soft: rgba(56, 189, 248, 0.16); --friend-border: rgba(56, 189, 248, 0.34); }
-    [data-theme='dark'] .firefly-friend-card:nth-child(6n+3) { --friend-accent: #34d399; --friend-accent-strong: #6ee7b7; --friend-soft: rgba(52, 211, 153, 0.16); --friend-border: rgba(52, 211, 153, 0.34); }
-    [data-theme='dark'] .firefly-friend-card:nth-child(6n+4) { --friend-accent: #f472b6; --friend-accent-strong: #f9a8d4; --friend-soft: rgba(244, 114, 182, 0.16); --friend-border: rgba(244, 114, 182, 0.34); }
-    [data-theme='dark'] .firefly-friend-card:nth-child(6n+5) { --friend-accent: #fbbf24; --friend-accent-strong: #fde68a; --friend-soft: rgba(251, 191, 36, 0.16); --friend-border: rgba(251, 191, 36, 0.34); }
-    [data-theme='dark'] .firefly-friend-card:nth-child(6n)   { --friend-accent: #818cf8; --friend-accent-strong: #a5b4fc; --friend-soft: rgba(129, 140, 248, 0.16); --friend-border: rgba(129, 140, 248, 0.34); }
+    [data-mode='dark'] .firefly-friend-card:nth-child(6n+1) { --friend-accent: #a78bfa; --friend-accent-strong: #c4b5fd; --friend-soft: rgba(167, 139, 250, 0.16); --friend-border: rgba(167, 139, 250, 0.34); }
+    [data-mode='dark'] .firefly-friend-card:nth-child(6n+2) { --friend-accent: #38bdf8; --friend-accent-strong: #7dd3fc; --friend-soft: rgba(56, 189, 248, 0.16); --friend-border: rgba(56, 189, 248, 0.34); }
+    [data-mode='dark'] .firefly-friend-card:nth-child(6n+3) { --friend-accent: #34d399; --friend-accent-strong: #6ee7b7; --friend-soft: rgba(52, 211, 153, 0.16); --friend-border: rgba(52, 211, 153, 0.34); }
+    [data-mode='dark'] .firefly-friend-card:nth-child(6n+4) { --friend-accent: #f472b6; --friend-accent-strong: #f9a8d4; --friend-soft: rgba(244, 114, 182, 0.16); --friend-border: rgba(244, 114, 182, 0.34); }
+    [data-mode='dark'] .firefly-friend-card:nth-child(6n+5) { --friend-accent: #fbbf24; --friend-accent-strong: #fde68a; --friend-soft: rgba(251, 191, 36, 0.16); --friend-border: rgba(251, 191, 36, 0.34); }
+    [data-mode='dark'] .firefly-friend-card:nth-child(6n)   { --friend-accent: #818cf8; --friend-accent-strong: #a5b4fc; --friend-soft: rgba(129, 140, 248, 0.16); --friend-border: rgba(129, 140, 248, 0.34); }
 
     .firefly-friend-card::before {
       content: "";
@@ -327,7 +318,7 @@
       text-transform: uppercase;
     }
 
-    [data-theme='dark'] .firefly-friend-card__initial {
+    [data-mode='dark'] .firefly-friend-card__initial {
       background:
         radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.16), transparent 38%),
         linear-gradient(135deg, color-mix(in srgb, var(--friend-accent) 28%, #0f172a), color-mix(in srgb, var(--friend-accent) 16%, #1e293b));
@@ -795,7 +786,7 @@
       background: var(--panel-muted);
     }
 
-    [data-theme='dark'] .firefly-friend-card {
+    [data-mode='dark'] .firefly-friend-card {
       border-color: rgba(148, 163, 184, 0.16);
       background:
         radial-gradient(190px 120px at 100% -20%, var(--friend-soft), transparent 70%),
@@ -803,7 +794,7 @@
     }
 
 
-    [data-theme='dark'] .friends-exchange {
+    [data-mode='dark'] .friends-exchange {
       --friend-exchange-accent: #38bdf8;
       --friend-exchange-accent-strong: #7dd3fc;
       --friend-exchange-text: var(--text-heading);
@@ -815,59 +806,59 @@
       box-shadow: 0 18px 42px -34px rgba(0, 0, 0, 0.72), var(--shadow-sm);
     }
 
-    [data-theme='dark'] .friends-exchange-card {
+    [data-mode='dark'] .friends-exchange-card {
       background: rgba(15, 23, 42, 0.54);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
-    [data-theme='dark'] .friends-site-card__avatar {
+    [data-mode='dark'] .friends-site-card__avatar {
       border-color: rgba(8, 169, 221, 0.26);
       background: rgba(30, 41, 59, 0.72);
     }
 
-    [data-theme='dark'] .friends-copy-item,
-    [data-theme='dark'] .friends-template-box {
+    [data-mode='dark'] .friends-copy-item,
+    [data-mode='dark'] .friends-template-box {
       background: rgba(30, 41, 59, 0.62);
     }
 
-    [data-theme='dark'] .friends-copy-item small {
+    [data-mode='dark'] .friends-copy-item small {
       color: rgba(148, 163, 184, 0.86);
     }
 
-    [data-theme='dark'] .friends-copy-btn {
+    [data-mode='dark'] .friends-copy-btn {
       background: rgba(51, 65, 85, 0.86);
       color: #67e8f9;
     }
 
-    [data-theme='dark'] .friends-copy-btn:hover {
+    [data-mode='dark'] .friends-copy-btn:hover {
       background: rgba(8, 169, 221, 0.22);
       color: #a5f3fc;
     }
 
-    [data-theme='dark'] .friends-section-title__icon {
+    [data-mode='dark'] .friends-section-title__icon {
       background: color-mix(in srgb, var(--friend-exchange-accent) 13%, transparent);
     }
 
-    [data-theme='dark'] .friends-section-title__icon--plain {
+    [data-mode='dark'] .friends-section-title__icon--plain {
       background: transparent;
     }
 
-    [data-theme='dark'] .friends-steps li:not(:last-child)::after {
+    [data-mode='dark'] .friends-steps li:not(:last-child)::after {
       background: rgba(148, 163, 184, 0.18);
     }
 
-    [data-theme='dark'] .friends-steps code {
+    [data-mode='dark'] .friends-steps code {
       border-color: rgba(56, 189, 248, 0.28);
       background: rgba(56, 189, 248, 0.14);
       color: var(--friend-exchange-accent-strong);
     }
 
-    [data-theme='dark'] .friends-note-list li {
+    [data-mode='dark'] .friends-note-list li {
       color: var(--friend-exchange-muted);
     }
 
-    [data-theme='dark'] .friends-note-list strong,
-    [data-theme='dark'] .friends-template-box strong {
+    [data-mode='dark'] .friends-note-list strong,
+    [data-mode='dark'] .friends-template-box strong {
       color: var(--friend-exchange-text);
     }
 

@@ -1,25 +1,5 @@
 (() => {
-  const storageKey = "ink-theme";
   const root = document.documentElement;
-  const themeColors = {
-    light: "#f1f5f9",
-    dark: "#0b1020",
-  };
-
-  const systemTheme = () =>
-    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-  const normalizeTheme = (value) => (value === "dark" || value === "light" ? value : systemTheme());
-
-  const syncThemeColor = (theme) => {
-    let meta = document.querySelector('meta[name="theme-color"]');
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "theme-color");
-      document.head.appendChild(meta);
-    }
-    meta.setAttribute("content", themeColors[normalizeTheme(theme)]);
-  };
 
   // 背景动效只在“首次进入当前标签页会话”播放一次，后续页面跳转保持静止以降低资源占用。
   try {
@@ -33,15 +13,6 @@
     // ignore
   }
 
-  const applyTheme = (theme) => {
-    const next = normalizeTheme(theme);
-    root.setAttribute("data-theme", next);
-    root.style.colorScheme = next;
-    syncThemeColor(next);
-  };
-
-  const giscusThemeFor = (theme) => (normalizeTheme(theme) === "dark" ? "dark_dimmed" : "light");
-
   const setGiscusTheme = () => {
     const frame = document.querySelector("iframe.giscus-frame");
     if (!frame || !frame.contentWindow) return;
@@ -53,7 +24,7 @@
     }
 
     frame.contentWindow.postMessage(
-      { giscus: { setConfig: { theme: giscusThemeFor(root.getAttribute("data-theme")) } } },
+      { giscus: { setConfig: { theme: root.dataset.mode === "dark" ? "dark_dimmed" : "light" } } },
       "https://giscus.app",
     );
   };
@@ -77,42 +48,8 @@
     });
   };
 
-  const getStoredTheme = () => {
-    try {
-      return normalizeTheme(localStorage.getItem(storageKey));
-    } catch {
-      return systemTheme();
-    }
-  };
-
-  const setStoredTheme = (theme) => {
-    try {
-      localStorage.setItem(storageKey, normalizeTheme(theme));
-    } catch {
-      // ignore
-    }
-  };
-
-  const toggleTheme = (current) => (normalizeTheme(current) === "dark" ? "light" : "dark");
-
-  const getThemeLabel = (theme) => (normalizeTheme(theme) === "dark" ? "主题：深色" : "主题：浅色");
-
-  let theme = getStoredTheme();
-  applyTheme(theme);
   observeGiscus();
-
-  const button = document.querySelector("[data-theme-toggle]");
-  if (button) button.setAttribute("aria-label", getThemeLabel(theme));
-
-  if (button) {
-    button.addEventListener("click", () => {
-      theme = toggleTheme(theme);
-      setStoredTheme(theme);
-      applyTheme(theme);
-      button.setAttribute("aria-label", getThemeLabel(theme));
-      setGiscusTheme();
-    });
-  }
+  document.addEventListener("moran:theme-change", setGiscusTheme);
 
   const navToggle = document.querySelector("[data-nav-toggle]");
   const navMobile = document.querySelector("[data-nav-mobile]");

@@ -6,7 +6,6 @@
         <div class="about-body">
           <div class="about-intro-header">
             {{- $aboutName := .Params.aboutName | default site.Params.profile.name | default site.Params.author | default "Author" -}}
-            {{- $aboutIntro := .Params.aboutIntro | default site.Params.profile.bio | default site.Params.about.intro | default "" -}}
             {{- $aboutAvatar := partial "avatar-path.html" . -}}
             {{- if not (hasPrefix $aboutAvatar "http") -}}{{- $aboutAvatar = ($aboutAvatar | relURL) -}}{{- end -}}
             <div class="about-identity">
@@ -15,7 +14,6 @@
               </div>
               <div class="about-identity__text">
                 <h1 class="about-name">{{ $aboutName }}</h1>
-                {{ if $aboutIntro }}<p class="about-tagline">{{ $aboutIntro }}</p>{{ end }}
               </div>
             </div>
             <div class="about-socials about-socials--terminal">
@@ -134,7 +132,7 @@
       overflow: hidden;
     }
 
-    [data-theme='dark'] .about-card--body-only {
+    [data-mode='dark'] .about-card--body-only {
       border-color: rgba(148, 163, 184, 0.18);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
@@ -208,7 +206,7 @@
       background: var(--hover-bg);
     }
 
-    [data-theme='dark'] .about-avatar {
+    [data-mode='dark'] .about-avatar {
       background:
         linear-gradient(var(--panel), var(--panel)) padding-box,
         conic-gradient(from 160deg, rgba(167, 139, 250, 0.9), rgba(45, 212, 191, 0.78), rgba(251, 191, 36, 0.66), rgba(167, 139, 250, 0.9)) border-box;
@@ -222,21 +220,11 @@
     .about-name {
       font-size: 2.25rem;
       font-weight: 900;
-      margin: 0 0 8px;
+      margin: 0;
       font-family: var(--font-serif);
       line-height: 1.1;
     }
 
-    .about-tagline {
-      color: #7c3aed;
-      font-weight: 500;
-      font-size: 1rem;
-      margin: 0;
-    }
-
-    [data-theme='dark'] .about-tagline {
-      color: #a78bfa;
-    }
     
     .about-socials {
       margin-top: 8px;
@@ -394,8 +382,8 @@
       border-bottom: 1px solid rgba(124, 58, 237, 0.28);
     }
 
-    [data-theme='dark'] .about-prose li::marker,
-    [data-theme='dark'] .about-prose a {
+    [data-mode='dark'] .about-prose li::marker,
+    [data-mode='dark'] .about-prose a {
       color: #a78bfa;
     }
 
@@ -492,11 +480,11 @@
     .skill-color-3 { background: #fffbeb; color: #d97706; border-color: #fef3c7; }
     .skill-color-4 { background: #f5f3ff; color: #7c3aed; border-color: #ede9fe; }
 
-    [data-theme='dark'] .skill-color-0 { background: rgba(244, 63, 94, 0.16); color: #fda4af; border-color: rgba(251, 113, 133, 0.32); }
-    [data-theme='dark'] .skill-color-1 { background: rgba(99, 102, 241, 0.16); color: #a5b4fc; border-color: rgba(129, 140, 248, 0.32); }
-    [data-theme='dark'] .skill-color-2 { background: rgba(20, 184, 166, 0.16); color: #5eead4; border-color: rgba(45, 212, 191, 0.32); }
-    [data-theme='dark'] .skill-color-3 { background: rgba(245, 158, 11, 0.16); color: #fcd34d; border-color: rgba(251, 191, 36, 0.32); }
-    [data-theme='dark'] .skill-color-4 { background: rgba(139, 92, 246, 0.16); color: #c4b5fd; border-color: rgba(167, 139, 250, 0.32); }
+    [data-mode='dark'] .skill-color-0 { background: rgba(244, 63, 94, 0.16); color: #fda4af; border-color: rgba(251, 113, 133, 0.32); }
+    [data-mode='dark'] .skill-color-1 { background: rgba(99, 102, 241, 0.16); color: #a5b4fc; border-color: rgba(129, 140, 248, 0.32); }
+    [data-mode='dark'] .skill-color-2 { background: rgba(20, 184, 166, 0.16); color: #5eead4; border-color: rgba(45, 212, 191, 0.32); }
+    [data-mode='dark'] .skill-color-3 { background: rgba(245, 158, 11, 0.16); color: #fcd34d; border-color: rgba(251, 191, 36, 0.32); }
+    [data-mode='dark'] .skill-color-4 { background: rgba(139, 92, 246, 0.16); color: #c4b5fd; border-color: rgba(167, 139, 250, 0.32); }
 
     .about-now-box {
       background: var(--panel-muted);
@@ -602,7 +590,7 @@
       isolation: isolate;
     }
 
-    [data-theme='dark'] .about-quote-card {
+    [data-mode='dark'] .about-quote-card {
       border-color: rgba(167, 139, 250, 0.20);
       background:
         linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.50)),
@@ -662,7 +650,7 @@
       font-size: 0.78rem;
     }
 
-    [data-theme='dark'] .about-quote-card__spark {
+    [data-mode='dark'] .about-quote-card__spark {
       background: rgba(167, 139, 250, 0.16);
       color: #a78bfa;
     }
@@ -713,7 +701,7 @@
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
     }
 
-    [data-theme='dark'] .about-quote-action {
+    [data-mode='dark'] .about-quote-action {
       background: rgba(15, 23, 42, 0.68);
     }
 
@@ -729,7 +717,7 @@
       color: #7c3aed;
     }
 
-    [data-theme='dark'] .about-quote-action:hover {
+    [data-mode='dark'] .about-quote-action:hover {
       color: #c4b5fd;
     }
 

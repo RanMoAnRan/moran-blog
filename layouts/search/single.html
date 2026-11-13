@@ -16,7 +16,6 @@
             <h1 class="crystal-mini-head__title">{{ .Title }}</h1>
             <span class="crystal-mini-head__pill">Instant Search</span>
           </div>
-          {{ with .Description }}<p class="crystal-mini-head__subtitle">{{ . }}</p>{{ else }}<p class="crystal-mini-head__subtitle">支持按标题、标签、分类或正文内容实时加权高亮检索</p>{{ end }}
         </div>
         <div class="crystal-mini-head__actions">
           <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ "tags" | relURL }}">按标签探索</a>
@@ -88,7 +87,7 @@
       border-color: transparent;
     }
 
-    [data-theme='dark'] .search-page-form__icon {
+    [data-mode='dark'] .search-page-form__icon {
       color: #818cf8;
     }
 
@@ -128,7 +127,7 @@
       margin-right: 2px;
     }
 
-    [data-theme='dark'] .search-page-form {
+    [data-mode='dark'] .search-page-form {
       border-color: rgba(148, 163, 184, 0.18);
       background: rgba(15, 23, 42, 0.65);
     }
