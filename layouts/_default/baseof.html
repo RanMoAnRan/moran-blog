@@ -1,6 +1,23 @@
 <!doctype html>
 <html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
 <head>
+  {{ if .IsHome }}
+    <script>
+      (() => {
+        const navigation = performance.getEntriesByType("navigation")[0];
+        if (navigation?.type !== "reload" || window.location.hash) return;
+
+        const previousRestoration = history.scrollRestoration;
+        history.scrollRestoration = "manual";
+        window.addEventListener("pageshow", () => {
+          window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+          requestAnimationFrame(() => {
+            history.scrollRestoration = previousRestoration;
+          });
+        }, { once: true });
+      })();
+    </script>
+  {{ end }}
   {{ partial "head.html" . }}
 </head>
 <body class="{{ if .IsHome }}is-home{{ end }}">
