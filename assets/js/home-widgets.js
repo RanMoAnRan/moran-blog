@@ -125,9 +125,9 @@
 
   const validPlayModes = new Set(["list", "one", "random"]);
   const playModeMeta = {
-    list: { icon: "∞", title: "列表循环" },
-    one: { icon: "①", title: "单曲循环" },
-    random: { icon: "⌘", title: "随机播放" },
+    list: { title: "列表循环" },
+    one: { title: "单曲循环" },
+    random: { title: "随机播放" },
   };
 
   const clampVolume = (value, fallback = 0.7) => {
@@ -183,6 +183,7 @@
         currentTime: audio.currentTime || 0,
         playMode: engine.playMode,
         volume: engine.volume,
+        muted: audio.muted,
         wasPlaying,
       });
     };
@@ -220,19 +221,28 @@
     };
 
     const syncModeUI = () => {
-      const meta = playModeMeta[engine.playMode] || playModeMeta.list;
+      const mode = Object.hasOwn(playModeMeta, engine.playMode) ? engine.playMode : "list";
+      const meta = playModeMeta[mode];
       activeControllers().forEach((ctrl) => {
         if (!ctrl.els.mode) return;
-        ctrl.els.mode.textContent = meta.icon;
+        ctrl.els.mode.querySelectorAll("[data-music-mode-icon]").forEach((icon) => {
+          icon.toggleAttribute("hidden", icon.dataset.musicModeIcon !== mode);
+        });
         ctrl.els.mode.title = meta.title;
         ctrl.els.mode.setAttribute("aria-label", meta.title);
       });
     };
 
     const syncVolumeUI = () => {
+      const muted = audio.muted || engine.volume === 0;
       activeControllers().forEach((ctrl) => {
-        if (!ctrl.els.volume) return;
-        ctrl.els.volume.value = String(engine.volume);
+        if (ctrl.els.volume) ctrl.els.volume.value = String(muted ? 0 : engine.volume);
+        if (ctrl.els.mute) {
+          ctrl.els.mute.classList.toggle("is-muted", muted);
+          ctrl.els.mute.setAttribute("aria-pressed", String(muted));
+          ctrl.els.mute.setAttribute("aria-label", muted ? "取消静音" : "静音");
+          ctrl.els.mute.title = muted ? "取消静音" : "静音";
+        }
       });
     };
 
@@ -476,6 +486,17 @@
     const setVolume = (value) => {
       engine.volume = clampVolume(value, engine.volume);
       audio.volume = engine.volume;
+      audio.muted = false;
+      syncVolumeUI();
+      persistState();
+    };
+
+    const toggleMute = () => {
+      if (engine.volume === 0) {
+        setVolume(clampVolume(engine.config.volume, 0.7) || 0.7);
+        return;
+      }
+      audio.muted = !audio.muted;
       syncVolumeUI();
       persistState();
     };
@@ -558,6 +579,7 @@
     engine.prev = prev;
     engine.cyclePlayMode = cyclePlayMode;
     engine.setVolume = setVolume;
+    engine.toggleMute = toggleMute;
     engine.setError = setError;
     engine.syncSourceUI = syncSourceUI;
     engine.syncAllUI = syncAllUI;
@@ -729,6 +751,7 @@
           ? clampVolume(currentPersisted.volume, clampVolume(config.volume, 0.7))
           : clampVolume(config.volume, 0.7);
         sharedAudio.volume = engine.volume;
+        sharedAudio.muted = currentPersisted.muted === true;
 
         const restoredIndex = currentPersisted.sourceKey === sourceKey
           ? playlist.findIndex((track) => getTrackKey(track) === currentPersisted.trackKey)
@@ -868,6 +891,7 @@
         next: widget.querySelector("[data-music-next]"),
         mode: widget.querySelector("[data-music-mode]"),
         volume: widget.querySelector("[data-music-volume]"),
+        mute: widget.querySelector("[data-music-mute]"),
         listToggle: widget.querySelector("[data-music-playlist-toggle]"),
         playlist: widget.querySelector("[data-music-playlist]"),
         error: widget.querySelector("[data-music-error]"),
@@ -901,6 +925,7 @@
       els.prev?.addEventListener("click", () => engine.prev());
       els.next?.addEventListener("click", () => engine.next());
       els.mode?.addEventListener("click", engine.cyclePlayMode);
+      els.mute?.addEventListener("click", engine.toggleMute);
       els.volume?.addEventListener("input", () => {
         engine.setVolume(els.volume.value);
       });

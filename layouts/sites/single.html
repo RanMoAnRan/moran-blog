@@ -31,8 +31,14 @@
     {{- $overflowTags = after $featuredLimit $sortedTags -}}
   {{- end -}}
 
-  <div class="container sites-container">
-    <div class="content sites-page" aria-label="网站工具导航">
+  <div class="container rail-layout-container rail-layout-container--three sites-container sites-rail-container">
+    <div class="rail-layout rail-layout--three">
+      <aside class="rail-sidebar rail-sidebar--left" aria-label="导航左侧栏">
+        {{ partial "home-profile-widget.html" . }}
+        {{ partial "home-music-widget.html" (dict "Page" . "class" "rail-music-widget") }}
+      </aside>
+
+    <div class="rail-main content sites-page" aria-label="网站工具导航">
       <!-- 页面顶部极简标题条（无大 Hero） -->
       <div class="sites-mini-head">
         <div class="sites-mini-head__title-wrap">
@@ -260,19 +266,31 @@
         </div>
       {{ end }}
     </div>
+      <aside class="rail-sidebar rail-sidebar--right" aria-label="导航分组侧栏">
+        {{ partial "rail/sites-index.html" . }}
+        {{ partial "rail/section-note.html" (dict "title" "浏览提示" "body" "按分组快速定位，或结合搜索和标签缩小范围。按 / 即可开始搜索。") }}
+      </aside>
+    </div>
   </div>
 
   <style>
     .sites-container {
-      max-width: 1160px;
-      margin: 0 auto;
-      padding: 12px 20px 64px;
+      padding-top: 16px;
+      padding-bottom: 64px;
+    }
+
+    @media (max-width: 1239px) {
+      .sites-container {
+        max-width: 1160px;
+        padding-inline: 20px;
+      }
     }
 
     .sites-page {
       display: flex;
       flex-direction: column;
       gap: 18px;
+      container-type: inline-size;
     }
 
     .sites-mini-head {
@@ -728,6 +746,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      scroll-margin-top: calc(var(--header-height, 64px) + 160px);
     }
 
     .sites-group__head {
@@ -789,11 +808,11 @@
       gap: 16px;
     }
 
-    @media (max-width: 960px) {
+    @container (max-width: 800px) {
       .sites-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 600px) {
+    @container (max-width: 560px) {
       .sites-grid { grid-template-columns: 1fr; }
     }
 
@@ -1295,6 +1314,10 @@
         if (searchInput) searchInput.value = "";
         applyFilters();
       };
+
+      document.querySelectorAll(".sites-rail-container [data-sites-group-link]").forEach((link) => {
+        link.addEventListener("click", () => resetAll(), { signal });
+      });
 
       groupButtons.forEach((btn) => {
         btn.addEventListener("click", () => {

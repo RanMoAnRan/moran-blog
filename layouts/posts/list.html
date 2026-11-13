@@ -9,22 +9,25 @@
       <div class="rail-main content posts-page">
         <header class="crystal-mini-head crystal-mini-head--compact">
           <div class="crystal-mini-head__left">
-            <a class="crystal-mini-head__back" href="{{ "/" | relURL }}" data-history-back="1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-              返回
-            </a>
             <div class="crystal-mini-head__title-row">
               <span class="crystal-mini-head__icon" aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
               </span>
               <h1 class="crystal-mini-head__title">{{ .Title }}</h1>
-              <span class="crystal-mini-head__pill crystal-mini-head__pill--accent">{{ len .Pages }} 篇文章</span>
+              <span class="posts-head__count">{{ len .Pages }} 篇文章</span>
             </div>
             {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
           </div>
-          <div class="crystal-mini-head__actions">
-            <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ "tags" | relURL }}">分类 / 标签索引</a>
-          </div>
+          <nav class="crystal-mini-head__actions" aria-label="文章导航">
+            <a class="crystal-mini-head__back" href="{{ "/" | relURL }}" data-history-back="1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              返回
+            </a>
+            <a class="crystal-mini-head__pill crystal-mini-head__pill--accent" href="{{ "tags" | relURL }}">
+              分类 / 标签索引
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+          </nav>
         </header>
 
         {{ with site.Taxonomies.categories.ByCount }}
