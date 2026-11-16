@@ -787,17 +787,11 @@
 
     @media (min-width: 1240px) {
       .post-left-sidebar .home-widget {
-        opacity: 0.76;
-        filter: saturate(0.86) contrast(0.98);
-        transform: scale(0.985);
-        transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        transition: border-color 0.2s ease;
       }
 
       .post-left-sidebar .home-widget:hover,
       .post-left-sidebar .home-widget:focus-within {
-        opacity: 1;
-        filter: none;
-        transform: none;
         border-color: color-mix(in srgb, var(--theme-primary) 28%, var(--border));
       }
     }

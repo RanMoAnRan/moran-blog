@@ -5122,6 +5122,10 @@ body.is-home .home-sidebar {
   transition: transform 0.32s ease, filter 0.32s ease;
 }
 
+.post-left-sidebar .home-profile-widget__avatar img {
+  object-position: center 20%;
+}
+
 .home-profile-widget__avatar:hover img {
   transform: scale(1.04);
   filter: saturate(1.08);
