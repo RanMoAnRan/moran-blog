@@ -35,7 +35,7 @@
     <div class="rail-layout rail-layout--three">
       <aside class="rail-sidebar rail-sidebar--left" aria-label="归档左侧栏">
         {{ partial "home-profile-widget.html" . }}
-        {{ partial "rail/site-pulse.html" . }}
+        {{ partial "rail/archive-capsule.html" . }}
       </aside>
 
       <div class="rail-main content post-detail-container page-narrow archives-page">
@@ -1615,6 +1615,99 @@
       background: rgba(15, 23, 42, 0.52);
       border-color: rgba(148, 163, 184, 0.16);
     }
+
+    /* 左侧栏时光漫游胶囊 */
+    .rail-archive-capsule {
+      padding-bottom: 14px;
+    }
+
+    .rail-capsule-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--theme-primary);
+      background: color-mix(in srgb, var(--theme-primary) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
+    }
+
+    .rail-capsule-body {
+      padding: 0 16px;
+    }
+
+    .rail-capsule-title {
+      font-size: 1.15rem;
+      font-weight: 850;
+      color: var(--text-heading);
+      margin: 4px 0 2px;
+      letter-spacing: -0.01em;
+    }
+
+    .rail-capsule-desc {
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+      margin: 0 0 10px;
+    }
+
+    .rail-capsule-insights {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding: 10px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--panel) 78%, var(--theme-softer));
+      border: 1px solid color-mix(in srgb, var(--theme-primary) 15%, var(--border));
+      margin-bottom: 12px;
+    }
+
+    .rail-capsule-insight {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: center;
+    }
+
+    .rail-capsule-insight__label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 650;
+    }
+
+    .rail-capsule-insight__val {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--theme-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rail-capsule-action-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid color-mix(in srgb, var(--theme-primary) 28%, var(--border));
+      background: color-mix(in srgb, var(--theme-primary) 8%, var(--panel));
+      color: var(--theme-primary);
+      font-size: 0.78rem;
+      font-weight: 750;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .rail-capsule-action-btn:hover {
+      background: var(--theme-primary);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-primary) 30%, transparent);
+    }
   </style>
 
   <script>
@@ -1889,6 +1982,24 @@
       };
 
       initBackToTop();
+
+      // 随机漫游点击处理
+      const initRandomArchive = () => {
+        const randomBtns = document.querySelectorAll("[data-action='random-archive']");
+        randomBtns.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const items = Array.from(document.querySelectorAll(".timeline-item"));
+            if (items.length > 0) {
+              const chosen = items[Math.floor(Math.random() * items.length)];
+              const href = chosen.getAttribute("href");
+              if (href) window.location.href = href;
+            }
+          }, { signal });
+        });
+      };
+      initRandomArchive();
+
       document.addEventListener("moran:page-load", () => {
         if (!document.contains(timeline)) {
           archivesController.abort();
