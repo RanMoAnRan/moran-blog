@@ -2,6 +2,7 @@
   <div class="container">
     <div class="not-found">
       <div class="not-found-card">
+        {{ partial "breadcrumbs.html" . }}
         <div class="not-found-code">404</div>
         <h1 class="not-found-title">页面走丢了</h1>
 
@@ -21,7 +22,6 @@
         </form>
 
         <div class="not-found-actions">
-          <a class="btn btn-outline" href="{{ site.Home.RelPermalink }}">返回首页</a>
           <a class="btn btn-outline" href="{{ "archives" | relURL }}">查看归档</a>
           <a class="btn btn-outline" href="{{ "tags" | relURL }}">浏览标签</a>
         </div>

@@ -1,0 +1,18 @@
+{{- $items := partial "breadcrumb-items.html" . -}}
+{{- $fromSource := and .IsPage (eq .Section "posts") -}}
+<nav class="breadcrumbs" aria-label="层级导航"{{ if $fromSource }} data-breadcrumb-origin{{ end }}>
+  <ol>
+    {{- range $i, $item := $items -}}
+      <li>
+        {{- if eq $i (sub (len $items) 1) -}}
+          <span aria-current="page">{{ $item.title }}</span>
+        {{- else -}}
+          <a href="{{ $item.url }}">{{ $item.title }}</a>
+        {{- end -}}
+      </li>
+    {{- end -}}
+  </ol>
+  {{- if $fromSource -}}
+    <script type="application/json" data-breadcrumb-sources>{{ partialCached "breadcrumb-sources.html" . site.Language.Lang | jsonify | safeJS }}</script>
+  {{- end -}}
+</nav>

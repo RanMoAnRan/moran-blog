@@ -2,18 +2,18 @@
   {{- $bgImages := slice -}}
   {{- range readDir "static/img/bg" -}}
     {{- if and (not .IsDir) (findRE `(?i)\.webp$` .Name) -}}
-      {{- $bgImages = $bgImages | append (printf "img/bg/%s" .Name | relURL) -}}
+      {{- $bgImages = $bgImages | append (printf "img/bg/%s" .Name) -}}
     {{- end -}}
   {{- end -}}
   {{- if eq (len $bgImages) 0 -}}
     {{- range readDir "static/img/bg" -}}
       {{- if and (not .IsDir) (findRE `(?i)\.(avif|png|jpe?g|gif)$` .Name) -}}
-        {{- $bgImages = $bgImages | append (printf "img/bg/%s" .Name | relURL) -}}
+        {{- $bgImages = $bgImages | append (printf "img/bg/%s" .Name) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- $bgImages = sort $bgImages -}}
-  {{- $defaultBg := "img/bg/3.webp" | relURL -}}
+  {{- $defaultBg := "img/bg/3.webp" -}}
   {{- if in $bgImages $defaultBg -}}
     {{- $orderedBgImages := slice $defaultBg -}}
     {{- range $bgImages -}}
@@ -24,8 +24,13 @@
     {{- $bgImages = $orderedBgImages -}}
   {{- end -}}
   {{- if eq (len $bgImages) 0 -}}
-    {{- $bgImages = slice ("img/bg/3.png" | relURL) -}}
+    {{- $bgImages = slice "img/bg/3.png" -}}
   {{- end -}}
+  {{- $responsiveBgImages := slice -}}
+  {{- range $bgImages -}}
+    {{- $responsiveBgImages = $responsiveBgImages | append (partial "hero-image.html" .) -}}
+  {{- end -}}
+  {{- $initialBg := index $responsiveBgImages 0 -}}
   <!-- Hero Section with Background Image -->
   <!--
     这里不需要用 100vw + 负 margin 的“全出血”写法。
@@ -34,7 +39,18 @@
   <div data-home-hero style="position: relative; width: 100%; overflow: visible; margin-bottom: 0;">
     <!-- Background Image -->
     <div style="position: absolute; inset: 0; z-index: -2;" id="hero-bg-container">
-      <img id="hero-bg-img" src="{{ index $bgImages 0 }}" alt="bg" loading="eager" fetchpriority="high" decoding="async" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; transition: opacity 0.5s ease-in-out;">
+      <picture>
+        <source id="hero-bg-compact" media="(max-width: 480px)">
+        <source id="hero-bg-mobile" media="(max-width: 768px)">
+        <img id="hero-bg-img" class="hero-bg-image" alt="" loading="eager" fetchpriority="high" decoding="async">
+      </picture>
+      <noscript>
+        <picture>
+          <source media="(max-width: 480px)" srcset="{{ $initialBg.compact }}">
+          <source media="(max-width: 768px)" srcset="{{ $initialBg.mobile }}">
+          <img class="hero-bg-image" src="{{ $initialBg.desktop }}" alt="" loading="eager" fetchpriority="high" decoding="async">
+        </picture>
+      </noscript>
     </div>
 
     <canvas class="hero-ripple-canvas" data-hero-ripple aria-hidden="true"></canvas>
@@ -48,27 +64,39 @@
 	      (function() {
 	        // 使用 Hugo 的 relURL 生成带 baseURL 子路径前缀的地址
 	        const bgImages = [
-          {{- range $bgImages }}
+          {{- range $responsiveBgImages }}
           {{ . | jsonify | safeJS }},
           {{- end }}
         ];
 
 	        const btn = document.getElementById('bg-toggle-btn');
 	        const img = document.getElementById('hero-bg-img');
+	        const compactSource = document.getElementById('hero-bg-compact');
+	        const mobileSource = document.getElementById('hero-bg-mobile');
 	        const STORAGE_KEY = 'ink-hero-bg-index-v3';
 
-        let currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) || "0");
+        let currentIndex = 0;
+        try {
+          currentIndex = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
+        } catch (_) {
+          // The banner should still load when browser storage is unavailable.
+        }
 
         if (isNaN(currentIndex) || currentIndex < 0 || currentIndex >= bgImages.length) {
           currentIndex = 0;
         }
 
-	        const setInitialImage = () => {
-	             img.src = bgImages[currentIndex];
+	        const setImage = () => {
+	             const image = bgImages[currentIndex];
+	             compactSource.srcset = image.compact;
+	             mobileSource.srcset = image.mobile;
+	             img.src = image.desktop;
 	             img.style.opacity = '1';
 	        };
 
-        setInitialImage();
+        // Assign URLs only after reading the saved selection to avoid fetching
+        // the default banner before the remembered one.
+        setImage();
 
         btn.addEventListener('click', () => {
           const icon = btn.querySelector('svg');
@@ -77,8 +105,10 @@
           setTimeout(() => { icon.style.transform = 'rotate(0deg)'; }, 500);
 
 	          currentIndex = (currentIndex + 1) % bgImages.length;
-	          localStorage.setItem(STORAGE_KEY, currentIndex);
-	          img.src = bgImages[currentIndex];
+	          try {
+	            localStorage.setItem(STORAGE_KEY, currentIndex);
+	          } catch (_) {}
+	          setImage();
 	        });
 	      })();
 	    </script>
@@ -550,6 +580,16 @@
   </div>
 
   <style>
+    .hero-bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 22%;
+      transition: opacity 0.5s ease-in-out;
+    }
+
     .home-latest-posts {
       max-width: none;
       margin: 0;
@@ -682,7 +722,7 @@
       color: #fff;
       border-color: rgba(226, 232, 240, 0.32);
     }
-	    [data-mode='dark'] #hero-bg-img {
+	    [data-mode='dark'] .hero-bg-image {
 	      filter: brightness(0.6) contrast(1.1); /* Dim background in dark mode */
 	    }
     [data-mode='dark'] .hero-gradient-v {

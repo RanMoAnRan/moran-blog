@@ -8,6 +8,18 @@ timeZone = 'Asia/Shanghai'
 theme = 'ink-thought'
 enableRobotsTXT = true
 
+# Make sidebar and banner originals available to Hugo's image pipeline.
+[module]
+  [[module.mounts]]
+    source = 'assets'
+    target = 'assets'
+  [[module.mounts]]
+    source = 'static/img/sidebar'
+    target = 'assets/img/sidebar'
+  [[module.mounts]]
+    source = 'static/img/bg'
+    target = 'assets/img/bg'
+
 [outputs]
   home = ['HTML', 'RSS', 'JSON']
 

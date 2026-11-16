@@ -1,0 +1,17 @@
+{{- $labels := dict "tags" "标签" "categories" "分类" "posts" "文章" "search" "搜索" -}}
+{{- $items := slice (dict "title" "首页" "url" site.Home.RelPermalink) -}}
+{{- if not .IsHome -}}
+  {{- if eq .Kind "term" -}}
+    {{- $taxonomy := .Data.Plural -}}
+    {{- $items = $items | append (dict "title" (index $labels $taxonomy | default $taxonomy) "url" (printf "%s/" $taxonomy | relURL)) -}}
+  {{- else if and .IsPage (eq .Section "posts") -}}
+    {{- with site.GetPage "/posts" -}}
+      {{- $items = $items | append (dict "title" "文章" "url" .RelPermalink) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $title := index $labels .Section | default .Title -}}
+  {{- if or (eq .Kind "term") (and .IsPage (eq .Section "posts")) -}}{{- $title = .Title -}}{{- end -}}
+  {{- if eq .Kind "404" -}}{{- $title = "页面未找到" -}}{{- end -}}
+  {{- $items = $items | append (dict "title" $title "url" .RelPermalink) -}}
+{{- end -}}
+{{- return $items -}}

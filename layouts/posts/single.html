@@ -18,12 +18,7 @@
         <div class="card-decoration"></div>
 
         <div class="detail-toolbar">
-          <a href="{{ site.Home.RelPermalink }}" class="back-btn" data-back-link>
-            <span class="back-icon" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            </span>
-            <span class="back-text" data-back-label>返回首页</span>
-          </a>
+          {{ partial "breadcrumbs.html" . }}
         </div>
 
         <header class="detail-header">
@@ -281,65 +276,9 @@
       }
     }
 
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      box-shadow: var(--shadow-sm);
-      text-decoration: none;
-      transition: transform 0.2s, border-color 0.2s, color 0.2s, background 0.2s;
-      margin: 0;
-    }
-
-    .back-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--violet-50);
-      color: var(--violet-600);
-    }
-
-    .back-text {
-      line-height: 1;
-    }
-
-    .back-btn:hover {
-      transform: translateY(-1px);
-      border-color: rgba(139, 92, 246, 0.35);
-      color: var(--violet-700);
-      background: var(--panel-muted);
-    }
-
-    [data-mode='dark'] .back-btn:hover {
-      border-color: rgba(139, 92, 246, 0.28);
-      color: var(--violet-400);
-      background: rgba(124, 58, 237, 0.12);
-    }
-
-    [data-mode='dark'] .back-icon {
-      background: rgba(124, 58, 237, 0.14);
-      color: var(--violet-400);
-    }
-
-    .detail-toolbar {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      margin: 0;
-      display: flex;
-      justify-content: flex-start;
-      max-width: none;
-      z-index: 2;
+    .post-detail-card > .detail-toolbar {
+      position: static;
+      margin: 0 0 24px;
     }
 
     .post-detail-card {
@@ -1463,40 +1402,6 @@
 		      const postPageController = new AbortController();
 		      window.__moranPostPageAbort = postPageController;
 		      const { signal } = postPageController;
-
-	      const backLink = document.querySelector("[data-back-link]");
-	      const backLabel = backLink && backLink.querySelector("[data-back-label]");
-	      const homePath = "{{ site.Home.RelPermalink }}";
-	      const normalizePath = (value) => (value || "/").replace(/\/+$/, "") || "/";
-	      const labelFromPath = (pathname) => {
-	        const normalized = normalizePath(pathname);
-	        const normalizedHome = normalizePath(homePath);
-	        if (normalized === normalizedHome) return "返回首页";
-	        if (normalized.includes("/archives")) return "返回归档";
-	        if (normalized.includes("/tags")) return "返回标签";
-	        if (normalized.includes("/categories")) return "返回分类";
-	        if (normalized.includes("/search")) return "返回搜索";
-	        return "返回上一页";
-	      };
-
-	      if (backLink) {
-	        try {
-		          const referrer = window.__moranPrevUrl || document.referrer;
-	          if (referrer) {
-		            const refUrl = new URL(referrer, window.location.href);
-	            if (refUrl.origin === window.location.origin) {
-	              backLink.setAttribute("href", refUrl.href);
-	              if (backLabel) backLabel.textContent = labelFromPath(refUrl.pathname);
-	            } else if (backLabel) {
-	              backLabel.textContent = "返回首页";
-	            }
-	          } else if (backLabel) {
-	            backLabel.textContent = "返回首页";
-	          }
-	        } catch {
-	          if (backLabel) backLabel.textContent = "返回首页";
-	        }
-	      }
 
 	      const shareRoot = document.querySelector("[data-share]");
 	      const shareTrigger = shareRoot && shareRoot.querySelector("[data-share-trigger]");

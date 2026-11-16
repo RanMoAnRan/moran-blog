@@ -33,6 +33,15 @@
 
 {{- if not (fileExists (printf "static/%s" $img)) -}}
   {{- $img = partial "avatar-path.html" . -}}
+{{- else -}}
+  {{- with resources.Get $img -}}
+    {{- /* Preserve the composition and enough detail for high-density displays. */ -}}
+    {{- $width := math.Min 960 .Width | int -}}
+    {{- $optimized := .Resize (printf "%dx webp q85 lanczos" $width) -}}
+    {{- if lt (len $optimized.Content) (len .Content) -}}
+      {{- $img = $optimized.RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $img -}}

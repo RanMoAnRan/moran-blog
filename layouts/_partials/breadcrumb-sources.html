@@ -1,0 +1,7 @@
+{{- $sources := dict -}}
+{{- range site.Pages -}}
+  {{- if and (ne .Kind "404") (not (and .IsPage (eq .Section "posts"))) -}}
+    {{- $sources = merge $sources (dict .RelPermalink (partial "breadcrumb-items.html" .)) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $sources -}}

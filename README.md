@@ -81,6 +81,21 @@ The main configuration file is `hugo.toml`:
 - `params.social`: social links
 - `params.giscus`: Giscus comments. Fill in `repo`, `repoId`, and `categoryId`, then set `enabled = true`.
 
+Sidebar originals live in `static/img/sidebar/`. Hugo automatically generates
+WebP images at quality 85, capped at 960 pixels wide without upscaling, and uses
+them in both sidebar profile widgets when smaller than the source. Replace the
+originals as usual; the next build regenerates the optimized images. The originals
+remain unchanged.
+Image processing requires Hugo Extended, as used by the deployment workflow.
+
+Homepage banners also get automatically generated WebP variants from the PNG
+originals in `static/img/bg/`: a centered square retaining the original height
+for screens up to 480px, and a full-frame version for screens up to 768px.
+The browser selects the matching variant, including when switching backgrounds;
+desktop keeps the existing image. Only smaller variants are used. The saved
+background is selected before any image request, with a default responsive
+banner available when JavaScript is disabled.
+
 ## Theme palettes
 
 The header palette button offers **14 palettes**: the original Moran gradient,

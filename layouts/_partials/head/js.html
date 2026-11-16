@@ -1,8 +1,9 @@
 {{- $main := resources.Get "js/main.js" -}}
 {{- $homeWidgets := resources.Get "js/home-widgets.js" -}}
 {{- $pjax := resources.Get "js/pjax.js" -}}
+{{- $breadcrumbs := resources.Get "js/breadcrumbs.js" -}}
 {{- $themePicker := resources.Get "js/theme-picker.js" | js.Build (dict "targetPath" "js/theme-picker.js" "format" "iife" "target" "es2020") -}}
-{{- $scripts := slice $themePicker $main $homeWidgets $pjax -}}
+{{- $scripts := slice $themePicker $main $homeWidgets $pjax $breadcrumbs -}}
 {{- if not (eq site.Params.petCat false) -}}
   {{- with resources.Get "js/pet-cat-fishing.js" -}}
     {{- $scripts = $scripts | append . -}}

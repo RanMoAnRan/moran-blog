@@ -1,0 +1,23 @@
+{{- $desktop := . | relURL -}}
+{{- $mobile := $desktop -}}
+{{- $compact := $desktop -}}
+{{- $source := resources.Get . -}}
+{{- /* Encode from the PNG original when available, rather than recompressing WebP. */ -}}
+{{- with resources.Get (printf "%s.png" (strings.TrimSuffix (path.Ext .) .)) -}}
+  {{- $source = . -}}
+{{- end -}}
+{{- with $source -}}
+  {{- $full := .Process "webp q85" -}}
+  {{- $existing := resources.Get $ -}}
+  {{- if lt (len $full.Content) (len $existing.Content) -}}
+    {{- $mobile = $full.RelPermalink -}}
+  {{- end -}}
+  {{- /* Narrow phones already crop the sides with object-fit: cover.
+        Keep the full source height so that high-density screens retain detail. */ -}}
+  {{- $side := math.Min .Width .Height | int -}}
+  {{- $square := .Crop (printf "%dx%d center webp q85" $side $side) -}}
+  {{- if lt (len $square.Content) (len $existing.Content) -}}
+    {{- $compact = $square.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "desktop" $desktop "mobile" $mobile "compact" $compact) -}}

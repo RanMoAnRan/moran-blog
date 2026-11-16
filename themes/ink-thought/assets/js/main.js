@@ -73,12 +73,13 @@
       setOpen(false);
     });
 
+    // Run before floating panels stop propagation so opening one closes the menu.
     document.addEventListener("click", (event) => {
       if (navMobile.hidden) return;
       if (event.target.closest("[data-nav-toggle]")) return;
       if (event.target.closest("[data-nav-mobile]")) return;
       setOpen(false);
-    });
+    }, true);
 
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") return;
