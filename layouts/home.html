@@ -352,8 +352,11 @@
             if (!drawSpark(sparks[i], now)) sparks.splice(i, 1);
           }
 
-          // 智能休眠判断：当没有待渲染的水波和火花且鼠标停止时，停止循环省电
-          if (ripples.length === 0 && sparks.length === 0 && !pointer.active) {
+          // 智能休眠判断：当没有待渲染的水波和火花且鼠标停止滑动时，清空画布并停止循环省电
+          const isPointerMoving = pointer.active && (now - pointer.lastTime < 350);
+          if (ripples.length === 0 && sparks.length === 0 && !isPointerMoving) {
+            pointer.active = false;
+            ctx.clearRect(0, 0, width, height);
             stop();
             return;
           }
@@ -361,35 +364,9 @@
           raf = requestAnimationFrame(draw);
         };
 
-        let ambientTimer = null;
         let visibilityObserver = null;
         let resizeObserver = null;
         let bootRippleTimer = 0;
-
-        const triggerAmbientRipple = () => {
-          if (signal.aborted || document.hidden || !isHeroVisible) return;
-          const maxAmbientRipples = prefersReducedMotion.matches ? 4 : 6;
-          // 仅在当前没有过多活跃水波时产生优雅微澜
-          if (ripples.length < maxAmbientRipples) {
-            const x = width * (0.18 + Math.random() * 0.64);
-            const y = height * (0.24 + Math.random() * 0.52);
-            addRipple(x, y, 0.88 + Math.random() * 0.24);
-          }
-        };
-
-        const startAmbientTimer = () => {
-          if (signal.aborted) return;
-          if (ambientTimer) clearInterval(ambientTimer);
-          const intervalMs = prefersReducedMotion.matches ? 2600 : 1400;
-          ambientTimer = setInterval(triggerAmbientRipple, intervalMs);
-        };
-
-        const stopAmbientTimer = () => {
-          if (ambientTimer) {
-            clearInterval(ambientTimer);
-            ambientTimer = null;
-          }
-        };
 
         const wakeUp = () => {
           if (signal.aborted || isRunning || document.hidden || !isHeroVisible) return;
@@ -408,14 +385,15 @@
         const boot = () => {
           if (signal.aborted) return;
           resize();
-          addRipple(width * 0.5, height * 0.46, 0.9);
-          bootRippleTimer = window.setTimeout(() => {
-            bootRippleTimer = 0;
-            if (!signal.aborted && isHeroVisible) {
-              addRipple(width * 0.34, height * 0.38, 0.75);
-            }
-          }, 550);
-          startAmbientTimer();
+          if (!prefersReducedMotion.matches) {
+            addRipple(width * 0.5, height * 0.46, 0.9);
+            bootRippleTimer = window.setTimeout(() => {
+              bootRippleTimer = 0;
+              if (!signal.aborted && isHeroVisible) {
+                addRipple(width * 0.34, height * 0.38, 0.75);
+              }
+            }, 550);
+          }
 
           if ('ResizeObserver' in window) {
             resizeObserver = new ResizeObserver(resize);
@@ -425,22 +403,18 @@
           if ('IntersectionObserver' in window) {
             visibilityObserver = new IntersectionObserver((entries) => {
               const entry = entries[0];
-              const wasVisible = isHeroVisible;
               isHeroVisible = Boolean(entry && entry.isIntersecting);
               if (isHeroVisible) {
-                startAmbientTimer();
-                if (!wasVisible && ripples.length === 0) triggerAmbientRipple();
                 if (ripples.length > 0 || pointer.active) wakeUp();
               } else {
-                stopAmbientTimer();
                 stop();
+                ctx.clearRect(0, 0, width, height);
               }
             }, { rootMargin: '80px 0px', threshold: 0.01 });
 
             visibilityObserver.observe(hero);
           } else {
             isHeroVisible = true;
-            wakeUp();
           }
         };
 
@@ -456,10 +430,9 @@
             return;
           }
           if (document.hidden) {
-            stopAmbientTimer();
             stop();
+            ctx.clearRect(0, 0, width, height);
           } else {
-            startAmbientTimer();
             if (ripples.length > 0 || pointer.active) wakeUp();
           }
         }, { signal });
@@ -469,8 +442,8 @@
             window.clearTimeout(bootRippleTimer);
             bootRippleTimer = 0;
           }
-          stopAmbientTimer();
           stop();
+          ctx.clearRect(0, 0, width, height);
           visibilityObserver?.disconnect();
           visibilityObserver = null;
           resizeObserver?.disconnect();
