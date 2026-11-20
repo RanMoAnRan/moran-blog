@@ -98,6 +98,7 @@ enableRobotsTXT = true
 
   [params.profile]
     name = '墨然'
+    url = 'https://moran.is-a.dev/'
     bio = '程序猿一枚，喜欢瞎捣鼓 . never stand still'
     location = 'Asia/Shanghai'
 
